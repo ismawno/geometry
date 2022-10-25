@@ -8,7 +8,7 @@ namespace geo
     void box2D::bound()
     {
         const auto cmp = [](const vec2 &v1, const vec2 &v2)
-        { return v1.angle() <= v2.angle(); };
+        { return v1.angle() < v2.angle(); };
         const auto &[min, max] = std::minmax_element(m_vertices->begin(), m_vertices->end(), cmp);
         m_min = *min;
         m_max = *max;
