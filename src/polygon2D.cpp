@@ -55,6 +55,17 @@ namespace geo
         return polygon2D(sum);
     }
 
+    const vec2 &polygon2D::support_vertex(const vec2 &direction) const
+    {
+        const vec2 &centre = m_centre;
+
+        const auto cmp = [&direction, &centre](const vec2 &v1, const vec2 &v2)
+        { return direction.dot(v1 - centre) < direction.dot(v2 - centre); };
+
+        const auto &support = std::max_element(m_vertices.begin(), m_vertices.end(), cmp);
+        return *support;
+    }
+
     bool polygon2D::is_convex() const
     {
         for (std::size_t i = 0; i < m_vertices.size() - 2; i++)
@@ -70,7 +81,7 @@ namespace geo
     bool polygon2D::contains_point(const vec2 &p) const
     {
         const auto cmp = [&p](const vec2 &v1, const vec2 &v2)
-        { return (v1 - p).angle() <= (v2 - p).angle(); };
+        { return (v1 - p).angle() < (v2 - p).angle(); };
         const auto &[min, max] = std::minmax_element(m_vertices.begin(), m_vertices.end(), cmp);
         return max->angle() - min->angle() >= M_PI;
     }
@@ -80,13 +91,11 @@ namespace geo
     void polygon2D::sort_vertices_by_angle()
     {
         const auto cmp = [](const vec2 &v1, const vec2 &v2)
-        { return v1.angle() <= v2.angle(); };
+        { return v1.angle() < v2.angle(); };
         std::sort(m_vertices.begin(), m_vertices.end(), cmp);
     }
 
     const std::vector<vec2> &polygon2D::vertices() const { return m_vertices; }
-
-    const vec2 &polygon2D::geometrical_centre() const { return m_centre; }
 
     std::size_t polygon2D::size() const { return m_vertices.size(); }
 
