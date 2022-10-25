@@ -1,4 +1,5 @@
 #include "polygon2D.hpp"
+#include "debug.h"
 #include <algorithm>
 #include <cstdint>
 #include <cmath>
@@ -8,6 +9,7 @@ namespace geo
     polygon2D::polygon2D(const std::vector<vec2> &vertices,
                          const vec2 &pos) : polygon2D(vertices)
     {
+        DBG_EXIT_IF(m_vertices.size() < 3, "Cannot make polygon with less than 3 vertices.\n")
         compute_centre();
         translate(-m_centre);
         sort_vertices_by_angle();
@@ -15,6 +17,7 @@ namespace geo
     }
     polygon2D::polygon2D(const std::vector<vec2> &vertices) : m_vertices(vertices)
     {
+        DBG_EXIT_IF(m_vertices.size() < 3, "Cannot make polygon with less than 3 vertices.\n")
         const vec2 prev_centre = compute_centre();
         translate(-m_centre);
         sort_vertices_by_angle();
