@@ -2,7 +2,7 @@
 
 namespace geo
 {
-    shape2D::shape2D(const vec2 &pos) : m_centre(pos) {}
+    shape2D::shape2D(const vec2 &pos) : m_centroid(pos) {}
 
-    const vec2 &shape2D::centre() const { return m_centre; }
+    const vec2 &shape2D::centroid() const { return m_centroid; }
 }

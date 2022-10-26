@@ -18,10 +18,10 @@ namespace geo
         virtual bool contains_point(const vec2 &p) const = 0;
         virtual bool contains_origin() const = 0;
 
-        const vec2 &centre() const;
+        const vec2 &centroid() const;
 
     protected:
-        vec2 m_centre;
+        vec2 m_centroid;
     };
 }
 
