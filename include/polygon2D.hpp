@@ -20,6 +20,14 @@ namespace geo
         bool is_convex() const override;
         bool contains_point(const vec2 &p) const override;
         bool contains_origin() const override;
+        bool overlaps(const polygon2D &poly) const; // CAMBIAR A OVERLAPS
+
+        float distance_to(const vec2 &p) const;
+        float distance_to(const polygon2D &poly) const;
+        float distance_to_origin() const;
+
+        vec2 centre_of_mass() const;
+        vec2 centre_of_vertices() const;
 
         const std::vector<vec2> &vertices() const;
         std::size_t size() const;
@@ -29,8 +37,10 @@ namespace geo
     private:
         std::vector<vec2> m_vertices;
 
-        const vec2 &compute_centre();
         void sort_vertices_by_angle();
+        static float sq_dist_to_edge(const vec2 &p1, const vec2 &p2, const vec2 &p);
+        float min_sq_dist_to_edge(const vec2 &p) const;
+        static bool line_intersects_edge(const vec2 &l1, const vec2 &l2, const vec2 &v1, const vec2 &v2);
     };
 
     polygon2D operator+(const polygon2D &poly);

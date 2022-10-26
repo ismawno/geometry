@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <cmath>
+#include <limits>
 
 namespace geo
 {
@@ -10,34 +11,51 @@ namespace geo
                          const vec2 &pos) : polygon2D(vertices)
     {
         DBG_EXIT_IF(m_vertices.size() < 3, "Cannot make polygon with less than 3 vertices.\n")
-        compute_centre();
-        translate(-m_centre);
+        const vec2 cvert = centre_of_vertices();
+        translate(-cvert);
         sort_vertices_by_angle();
-        translate(pos);
+        m_centroid = centre_of_mass();
+        translate(pos - m_centroid);
     }
     polygon2D::polygon2D(const std::vector<vec2> &vertices) : m_vertices(vertices)
     {
         DBG_EXIT_IF(m_vertices.size() < 3, "Cannot make polygon with less than 3 vertices.\n")
-        const vec2 prev_centre = compute_centre();
-        translate(-m_centre);
+        const vec2 cvert = centre_of_vertices();
+        translate(-cvert);
         sort_vertices_by_angle();
-        translate(prev_centre);
+        m_centroid = centre_of_mass();
+        translate(cvert);
     }
 
-    const vec2 &polygon2D::polygon2D::compute_centre()
+    vec2 polygon2D::centre_of_mass() const
     {
-        m_centre = {0.f, 0.f};
+        const vec2 &v0 = m_vertices[0];
+
+        vec2 num;
+        float den = 0.f;
+        for (std::size_t i = 1; i < m_vertices.size() - 1; i++)
+        {
+            const vec2 edg1 = m_vertices[i] - v0, edg2 = m_vertices[i + 1] - v0;
+            const float cross = std::abs(edg1.cross(edg2));
+            num += (edg1 + edg2) * cross;
+            den += cross;
+        }
+        return v0 + num / (3.f * den);
+    }
+
+    vec2 polygon2D::centre_of_vertices() const
+    {
+        vec2 centre;
         for (const vec2 &v : m_vertices)
-            m_centre += v;
-        m_centre /= m_vertices.size();
-        return m_centre;
+            centre += v;
+        return centre / m_vertices.size();
     }
 
     void polygon2D::translate(const vec2 &dpos)
     {
         for (vec2 &v : m_vertices)
             v += dpos;
-        m_centre += dpos;
+        m_centroid += dpos;
     }
 
     polygon2D polygon2D::minkowski_sum(const polygon2D &poly1, const polygon2D &poly2)
@@ -60,10 +78,10 @@ namespace geo
 
     const vec2 &polygon2D::support_vertex(const vec2 &direction) const
     {
-        const vec2 &centre = m_centre;
+        const vec2 &centroid = m_centroid;
 
-        const auto cmp = [&direction, &centre](const vec2 &v1, const vec2 &v2)
-        { return direction.dot(v1 - centre) < direction.dot(v2 - centre); };
+        const auto cmp = [&direction, &centroid](const vec2 &v1, const vec2 &v2)
+        { return direction.dot(v1 - centroid) < direction.dot(v2 - centroid); };
 
         const auto &support = std::max_element(m_vertices.begin(), m_vertices.end(), cmp);
         return *support;
@@ -71,11 +89,11 @@ namespace geo
 
     bool polygon2D::is_convex() const
     {
-        for (std::size_t i = 0; i < m_vertices.size() - 2; i++)
+        for (std::size_t i = 0; i < m_vertices.size(); i++)
         {
-            const vec2 &prev = m_vertices[i], &mid = m_vertices[i + 1], &next = m_vertices[i + 2];
+            const vec2 &prev = (*this)[i], &mid = (*this)[i + 1], &next = (*this)[i + 2];
             const vec2 accel = (next - mid) - (mid - prev);
-            if (accel.dot(m_centre - mid) < 0.f)
+            if (accel.dot(m_centroid - mid) < 0.f)
                 return false;
         }
         return true;
@@ -83,13 +101,54 @@ namespace geo
 
     bool polygon2D::contains_point(const vec2 &p) const
     {
-        const auto cmp = [&p](const vec2 &v1, const vec2 &v2)
-        { return (v1 - p).angle() < (v2 - p).angle(); };
-        const auto &[min, max] = std::minmax_element(m_vertices.begin(), m_vertices.end(), cmp);
-        return max->angle() - min->angle() >= M_PI;
+        DBG_LOG_IF(!is_convex(), "Checking if a point is contained in a non convex polygon yields undefined behaviour.\n")
+        for (std::size_t i = 0; i < m_vertices.size(); i++)
+        {
+            const vec2 &v1 = (*this)[i], &v2 = (*this)[i + 1];
+            if (line_intersects_edge(v2, v1, p, m_centroid) && line_intersects_edge(p, m_centroid, v2, v1))
+                return false;
+        }
+        return true;
     }
 
     bool polygon2D::contains_origin() const { return contains_point({0.f, 0.f}); }
+
+    bool polygon2D::overlaps(const polygon2D &poly) const { return (*this - poly).contains_origin(); }
+
+    float polygon2D::distance_to(const vec2 &p) const { return std::sqrt(min_sq_dist_to_edge(p)); }
+
+    float polygon2D::distance_to_origin() const { return distance_to({0.f, 0.f}); }
+
+    float polygon2D::distance_to(const polygon2D &poly) const { return (*this - poly).distance_to_origin(); }
+
+    float polygon2D::sq_dist_to_edge(const vec2 &p1, const vec2 &p2, const vec2 &p)
+    {
+        const float t = std::clamp((p - p1).dot(p2 - p1) / p1.sq_dist(p2), 0.f, 1.f);
+        const vec2 proj = p1 + t * (p2 - p1);
+        return proj.sq_dist(p);
+    }
+
+    float polygon2D::min_sq_dist_to_edge(const vec2 &p) const
+    {
+        float min_dist = std::numeric_limits<float>::max();
+        for (std::size_t i = 0; i < m_vertices.size(); i++)
+        {
+            const float dist = sq_dist_to_edge((*this)[i], (*this)[i + 1], p);
+            if (min_dist > dist)
+                min_dist = dist;
+        }
+        return min_dist;
+    }
+
+    bool polygon2D::line_intersects_edge(const vec2 &l1, const vec2 &l2, const vec2 &v1, const vec2 &v2)
+    {
+        const float a = l2.y - l1.y, b = l1.x - l2.x;
+        const float c = l2.x * l1.y - l1.x * l2.y;
+
+        const float d1 = a * v1.x + b * v1.y + c;
+        const float d2 = a * v2.x + b * v2.y + c;
+        return !((d1 > 0.f && d2 > 0.f) || (d1 < 0.f && d2 < 0.f));
+    }
 
     void polygon2D::sort_vertices_by_angle()
     {
