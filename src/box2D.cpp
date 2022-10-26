@@ -1,4 +1,4 @@
-#include <algorithm>
+#include <limits>
 #include "box2D.hpp"
 
 namespace geo
@@ -7,11 +7,19 @@ namespace geo
 
     void box2D::bound()
     {
-        const auto cmp = [](const vec2 &v1, const vec2 &v2)
-        { return v1.angle() < v2.angle(); };
-        const auto &[min, max] = std::minmax_element(m_vertices->begin(), m_vertices->end(), cmp);
-        m_min = *min;
-        m_max = *max;
+        m_min.x = m_min.y = std::numeric_limits<float>::max();
+        m_max.x = m_max.y = -std::numeric_limits<float>::max();
+        for (const vec2 &v : *m_vertices)
+        {
+            if (m_min.x > v.x)
+                m_min.x = v.x;
+            if (m_min.y > v.y)
+                m_min.y = v.y;
+            if (m_max.x < v.x)
+                m_max.x = v.x;
+            if (m_max.y < v.y)
+                m_max.y = v.y;
+        }
     }
 
     bool box2D::overlaps(const box2D &box) const
