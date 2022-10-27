@@ -20,7 +20,7 @@ namespace geo
         bool is_convex() const override;
         bool contains_point(const vec2 &p) const override;
         bool contains_origin() const override;
-        bool overlaps(const polygon2D &poly) const; // CAMBIAR A OVERLAPS
+        bool overlaps(const polygon2D &poly) const;
 
         float distance_to(const vec2 &p) const;
         float distance_to(const polygon2D &poly) const;
