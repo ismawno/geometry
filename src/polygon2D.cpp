@@ -115,29 +115,34 @@ namespace geo
 
     bool polygon2D::overlaps(const polygon2D &poly) const { return (*this - poly).contains_origin(); }
 
-    float polygon2D::distance_to(const vec2 &p) const { return std::sqrt(min_sq_dist_to_edge(p)); }
+    float polygon2D::distance_to(const vec2 &p) const { return towards_closest_edge_from(p).norm(); }
 
     float polygon2D::distance_to_origin() const { return distance_to({0.f, 0.f}); }
 
     float polygon2D::distance_to(const polygon2D &poly) const { return (*this - poly).distance_to_origin(); }
 
-    float polygon2D::sq_dist_to_edge(const vec2 &p1, const vec2 &p2, const vec2 &p)
+    vec2 polygon2D::towards_segment_from(const vec2 &p1, const vec2 &p2, const vec2 &p)
     {
         const float t = std::clamp((p - p1).dot(p2 - p1) / p1.sq_dist(p2), 0.f, 1.f);
         const vec2 proj = p1 + t * (p2 - p1);
-        return proj.sq_dist(p);
+        return proj - p;
     }
 
-    float polygon2D::min_sq_dist_to_edge(const vec2 &p) const
+    vec2 polygon2D::towards_closest_edge_from(const vec2 &p) const
     {
         float min_dist = std::numeric_limits<float>::max();
+        vec2 closest;
         for (std::size_t i = 0; i < m_vertices.size(); i++)
         {
-            const float dist = sq_dist_to_edge((*this)[i], (*this)[i + 1], p);
+            const vec2 towards = towards_segment_from((*this)[i], (*this)[i + 1], p);
+            const float dist = towards.sq_norm();
             if (min_dist > dist)
+            {
                 min_dist = dist;
+                closest = towards;
+            }
         }
-        return min_dist;
+        return closest;
     }
 
     bool polygon2D::line_intersects_edge(const vec2 &l1, const vec2 &l2, const vec2 &v1, const vec2 &v2)

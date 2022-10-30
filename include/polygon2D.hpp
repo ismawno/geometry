@@ -26,6 +26,7 @@ namespace geo
         float distance_to(const polygon2D &poly) const;
         float distance_to_origin() const;
 
+        vec2 towards_closest_edge_from(const vec2 &p) const;
         vec2 centre_of_mass() const;
         vec2 centre_of_vertices() const;
 
@@ -38,8 +39,7 @@ namespace geo
         std::vector<vec2> m_vertices;
 
         void sort_vertices_by_angle();
-        static float sq_dist_to_edge(const vec2 &p1, const vec2 &p2, const vec2 &p);
-        float min_sq_dist_to_edge(const vec2 &p) const;
+        static vec2 towards_segment_from(const vec2 &p1, const vec2 &p2, const vec2 &p);
         static bool line_intersects_edge(const vec2 &l1, const vec2 &l2, const vec2 &v1, const vec2 &v2);
     };
 
