@@ -7,8 +7,8 @@
 
 namespace geo
 {
-    polygon2D::polygon2D(const std::vector<vec2> &vertices,
-                         const vec2 &pos) : polygon2D(vertices)
+    polygon2D::polygon2D(const vec2 &pos,
+                         const std::vector<vec2> &vertices) : polygon2D(vertices)
     {
         DBG_EXIT_IF(m_vertices.size() < 3, "Cannot make polygon with less than 3 vertices.\n")
         const vec2 cvert = centre_of_vertices();

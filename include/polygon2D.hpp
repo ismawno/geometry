@@ -9,9 +9,9 @@ namespace geo
     class polygon2D : public shape2D
     {
     public:
-        polygon2D() = delete;
-        polygon2D(const std::vector<vec2> &vertices);
-        polygon2D(const std::vector<vec2> &vertices, const vec2 &pos);
+        polygon2D(const std::vector<vec2> &vertices = {{-1.f, -1.f}, {1.f, -1.f}, {1.f, 1.f}, {-1.f, 1.f}});
+        polygon2D(const vec2 &pos,
+                  const std::vector<vec2> &vertices = {{-1.f, -1.f}, {1.f, -1.f}, {1.f, 1.f}, {-1.f, 1.f}});
 
         void translate(const vec2 &dpos) override;
         static polygon2D minkowski_sum(const polygon2D &poly1, const polygon2D &poly2);
