@@ -10,8 +10,7 @@ namespace geo
     class box2D
     {
     public:
-        box2D() = delete;
-        box2D(const std::vector<vec2> &vertices);
+        box2D(const std::vector<vec2> &vertices = {{-1.f, -1.f}, {1.f, -1.f}, {1.f, 1.f}, {-1.f, 1.f}});
 
         void bound();
         bool overlaps(const box2D &box) const;
