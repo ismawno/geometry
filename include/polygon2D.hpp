@@ -34,6 +34,8 @@ namespace geo
         vec2 centre_of_vertices() const;
 
         const std::vector<vec2> &vertices() const;
+        std::vector<vec2> &vertices();
+
         std::size_t size() const;
         const vec2 &centroid() const;
 

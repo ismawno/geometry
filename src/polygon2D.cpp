@@ -165,6 +165,7 @@ namespace geo
     }
 
     const std::vector<vec2> &polygon2D::vertices() const { return m_vertices; }
+    std::vector<vec2> &polygon2D::vertices() { return m_vertices; }
 
     std::size_t polygon2D::size() const { return m_vertices.size(); }
 
