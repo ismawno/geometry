@@ -1,25 +1,28 @@
 #ifndef POLYGON2D_HPP
 #define POLYGON2D_HPP
 
-#include "shape2D.hpp"
+#include "vec2.hpp"
 #include <vector>
 
 namespace geo
 {
-    class polygon2D : public shape2D
+    using namespace vec;
+    class polygon2D
     {
     public:
         polygon2D(const std::vector<vec2> &vertices = {{-1.f, -1.f}, {1.f, -1.f}, {1.f, 1.f}, {-1.f, 1.f}});
         polygon2D(const vec2 &pos,
                   const std::vector<vec2> &vertices = {{-1.f, -1.f}, {1.f, -1.f}, {1.f, 1.f}, {-1.f, 1.f}});
 
-        void translate(const vec2 &dpos) override;
-        static polygon2D minkowski_sum(const polygon2D &poly1, const polygon2D &poly2);
-        const vec2 &support_vertex(const vec2 &direction) const override;
+        void translate(const vec2 &dpos);
+        void move(const vec2 &pos);
 
-        bool is_convex() const override;
-        bool contains_point(const vec2 &p) const override;
-        bool contains_origin() const override;
+        static polygon2D minkowski_sum(const polygon2D &poly1, const polygon2D &poly2);
+        const vec2 &support_vertex(const vec2 &direction) const;
+
+        bool is_convex() const;
+        bool contains_point(const vec2 &p) const;
+        bool contains_origin() const;
         bool overlaps(const polygon2D &poly) const;
 
         float distance_to(const vec2 &p) const;
@@ -32,11 +35,13 @@ namespace geo
 
         const std::vector<vec2> &vertices() const;
         std::size_t size() const;
+        const vec2 &centroid() const;
 
         const vec2 &operator[](std::size_t index) const;
 
     private:
         std::vector<vec2> m_vertices;
+        vec2 m_centroid;
 
         void sort_vertices_by_angle();
         static vec2 towards_segment_from(const vec2 &p1, const vec2 &p2, const vec2 &p);

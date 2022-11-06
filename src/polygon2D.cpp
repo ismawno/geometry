@@ -58,6 +58,8 @@ namespace geo
         m_centroid += dpos;
     }
 
+    void polygon2D::move(const vec2 &pos) { translate(pos - m_centroid); }
+
     polygon2D polygon2D::minkowski_sum(const polygon2D &poly1, const polygon2D &poly2)
     {
         std::vector<vec2> sum;
@@ -165,6 +167,8 @@ namespace geo
     const std::vector<vec2> &polygon2D::vertices() const { return m_vertices; }
 
     std::size_t polygon2D::size() const { return m_vertices.size(); }
+
+    const vec2 &polygon2D::centroid() const { return m_centroid; }
 
     const vec2 &polygon2D::operator[](const std::size_t index) const { return m_vertices[index % m_vertices.size()]; }
 
