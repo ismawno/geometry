@@ -33,6 +33,10 @@ namespace geo
         vec2 centre_of_mass() const;
         vec2 centre_of_vertices() const;
 
+        void rotate(float dangle);
+        void rotation(float angle);
+        float rotation() const;
+
         const std::vector<vec2> &vertices() const;
         std::vector<vec2> &vertices();
 
@@ -44,6 +48,7 @@ namespace geo
     private:
         std::vector<vec2> m_vertices;
         vec2 m_centroid;
+        float m_angle = 0.f;
 
         void sort_vertices_by_angle();
         static vec2 towards_segment_from(const vec2 &p1, const vec2 &p2, const vec2 &p);

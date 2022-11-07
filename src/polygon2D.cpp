@@ -164,6 +164,14 @@ namespace geo
         std::sort(m_vertices.begin(), m_vertices.end(), cmp);
     }
 
+    void polygon2D::rotate(float dangle)
+    {
+        for (vec2 &v : m_vertices)
+            v = (v - m_centroid).rotated(dangle) + m_centroid;
+    }
+    void polygon2D::rotation(float angle) { rotate(angle - m_angle); }
+    float polygon2D::rotation() const { return m_angle; }
+
     const std::vector<vec2> &polygon2D::vertices() const { return m_vertices; }
     std::vector<vec2> &polygon2D::vertices() { return m_vertices; }
 
