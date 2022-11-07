@@ -15,7 +15,7 @@ namespace geo
                   const std::vector<vec2> &vertices = {{-1.f, -1.f}, {1.f, -1.f}, {1.f, 1.f}, {-1.f, 1.f}});
 
         void translate(const vec2 &dpos);
-        void move(const vec2 &pos);
+        void pos(const vec2 &pos);
 
         static polygon2D minkowski_sum(const polygon2D &poly1, const polygon2D &poly2);
         const vec2 &support_vertex(const vec2 &direction) const;

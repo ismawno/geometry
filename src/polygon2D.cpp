@@ -58,7 +58,7 @@ namespace geo
         m_centroid += dpos;
     }
 
-    void polygon2D::move(const vec2 &pos) { translate(pos - m_centroid); }
+    void polygon2D::pos(const vec2 &pos) { translate(pos - m_centroid); }
 
     polygon2D polygon2D::minkowski_sum(const polygon2D &poly1, const polygon2D &poly2)
     {
