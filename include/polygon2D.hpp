@@ -3,6 +3,7 @@
 
 #include "vec2.hpp"
 #include <vector>
+#include <utility>
 
 namespace geo
 {
@@ -30,6 +31,7 @@ namespace geo
         float distance_to_origin() const;
 
         vec2 towards_closest_edge_from(const vec2 &p) const;
+        std::pair<vec2, vec2> separation_points(const polygon2D &poly) const;
         vec2 centre_of_mass() const;
         vec2 centre_of_vertices() const;
 

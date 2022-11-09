@@ -147,6 +147,24 @@ namespace geo
         return closest;
     }
 
+    std::pair<vec2, vec2> polygon2D::separation_points(const polygon2D &poly) const
+    {
+        float min_dist = std::numeric_limits<float>::max();
+        vec2 vertex, sep_vec;
+        for (const vec2 &v : m_vertices)
+        {
+            const vec2 towards = poly.towards_closest_edge_from(v);
+            const float dist = towards.sq_norm();
+            if (min_dist > towards.sq_norm())
+            {
+                sep_vec = towards;
+                vertex = v;
+                min_dist = dist;
+            }
+        }
+        return {vertex, vertex + sep_vec};
+    }
+
     bool polygon2D::line_intersects_edge(const vec2 &l1, const vec2 &l2, const vec2 &v1, const vec2 &v2)
     {
         const float a = l2.y - l1.y, b = l1.x - l2.x;
