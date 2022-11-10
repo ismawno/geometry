@@ -186,6 +186,8 @@ namespace geo
     {
         for (vec2 &v : m_vertices)
             v = (v - m_centroid).rotated(dangle) + m_centroid;
+        m_angle += dangle;
+        sort_vertices_by_angle();
     }
     void polygon2D::rotation(float angle) { rotate(angle - m_angle); }
     float polygon2D::rotation() const { return m_angle; }
