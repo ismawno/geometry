@@ -65,11 +65,17 @@ namespace geo
         std::vector<vec2> sum;
         sum.reserve(poly1.size() + poly2.size());
 
+        const auto cmp = [](const vec2 &v1, const vec2 &v2)
+        { return v1.x < v2.x; };
+        const std::size_t m1 = std::distance(poly1.vertices().begin(), std::min_element(poly1.vertices().begin(), poly1.vertices().end(), cmp));
+        const std::size_t m2 = std::distance(poly2.vertices().begin(), std::min_element(poly2.vertices().begin(), poly2.vertices().end(), cmp));
+
         std::size_t i = 0, j = 0;
         while (i < poly1.size() || j < poly2.size())
         {
-            sum.emplace_back(poly1[i] + poly2[j]);
-            const float cross = (poly1[i + 1] - poly1[i]).cross(poly2[j + 1] - poly2[j]);
+            const std::size_t index1 = i + m1, index2 = j + m2;
+            sum.emplace_back(poly1[index1] + poly2[index2]);
+            const float cross = (poly1[index1 + 1] - poly1[index1]).cross(poly2[index2 + 1] - poly2[index2]);
             if (cross >= 0.f)
                 i++;
             if (cross <= 0.f)
@@ -175,10 +181,10 @@ namespace geo
         return !((d1 > 0.f && d2 > 0.f) || (d1 < 0.f && d2 < 0.f));
     }
 
-    void polygon2D::sort_vertices_by_angle()
+    void polygon2D::sort_vertices_by_angle(const vec2 &centre_point)
     {
-        const auto cmp = [](const vec2 &v1, const vec2 &v2)
-        { return v1.angle() < v2.angle(); };
+        const auto cmp = [&centre_point](const vec2 &v1, const vec2 &v2)
+        { return (v1 - centre_point).angle() < (v2 - centre_point).angle(); };
         std::sort(m_vertices.begin(), m_vertices.end(), cmp);
     }
 
@@ -187,7 +193,7 @@ namespace geo
         for (vec2 &v : m_vertices)
             v = (v - m_centroid).rotated(dangle) + m_centroid;
         m_angle += dangle;
-        sort_vertices_by_angle();
+        sort_vertices_by_angle(m_centroid);
     }
     void polygon2D::rotation(float angle) { rotate(angle - m_angle); }
     float polygon2D::rotation() const { return m_angle; }

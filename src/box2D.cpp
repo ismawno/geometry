@@ -3,13 +3,11 @@
 
 namespace geo
 {
-    box2D::box2D(const polygon2D &poly) : m_poly(poly) { bound(); }
-
-    void box2D::bound()
+    void box2D::bound(const std::vector<vec2> &vertices, const vec2 &centroid)
     {
         m_min.x = m_min.y = std::numeric_limits<float>::max();
         m_max.x = m_max.y = -std::numeric_limits<float>::max();
-        for (const vec2 &v : m_poly.vertices())
+        for (const vec2 &v : vertices)
         {
             if (m_min.x > v.x)
                 m_min.x = v.x;
@@ -20,7 +18,7 @@ namespace geo
             if (m_max.y < v.y)
                 m_max.y = v.y;
         }
-        m_centroid = m_poly.centroid();
+        m_centroid = centroid;
     }
 
     bool box2D::overlaps(const box2D &box) const
@@ -34,12 +32,12 @@ namespace geo
         return true;
     }
 
-    void box2D::recentre()
+    void box2D::recentre(const vec2 &centroid)
     {
-        const vec2 dpos = m_poly.centroid() - m_centroid;
+        const vec2 dpos = centroid - m_centroid;
         m_min += dpos;
         m_max += dpos;
-        m_centroid = m_poly.centroid();
+        m_centroid = centroid;
     }
 
     const vec2 &box2D::min() const { return m_min; }

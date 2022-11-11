@@ -11,17 +11,16 @@ namespace geo
     class box2D
     {
     public:
-        box2D(const polygon2D &poly);
+        box2D() = default;
 
-        void bound();
+        void bound(const std::vector<vec2> &vertices, const vec2 &centroid);
         bool overlaps(const box2D &box) const;
-        void recentre();
+        void recentre(const vec2 &centroid);
 
         const vec2 &min() const;
         const vec2 &max() const;
 
     private:
-        const polygon2D &m_poly;
         vec2 m_min, m_max, m_centroid;
     };
 }
