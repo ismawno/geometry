@@ -60,30 +60,6 @@ namespace geo
 
     void polygon2D::pos(const vec2 &pos) { translate(pos - m_centroid); }
 
-    polygon2D polygon2D::minkowski_sum(const polygon2D &poly1, const polygon2D &poly2)
-    {
-        std::vector<vec2> sum;
-        sum.reserve(poly1.size() + poly2.size());
-
-        const auto cmp = [](const vec2 &v1, const vec2 &v2)
-        { return v1.x < v2.x; };
-        const std::size_t m1 = std::distance(poly1.vertices().begin(), std::min_element(poly1.vertices().begin(), poly1.vertices().end(), cmp));
-        const std::size_t m2 = std::distance(poly2.vertices().begin(), std::min_element(poly2.vertices().begin(), poly2.vertices().end(), cmp));
-
-        std::size_t i = 0, j = 0;
-        while (i < poly1.size() || j < poly2.size())
-        {
-            const std::size_t index1 = i + m1, index2 = j + m2;
-            sum.emplace_back(poly1[index1] + poly2[index2]);
-            const float cross = (poly1[index1 + 1] - poly1[index1]).cross(poly2[index2 + 1] - poly2[index2]);
-            if (cross >= 0.f)
-                i++;
-            if (cross <= 0.f)
-                j++;
-        }
-        return polygon2D(sum);
-    }
-
     const vec2 &polygon2D::support_vertex(const vec2 &direction) const
     {
         const vec2 &centroid = m_centroid;
@@ -120,13 +96,11 @@ namespace geo
 
     bool polygon2D::contains_origin() const { return contains_point({0.f, 0.f}); }
 
-    bool polygon2D::overlaps(const polygon2D &poly) const { return (*this - poly).contains_origin(); }
+    bool polygon2D::overlaps(const polygon2D &poly) const { return gjk(*this, poly); }
 
     float polygon2D::distance_to(const vec2 &p) const { return towards_closest_edge_from(p).norm(); }
 
     float polygon2D::distance_to_origin() const { return distance_to({0.f, 0.f}); }
-
-    float polygon2D::distance_to(const polygon2D &poly) const { return (*this - poly).distance_to_origin(); }
 
     vec2 polygon2D::towards_segment_from(const vec2 &p1, const vec2 &p2, const vec2 &p)
     {
@@ -206,20 +180,49 @@ namespace geo
 
     const vec2 &polygon2D::operator[](const std::size_t index) const { return m_vertices[index % m_vertices.size()]; }
 
-    polygon2D operator+(const polygon2D &poly) { return poly; }
-
-    polygon2D &operator+(polygon2D &poly) { return poly; }
-
-    polygon2D operator-(const polygon2D &poly)
+    bool polygon2D::gjk(const polygon2D &poly1, const polygon2D &poly2)
     {
-        std::vector<vec2> vertices;
-        vertices.reserve(poly.size());
-        for (const vec2 &v : poly.vertices())
-            vertices.emplace_back(-v);
-        return polygon2D(vertices);
+        vec2 dir = poly2.centroid() - poly1.centroid();
+        std::array<vec2, SIMPLEX_VERTICES> simplex = {poly1.support_vertex(dir) - poly2.support_vertex(-dir)};
+        dir = -simplex[0];
+        std::size_t size = 1;
+        for (;;)
+        {
+            const vec2 A = poly1.support_vertex(dir) - poly2.support_vertex(-dir);
+            if (A.dot(dir) < 0.f)
+                return false;
+            simplex[size++] = A;
+            if (size == 2)
+                line_case(simplex, dir);
+            else
+                return triangle_case(simplex, dir, size);
+        }
     }
-
-    polygon2D operator+(const polygon2D &poly1, const polygon2D &poly2) { return polygon2D::minkowski_sum(poly1, poly2); }
-
-    polygon2D operator-(const polygon2D &poly1, const polygon2D &poly2) { return polygon2D::minkowski_sum(poly1, -poly2); }
+    void polygon2D::line_case(const std::array<vec2, SIMPLEX_VERTICES> &simplex, vec2 &dir)
+    {
+        const vec2 AB = simplex[0] - simplex[1], AO = -simplex[1];
+        dir = vec2::triple_cross(AB, AO, AB);
+    }
+    bool polygon2D::triangle_case(std::array<vec2, SIMPLEX_VERTICES> &simplex, vec2 &dir, std::size_t &size)
+    {
+        const vec2 AB = simplex[1] - simplex[2], AC = simplex[0] - simplex[2], AO = -simplex[2];
+        const vec2 ABperp = vec2::triple_cross(AC, AB, AB);
+        if (ABperp.dot(AO) > 0.f)
+        {
+            size--;
+            simplex[0] = simplex[1];
+            simplex[1] = simplex[2];
+            dir = ABperp;
+            return false;
+        }
+        const vec2 ACperp = vec2::triple_cross(AB, AC, AC);
+        if (ACperp.dot(AO) > 0.f)
+        {
+            size--;
+            simplex[0] = simplex[1];
+            dir = ACperp;
+            return false;
+        }
+        return true;
+    }
 }
