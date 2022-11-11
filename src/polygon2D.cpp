@@ -100,8 +100,7 @@ namespace geo
         for (std::size_t i = 0; i < m_vertices.size(); i++)
         {
             const vec2 &prev = (*this)[i], &mid = (*this)[i + 1], &next = (*this)[i + 2];
-            const vec2 accel = (next - mid) - (mid - prev);
-            if (accel.dot(m_centroid - mid) < 0.f)
+            if ((mid - prev).cross(next - mid) < 0.f)
                 return false;
         }
         return true;
