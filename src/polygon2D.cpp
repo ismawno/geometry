@@ -225,4 +225,45 @@ namespace geo
         }
         return true;
     }
+
+    polygon2D polygon2D::minkowski_sum(const polygon2D &poly1, const polygon2D &poly2)
+    {
+        std::vector<vec2> sum;
+        sum.reserve(poly1.size() + poly2.size());
+
+        const auto cmp = [](const vec2 &v1, const vec2 &v2)
+        { return v1.x < v2.x; };
+        const std::size_t m1 = std::distance(poly1.vertices().begin(), std::min_element(poly1.vertices().begin(), poly1.vertices().end(), cmp));
+        const std::size_t m2 = std::distance(poly2.vertices().begin(), std::min_element(poly2.vertices().begin(), poly2.vertices().end(), cmp));
+
+        std::size_t i = 0, j = 0;
+        while (i < poly1.size() || j < poly2.size())
+        {
+            const std::size_t index1 = i + m1, index2 = j + m2;
+            sum.emplace_back(poly1[index1] + poly2[index2]);
+            const float cross = (poly1[index1 + 1] - poly1[index1]).cross(poly2[index2 + 1] - poly2[index2]);
+            if (cross >= 0.f)
+                i++;
+            if (cross <= 0.f)
+                j++;
+        }
+        return polygon2D(sum);
+    }
+
+    polygon2D operator+(const polygon2D &poly) { return poly; }
+
+    polygon2D &operator+(polygon2D &poly) { return poly; }
+
+    polygon2D operator-(const polygon2D &poly)
+    {
+        std::vector<vec2> vertices;
+        vertices.reserve(poly.size());
+        for (const vec2 &v : poly.vertices())
+            vertices.emplace_back(-v);
+        return polygon2D(vertices);
+    }
+
+    polygon2D operator+(const polygon2D &poly1, const polygon2D &poly2) { return polygon2D::minkowski_sum(poly1, poly2); }
+
+    polygon2D operator-(const polygon2D &poly1, const polygon2D &poly2) { return polygon2D::minkowski_sum(poly1, -poly2); }
 }

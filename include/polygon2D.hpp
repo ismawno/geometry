@@ -48,6 +48,8 @@ namespace geo
 
         const vec2 &operator[](std::size_t index) const;
 
+        static polygon2D minkowski_sum(const polygon2D &poly1, const polygon2D &poly2);
+
     private:
         std::vector<vec2> m_vertices;
         vec2 m_centroid;
@@ -61,6 +63,16 @@ namespace geo
         static void line_case(const std::array<vec2, SIMPLEX_VERTICES> &simplex, vec2 &dir);
         static bool triangle_case(std::array<vec2, SIMPLEX_VERTICES> &simplex, vec2 &dir, std::size_t &size);
     };
+
+    polygon2D operator+(const polygon2D &poly);
+
+    polygon2D &operator+(polygon2D &poly);
+
+    polygon2D operator-(const polygon2D &poly);
+
+    polygon2D operator+(const polygon2D &poly1, const polygon2D &poly2);
+
+    polygon2D operator-(const polygon2D &poly1, const polygon2D &poly2);
 }
 
 #endif
