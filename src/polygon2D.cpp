@@ -183,8 +183,12 @@ namespace geo
     bool polygon2D::gjk(const polygon2D &poly1, const polygon2D &poly2)
     {
         vec2 dir = poly2.centroid() - poly1.centroid();
-        std::array<vec2, SIMPLEX_VERTICES> simplex = {poly1.support_vertex(dir) - poly2.support_vertex(-dir)};
-        dir = -simplex[0];
+        std::array<vec2, SIMPLEX_VERTICES> simplex;
+
+        const vec2 supp = poly1.support_vertex(dir) - poly2.support_vertex(-dir);
+        dir = -supp;
+        simplex[0] = supp;
+
         std::size_t size = 1;
         for (;;)
         {
