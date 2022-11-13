@@ -6,8 +6,6 @@
 #include <array>
 #include <utility>
 
-#define SIMPLEX_VERTICES 3
-
 namespace geo
 {
     using namespace vec;
@@ -32,9 +30,9 @@ namespace geo
         float distance_to_origin() const;
 
         vec2 towards_closest_edge_from(const vec2 &p) const;
-        std::pair<vec2, vec2> separation_points(const polygon2D &poly) const;
         vec2 centre_of_mass() const;
         vec2 centre_of_vertices() const;
+        static std::pair<vec2, vec2> touch_points(const polygon2D &poly1, const polygon2D &poly2);
 
         void rotate(float dangle);
         void rotation(float angle);
@@ -60,8 +58,8 @@ namespace geo
         static bool line_intersects_edge(const vec2 &l1, const vec2 &l2, const vec2 &v1, const vec2 &v2);
 
         static bool gjk(const polygon2D &poly1, const polygon2D &poly2);
-        static void line_case(const std::array<vec2, SIMPLEX_VERTICES> &simplex, vec2 &dir);
-        static bool triangle_case(std::array<vec2, SIMPLEX_VERTICES> &simplex, vec2 &dir, std::size_t &size);
+        static void line_case(const std::vector<vec2> &simplex, vec2 &dir);
+        static bool triangle_case(std::vector<vec2> &simplex, vec2 &dir);
     };
 
     polygon2D operator+(const polygon2D &poly);

@@ -126,22 +126,34 @@ namespace geo
         return closest;
     }
 
-    std::pair<vec2, vec2> polygon2D::separation_points(const polygon2D &poly) const
+    std::pair<vec2, vec2> polygon2D::touch_points(const polygon2D &poly1, const polygon2D &poly2)
     {
+        const vec2 mtv = (poly2 - poly1).towards_closest_edge_from({0.f, 0.f});
+        vec2 t1, t2;
         float min_dist = std::numeric_limits<float>::max();
-        vec2 vertex, sep_vec;
-        for (const vec2 &v : m_vertices)
+        for (const vec2 &v : poly1.vertices())
         {
-            const vec2 towards = poly.towards_closest_edge_from(v);
+            const vec2 towards = poly2.towards_closest_edge_from(v + mtv);
             const float dist = towards.sq_norm();
-            if (min_dist > towards.sq_norm())
+            if (min_dist > dist)
             {
-                sep_vec = towards;
-                vertex = v;
                 min_dist = dist;
+                t1 = v;
+                t2 = v + mtv;
             }
         }
-        return {vertex, vertex + sep_vec};
+        for (const vec2 &v : poly2.vertices())
+        {
+            const vec2 towards = poly1.towards_closest_edge_from(v - mtv);
+            const float dist = towards.sq_norm();
+            if (min_dist > dist)
+            {
+                min_dist = dist;
+                t2 = v;
+                t1 = v - mtv;
+            }
+        }
+        return {t1, t2};
     }
 
     bool polygon2D::line_intersects_edge(const vec2 &l1, const vec2 &l2, const vec2 &v1, const vec2 &v2)
@@ -183,47 +195,43 @@ namespace geo
     bool polygon2D::gjk(const polygon2D &poly1, const polygon2D &poly2)
     {
         vec2 dir = poly2.centroid() - poly1.centroid();
-        std::array<vec2, SIMPLEX_VERTICES> simplex;
+        std::vector<vec2> simplex;
+        simplex.reserve(3);
 
         const vec2 supp = poly1.support_vertex(dir) - poly2.support_vertex(-dir);
         dir = -supp;
-        simplex[0] = supp;
+        simplex.emplace_back(supp);
 
-        std::size_t size = 1;
         for (;;)
         {
             const vec2 A = poly1.support_vertex(dir) - poly2.support_vertex(-dir);
             if (A.dot(dir) < 0.f)
                 return false;
-            simplex[size++] = A;
-            if (size == 2)
+            simplex.emplace_back(A);
+            if (simplex.size() == 2)
                 line_case(simplex, dir);
-            else
-                return triangle_case(simplex, dir, size);
+            else if (triangle_case(simplex, dir))
+                return true;
         }
     }
-    void polygon2D::line_case(const std::array<vec2, SIMPLEX_VERTICES> &simplex, vec2 &dir)
+    void polygon2D::line_case(const std::vector<vec2> &simplex, vec2 &dir)
     {
         const vec2 AB = simplex[0] - simplex[1], AO = -simplex[1];
         dir = vec2::triple_cross(AB, AO, AB);
     }
-    bool polygon2D::triangle_case(std::array<vec2, SIMPLEX_VERTICES> &simplex, vec2 &dir, std::size_t &size)
+    bool polygon2D::triangle_case(std::vector<vec2> &simplex, vec2 &dir)
     {
         const vec2 AB = simplex[1] - simplex[2], AC = simplex[0] - simplex[2], AO = -simplex[2];
         const vec2 ABperp = vec2::triple_cross(AC, AB, AB);
         if (ABperp.dot(AO) > 0.f)
         {
-            size--;
-            simplex[0] = simplex[1];
-            simplex[1] = simplex[2];
-            dir = ABperp;
+            simplex.erase(simplex.begin());
             return false;
         }
         const vec2 ACperp = vec2::triple_cross(AB, AC, AC);
         if (ACperp.dot(AO) > 0.f)
         {
-            size--;
-            simplex[0] = simplex[1];
+            simplex.erase(simplex.begin() + 1);
             dir = ACperp;
             return false;
         }
