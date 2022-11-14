@@ -30,28 +30,31 @@ namespace geo
         float distance_to_origin() const;
 
         vec2 towards_closest_edge_from(const vec2 &p) const;
-        vec2 centre_of_mass() const;
-        vec2 centre_of_vertices() const;
-        static std::pair<vec2, vec2> touch_points(const polygon2D &poly1, const polygon2D &poly2);
 
         void rotate(float dangle);
         void rotation(float angle);
         float rotation() const;
 
         const std::vector<vec2> &vertices() const;
-        std::vector<vec2> &vertices();
 
         std::size_t size() const;
         const vec2 &centroid() const;
+        float area() const;
+        float inertia() const;
 
         const vec2 &operator[](std::size_t index) const;
 
         static polygon2D minkowski_sum(const polygon2D &poly1, const polygon2D &poly2);
+        static std::pair<vec2, vec2> touch_points(const polygon2D &poly1, const polygon2D &poly2);
+        static vec2 centre_of_vertices(const polygon2D &poly);
+        static vec2 centre_of_mass(const polygon2D &poly);
+        static float area(const polygon2D &poly);
+        static float inertia(const polygon2D &poly);
 
     private:
         std::vector<vec2> m_vertices;
         vec2 m_centroid;
-        float m_angle = 0.f;
+        float m_angle = 0.f, m_area = 0.f, m_inertia = 0.f;
 
         void sort_vertices_by_angle(const vec2 &centre_point = {0.f, 0.f});
         static vec2 towards_segment_from(const vec2 &p1, const vec2 &p2, const vec2 &p);
