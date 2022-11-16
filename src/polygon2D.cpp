@@ -213,6 +213,36 @@ namespace geo
 
     const vec2 &polygon2D::operator[](const std::size_t index) const { return m_vertices[index % m_vertices.size()]; }
 
+    std::vector<vec2> polygon2D::box(const float size)
+    {
+        return {
+            {-size / 2.f, -size / 2.f},
+            {size / 2.f, -size / 2.f},
+            {size / 2.f, size / 2.f},
+            {-size / 2.f, size / 2.f}};
+    }
+    std::vector<vec2> polygon2D::rect(const float width, const float height)
+    {
+        return {
+            {-width / 2.f, -height / 2.f},
+            {width / 2.f, -height / 2.f},
+            {width / 2.f, height / 2.f},
+            {-width / 2.f, height / 2.f}};
+    }
+    std::vector<vec2> polygon2D::circle(const float radius, const std::size_t partitions)
+    {
+        std::vector<vec2> vertices;
+        vertices.reserve(partitions);
+
+        const float dangle = 2.f * M_PI / partitions;
+        for (std::size_t i = 0; i < partitions; i++)
+        {
+            const float angle = i * dangle;
+            vertices.emplace_back(vec2(radius * std::sin(angle), radius * std::cos(angle)));
+        }
+        return vertices;
+    }
+
     polygon2D polygon2D::minkowski_sum(const polygon2D &poly1, const polygon2D &poly2)
     {
         std::vector<vec2> sum;

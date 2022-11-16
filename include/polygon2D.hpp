@@ -43,6 +43,10 @@ namespace geo
 
         const vec2 &operator[](std::size_t index) const;
 
+        static std::vector<vec2> box(float size);
+        static std::vector<vec2> rect(float width, float height);
+        static std::vector<vec2> circle(float radius, std::size_t partitions = 10);
+
         static polygon2D minkowski_sum(const polygon2D &poly1, const polygon2D &poly2);
         static vec2 centre_of_vertices(const polygon2D &poly);
         static vec2 centre_of_mass(const polygon2D &poly);
