@@ -24,7 +24,6 @@ namespace geo
         bool is_convex() const;
         bool contains_point(const vec2 &p) const;
         bool contains_origin() const;
-        bool overlaps(const polygon2D &poly) const;
 
         float distance_to(const vec2 &p) const;
         float distance_to_origin() const;
@@ -45,7 +44,6 @@ namespace geo
         const vec2 &operator[](std::size_t index) const;
 
         static polygon2D minkowski_sum(const polygon2D &poly1, const polygon2D &poly2);
-        static std::pair<vec2, vec2> touch_points(const polygon2D &poly1, const polygon2D &poly2);
         static vec2 centre_of_vertices(const polygon2D &poly);
         static vec2 centre_of_mass(const polygon2D &poly);
         static float area(const polygon2D &poly);
@@ -59,10 +57,6 @@ namespace geo
         void sort_vertices_by_angle(const vec2 &centre_point = {0.f, 0.f});
         static vec2 towards_segment_from(const vec2 &p1, const vec2 &p2, const vec2 &p);
         static bool line_intersects_edge(const vec2 &l1, const vec2 &l2, const vec2 &v1, const vec2 &v2);
-
-        static bool gjk(const polygon2D &poly1, const polygon2D &poly2);
-        static void line_case(const std::vector<vec2> &simplex, vec2 &dir);
-        static bool triangle_case(std::vector<vec2> &simplex, vec2 &dir);
     };
 
     polygon2D operator+(const polygon2D &poly);
