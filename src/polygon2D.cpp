@@ -7,28 +7,19 @@
 
 namespace geo
 {
-    polygon2D::polygon2D(const vec2 &pos,
-                         const std::vector<vec2> &vertices) : m_vertices(vertices)
-    {
-        DBG_EXIT_IF(m_vertices.size() < 3, "Cannot make polygon with less than 3 vertices.\n")
-        const vec2 cvert = centre_of_vertices(*this);
-        translate(-cvert);
-        sort_vertices_by_angle();
-        m_centroid = centre_of_mass(*this);
-        this->pos(pos);
-        m_area = area(*this);
-        m_inertia = inertia(*this);
-    }
     polygon2D::polygon2D(const std::vector<vec2> &vertices) : m_vertices(vertices)
     {
         DBG_EXIT_IF(m_vertices.size() < 3, "Cannot make polygon with less than 3 vertices.\n")
-        const vec2 cvert = centre_of_vertices(*this);
-        translate(-cvert);
-        sort_vertices_by_angle();
         m_centroid = centre_of_mass(*this);
-        translate(cvert);
         m_area = area(*this);
         m_inertia = inertia(*this);
+        sort_vertices();
+    }
+
+    polygon2D::polygon2D(const vec2 &pos,
+                         const std::vector<vec2> &vertices) : polygon2D(vertices)
+    {
+        this->pos(pos);
     }
 
     vec2 polygon2D::centre_of_vertices(const polygon2D &poly)
@@ -184,10 +175,11 @@ namespace geo
         return !((d1 > 0.f && d2 > 0.f) || (d1 < 0.f && d2 < 0.f));
     }
 
-    void polygon2D::sort_vertices_by_angle(const vec2 &centre_point)
+    void polygon2D::sort_vertices()
     {
-        const auto cmp = [&centre_point](const vec2 &v1, const vec2 &v2)
-        { return (v1 - centre_point).angle() < (v2 - centre_point).angle(); };
+        const vec2 &centroid = m_centroid;
+        const auto cmp = [&centroid](const vec2 &v1, const vec2 &v2)
+        { return (v1 - centroid).angle() < (v2 - centroid).angle(); };
         std::sort(m_vertices.begin(), m_vertices.end(), cmp);
     }
 
@@ -196,7 +188,6 @@ namespace geo
         for (vec2 &v : m_vertices)
             v = (v - m_centroid).rotated(dangle) + m_centroid;
         m_angle += dangle;
-        sort_vertices_by_angle(m_centroid);
     }
     void polygon2D::rotation(float angle) { rotate(angle - m_angle); }
     float polygon2D::rotation() const { return m_angle; }

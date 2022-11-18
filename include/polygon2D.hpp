@@ -33,6 +33,7 @@ namespace geo
         void rotate(float dangle);
         void rotation(float angle);
         float rotation() const;
+        void sort_vertices();
 
         const std::vector<vec2> &vertices() const;
 
@@ -58,7 +59,6 @@ namespace geo
         vec2 m_centroid;
         float m_angle = 0.f, m_area = 0.f, m_inertia = 0.f;
 
-        void sort_vertices_by_angle(const vec2 &centre_point = {0.f, 0.f});
         static vec2 towards_segment_from(const vec2 &p1, const vec2 &p2, const vec2 &p);
         static bool line_intersects_edge(const vec2 &l1, const vec2 &l2, const vec2 &v1, const vec2 &v2);
     };
