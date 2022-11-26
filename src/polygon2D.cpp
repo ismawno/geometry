@@ -210,6 +210,8 @@ namespace geo
 
     float polygon2D::inertia() const { return m_inertia; }
 
+    alg::vec2 polygon2D::relative(const std::size_t index) const { return this->operator[](index) - m_centroid; }
+
     const alg::vec2 &polygon2D::operator[](const std::size_t index) const
     {
         return m_vertices[index % m_vertices.size()];

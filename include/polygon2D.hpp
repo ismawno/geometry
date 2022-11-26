@@ -49,6 +49,7 @@ namespace geo
         float area() const;
         float inertia() const;
 
+        alg::vec2 relative(std::size_t index) const;
         const alg::vec2 &operator[](std::size_t index) const;
 
         static std::vector<alg::vec2> box(float size);
