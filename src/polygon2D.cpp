@@ -9,7 +9,7 @@ namespace geo
 {
     polygon2D::polygon2D(const std::vector<alg::vec2> &vertices) : m_vertices(vertices)
     {
-        DBG_EXIT_IF(m_vertices.size() < 3, "Cannot make polygon with less than 3 vertices.\n")
+        DBG_ASSERT(m_vertices.size() >= 3, "Cannot make polygon with less than 3 vertices.\n")
         m_centroid = centre_of_mass(*this);
         m_area = area(*this);
         m_inertia = inertia(*this);
@@ -125,7 +125,7 @@ namespace geo
 
     bool polygon2D::contains_point(const alg::vec2 &p) const
     {
-        DBG_LOG_IF(!is_convex(), "Checking if a point is contained in a non convex polygon yields undefined behaviour.\n")
+        DBG_ASSERT_LOG(is_convex(), "Checking if a point is contained in a non convex polygon yields undefined behaviour.\n")
         for (std::size_t i = 0; i < m_vertices.size(); i++)
         {
             const alg::vec2 &v1 = (*this)[i], &v2 = (*this)[i + 1];
