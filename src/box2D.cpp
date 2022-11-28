@@ -24,7 +24,7 @@ namespace geo
     bool box2D::overlaps(const box2D &box) const
     {
         const alg::vec2 df1 = box.m_min - m_max;
-        const alg::vec2 df2 = box.m_min - m_max;
+        const alg::vec2 df2 = m_min - box.m_max;
         if (df1.x > 0.f || df1.y > 0.f)
             return false;
         if (df2.x > 0.f || df2.y > 0.f)
