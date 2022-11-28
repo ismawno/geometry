@@ -20,6 +20,12 @@ project "geometry"
       defines { "NDEBUG" }
       runtime "Release"
       optimize "On"
+      removefiles "src/test.cpp"
+
+   filter "configurations:test"
+      defines { "DEBUG" }
+      runtime "Debug"
+      symbols "On"
 
    filter "configurations:debug-profile"
       defines { "DEBUG", "PERF" }
@@ -31,7 +37,7 @@ project "geometry"
       runtime "Release"
       optimize "On"
 
-   filter "configurations:test"
-      defines { "DEBUG" }
+   filter "configurations:test-profile"
+      defines { "DEBUG", "PERF" }
       runtime "Debug"
       symbols "On"
