@@ -23,8 +23,14 @@ namespace geo
 
     bool box2D::overlaps(const box2D &box) const
     {
-        const alg::vec2 df1 = box.m_min - m_max;
-        const alg::vec2 df2 = m_min - box.m_max;
+        return overlap(m_min, m_max, box.m_min, box.m_max);
+    }
+
+    bool box2D::overlap(const alg::vec2 &mm1, const alg::vec2 &mx1,
+                        const alg::vec2 &mm2, const alg::vec2 &mx2)
+    {
+        const alg::vec2 df1 = mm2 - mx1,
+                        df2 = mm1 - mx2;
         if (df1.x > 0.f || df1.y > 0.f)
             return false;
         if (df2.x > 0.f || df2.y > 0.f)

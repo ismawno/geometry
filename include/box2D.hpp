@@ -19,6 +19,9 @@ namespace geo
         const alg::vec2 &min() const;
         const alg::vec2 &max() const;
 
+        static bool overlap(const alg::vec2 &mm1, const alg::vec2 &mx1,
+                            const alg::vec2 &mm2, const alg::vec2 &mx2);
+
     private:
         alg::vec2 m_min, m_max, m_centroid;
     };
