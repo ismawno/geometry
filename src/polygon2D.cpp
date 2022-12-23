@@ -233,13 +233,13 @@ namespace geo
             {width / 2.f, height / 2.f},
             {-width / 2.f, height / 2.f}};
     }
-    std::vector<alg::vec2> polygon2D::circle(const float radius, const std::size_t partitions)
+    std::vector<alg::vec2> polygon2D::ngon(const float radius, const std::uint32_t sides)
     {
         std::vector<alg::vec2> vertices;
-        vertices.reserve(partitions);
+        vertices.reserve(sides);
 
-        const float dangle = 2.f * M_PI / partitions;
-        for (std::size_t i = 0; i < partitions; i++)
+        const float dangle = 2.f * M_PI / sides;
+        for (std::size_t i = 0; i < sides; i++)
         {
             const float angle = i * dangle;
             vertices.emplace_back(alg::vec2(radius * std::sinf(angle), radius * std::cosf(angle)));

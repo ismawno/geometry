@@ -54,7 +54,7 @@ namespace geo
 
         static std::vector<alg::vec2> box(float size);
         static std::vector<alg::vec2> rect(float width, float height);
-        static std::vector<alg::vec2> circle(float radius, std::size_t partitions = 20);
+        static std::vector<alg::vec2> ngon(float radius, std::uint32_t sides);
 
         static polygon2D minkowski_sum(const polygon2D &poly1, const polygon2D &poly2);
         static alg::vec2 centre_of_vertices(const polygon2D &poly);
