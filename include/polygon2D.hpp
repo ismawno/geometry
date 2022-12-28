@@ -11,17 +11,9 @@ namespace geo
     class polygon2D
     {
     public:
-        polygon2D(const std::vector<alg::vec2> &vertices = {
-                      {-1.f, -1.f},
-                      {1.f, -1.f},
-                      {1.f, 1.f},
-                      {-1.f, 1.f}});
+        polygon2D(const std::vector<alg::vec2> &vertices = box(1.f));
         polygon2D(const alg::vec2 &pos,
-                  const std::vector<alg::vec2> &vertices = {
-                      {-1.f, -1.f},
-                      {1.f, -1.f},
-                      {1.f, 1.f},
-                      {-1.f, 1.f}});
+                  const std::vector<alg::vec2> &vertices = box(1.f));
 
         void translate(const alg::vec2 &dpos);
         void pos(const alg::vec2 &pos);
