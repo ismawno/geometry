@@ -2,7 +2,6 @@
 #define AABB2D_HPP
 
 #include "vec2.hpp"
-#include "polygon2D.hpp"
 #include <vector>
 
 namespace geo
