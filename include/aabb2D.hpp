@@ -10,6 +10,7 @@ namespace geo
     {
     public:
         aabb2D() = default;
+        aabb2D(const alg::vec2 &point);
         aabb2D(const alg::vec2 &min, const alg::vec2 &max);
 
         void bound(const std::vector<alg::vec2> &vertices);

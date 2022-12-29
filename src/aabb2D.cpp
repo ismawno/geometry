@@ -3,7 +3,9 @@
 
 namespace geo
 {
+    aabb2D::aabb2D(const alg::vec2 &point) : aabb2D(point, point) {}
     aabb2D::aabb2D(const alg::vec2 &min, const alg::vec2 &max) : m_min(min), m_max(max) {}
+
     void aabb2D::bound(const std::vector<alg::vec2> &vertices)
     {
         m_min.x = m_min.y = std::numeric_limits<float>::max();
