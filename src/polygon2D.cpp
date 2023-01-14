@@ -1,5 +1,5 @@
 #include "polygon2D.hpp"
-#include "debug.h"
+#include "debug.hpp"
 #include <algorithm>
 #include <cstdint>
 #include <cmath>
