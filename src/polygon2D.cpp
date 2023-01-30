@@ -191,6 +191,42 @@ namespace geo
         std::sort(m_vertices.begin(), m_vertices.end(), cmp);
     }
 
+    void polygon2D::write(ini::output &out) const
+    {
+        std::size_t index = 0;
+        const std::string section = "vertex";
+
+        for (const alg::vec2 &v : m_vertices)
+        {
+            out.begin_section(section + std::to_string(index++));
+            v.write(out);
+            out.end_section();
+        }
+        out.write("angle", m_angle);
+    }
+    void polygon2D::read(ini::input &in)
+    {
+        std::vector<alg::vec2> vertices;
+        vertices.reserve(m_vertices.capacity());
+
+        std::size_t index = 0;
+        const std::string section = "vertex";
+
+        while (true)
+        {
+            in.begin_section(section + std::to_string(index++));
+            if (!in.contains_section())
+            {
+                in.end_section();
+                break;
+            }
+            vertices.emplace_back().read(in);
+            in.end_section();
+        }
+        *this = geo::polygon2D(vertices);
+        m_angle = in.readf("angle");
+    }
+
     void polygon2D::rotate(float dangle)
     {
         for (alg::vec2 &v : m_vertices)

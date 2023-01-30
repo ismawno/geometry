@@ -2,13 +2,14 @@
 #define POLYGON2D_HPP
 
 #include "vec2.hpp"
+#include "saveable.hpp"
 #include <vector>
 #include <array>
 #include <utility>
 
 namespace geo
 {
-    class polygon2D
+    class polygon2D : public ini::saveable
     {
     public:
         polygon2D(const std::vector<alg::vec2> &vertices = box(1.f));
@@ -33,6 +34,9 @@ namespace geo
         void rotation(float angle);
         float rotation() const;
         void sort_vertices();
+
+        void write(ini::output &out) const override;
+        void read(ini::input &in) override;
 
         const std::vector<alg::vec2> &vertices() const;
 
