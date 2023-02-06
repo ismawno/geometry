@@ -9,7 +9,7 @@
 
 namespace geo
 {
-    class polygon2D : public ini::saveable
+    class polygon2D : ini::saveable
     {
     public:
         polygon2D(const std::vector<alg::vec2> &vertices = box(1.f));
