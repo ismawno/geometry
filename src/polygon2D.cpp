@@ -193,6 +193,7 @@ namespace geo
 
     void polygon2D::write(ini::output &out) const
     {
+        out.write("angle", m_angle);
         std::size_t index = 0;
         const std::string section = "vertex";
 
@@ -202,10 +203,10 @@ namespace geo
             v.write(out);
             out.end_section();
         }
-        out.write("angle", m_angle);
     }
     void polygon2D::read(ini::input &in)
     {
+        m_angle = in.readf("angle");
         std::vector<alg::vec2> vertices;
         vertices.reserve(m_vertices.capacity());
 
@@ -224,7 +225,6 @@ namespace geo
             in.end_section();
         }
         *this = geo::polygon2D(vertices);
-        m_angle = in.readf("angle");
     }
 
     void polygon2D::rotate(float dangle)
