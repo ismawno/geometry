@@ -212,7 +212,6 @@ namespace geo
 
         std::size_t index = 0;
         const std::string section = "vertex";
-
         while (true)
         {
             in.begin_section(section + std::to_string(index++));
