@@ -135,14 +135,14 @@ namespace geo
         return true;
     }
 
-    bool polygon2D::contains_origin() const { return contains_point({0.f, 0.f}); }
+    bool polygon2D::contains_origin() const { return contains_point(alg::vec2::zero); }
 
     float polygon2D::distance_to(const alg::vec2 &p) const
     {
         return towards_closest_edge_from(p).norm();
     }
 
-    float polygon2D::distance_to_origin() const { return distance_to({0.f, 0.f}); }
+    float polygon2D::distance_to_origin() const { return distance_to(alg::vec2::zero); }
 
     alg::vec2 polygon2D::towards_segment_from(const alg::vec2 &p1,
                                               const alg::vec2 &p2,
