@@ -1,4 +1,4 @@
-project "geometry"
+project "shapes-2D"
    language "C++"
    cppdialect "C++20"
    staticruntime "on"
