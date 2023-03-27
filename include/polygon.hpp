@@ -1,5 +1,5 @@
-#ifndef POLYGON2D_HPP
-#define POLYGON2D_HPP
+#ifndef POLYGON_HPP
+#define POLYGON_HPP
 
 #include "vec2.hpp"
 #include "saveable.hpp"
@@ -9,11 +9,11 @@
 
 namespace geo
 {
-    class polygon2D : public ini::saveable
+    class polygon : public ini::saveable
     {
     public:
-        polygon2D(const std::vector<alg::vec2> &vertices = box(1.f));
-        polygon2D(const alg::vec2 &pos,
+        polygon(const std::vector<alg::vec2> &vertices = box(1.f));
+        polygon(const alg::vec2 &pos,
                   const std::vector<alg::vec2> &vertices = box(1.f));
 
         void translate(const alg::vec2 &dpos);
@@ -52,11 +52,11 @@ namespace geo
         static std::vector<alg::vec2> rect(float width, float height);
         static std::vector<alg::vec2> ngon(float radius, std::uint32_t sides);
 
-        static polygon2D minkowski_sum(const polygon2D &poly1, const polygon2D &poly2);
-        static alg::vec2 centre_of_vertices(const polygon2D &poly);
-        static alg::vec2 centre_of_mass(const polygon2D &poly);
-        static float area(const polygon2D &poly);
-        static float inertia(const polygon2D &poly);
+        static polygon minkowski_sum(const polygon &poly1, const polygon &poly2);
+        static alg::vec2 centre_of_vertices(const polygon &poly);
+        static alg::vec2 centre_of_mass(const polygon &poly);
+        static float area(const polygon &poly);
+        static float inertia(const polygon &poly);
 
     private:
         std::vector<alg::vec2> m_vertices;
@@ -72,15 +72,15 @@ namespace geo
                                          const alg::vec2 &v2);
     };
 
-    polygon2D operator+(const polygon2D &poly);
+    polygon operator+(const polygon &poly);
 
-    polygon2D &operator+(polygon2D &poly);
+    polygon &operator+(polygon &poly);
 
-    polygon2D operator-(const polygon2D &poly);
+    polygon operator-(const polygon &poly);
 
-    polygon2D operator+(const polygon2D &poly1, const polygon2D &poly2);
+    polygon operator+(const polygon &poly1, const polygon &poly2);
 
-    polygon2D operator-(const polygon2D &poly1, const polygon2D &poly2);
+    polygon operator-(const polygon &poly1, const polygon &poly2);
 }
 
 #endif

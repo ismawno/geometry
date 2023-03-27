@@ -1,4 +1,4 @@
-#include "polygon2D.hpp"
+#include "polygon.hpp"
 #include "debug.hpp"
 #include <algorithm>
 #include <cstdint>
@@ -7,7 +7,7 @@
 
 namespace geo
 {
-    polygon2D::polygon2D(const std::vector<alg::vec2> &vertices) : m_vertices(vertices)
+    polygon::polygon(const std::vector<alg::vec2> &vertices) : m_vertices(vertices)
     {
         DBG_ASSERT(m_vertices.size() >= 3, "Cannot make polygon with less than 3 vertices - vertices: %zu\n", m_vertices.size())
         m_centroid = centre_of_mass(*this);
@@ -16,13 +16,13 @@ namespace geo
         sort_vertices();
     }
 
-    polygon2D::polygon2D(const alg::vec2 &pos,
-                         const std::vector<alg::vec2> &vertices) : polygon2D(vertices)
+    polygon::polygon(const alg::vec2 &pos,
+                         const std::vector<alg::vec2> &vertices) : polygon(vertices)
     {
         this->pos(pos);
     }
 
-    alg::vec2 polygon2D::centre_of_vertices(const polygon2D &poly)
+    alg::vec2 polygon::centre_of_vertices(const polygon &poly)
     {
         alg::vec2 centre;
         for (const alg::vec2 &v : poly.vertices())
@@ -30,7 +30,7 @@ namespace geo
         return centre / poly.size();
     }
 
-    alg::vec2 polygon2D::centre_of_mass(const polygon2D &poly)
+    alg::vec2 polygon::centre_of_mass(const polygon &poly)
     {
         const alg::vec2 &p1 = poly[0];
         alg::vec2 num, den;
@@ -44,7 +44,7 @@ namespace geo
         return p1 + num / (3.f * den);
     }
 
-    float polygon2D::area(const polygon2D &poly)
+    float polygon::area(const polygon &poly)
     {
         float area = 0.f;
         const alg::vec2 &p1 = poly[0];
@@ -56,7 +56,7 @@ namespace geo
         return area / 2.f;
     }
 
-    float polygon2D::inertia(const polygon2D &poly)
+    float polygon::inertia(const polygon &poly)
     {
         const alg::vec2 &p1 = poly[0];
         float inertia = 0.f;
@@ -92,16 +92,16 @@ namespace geo
         return std::abs(inertia) / poly.area();
     }
 
-    void polygon2D::translate(const alg::vec2 &dpos)
+    void polygon::translate(const alg::vec2 &dpos)
     {
         for (alg::vec2 &v : m_vertices)
             v += dpos;
         m_centroid += dpos;
     }
 
-    void polygon2D::pos(const alg::vec2 &pos) { translate(pos - m_centroid); }
+    void polygon::pos(const alg::vec2 &pos) { translate(pos - m_centroid); }
 
-    const alg::vec2 &polygon2D::support_vertex(const alg::vec2 &direction) const
+    const alg::vec2 &polygon::support_vertex(const alg::vec2 &direction) const
     {
         const alg::vec2 &centroid = m_centroid;
 
@@ -112,7 +112,7 @@ namespace geo
         return *support;
     }
 
-    bool polygon2D::is_convex() const
+    bool polygon::is_convex() const
     {
         for (std::size_t i = 0; i < m_vertices.size(); i++)
         {
@@ -123,7 +123,7 @@ namespace geo
         return true;
     }
 
-    bool polygon2D::contains_point(const alg::vec2 &p) const
+    bool polygon::contains_point(const alg::vec2 &p) const
     {
         DBG_LOG_IF(!is_convex(), "Checking if a point is contained in a non convex polygon yields undefined behaviour.\n")
         for (std::size_t i = 0; i < m_vertices.size(); i++)
@@ -135,16 +135,16 @@ namespace geo
         return true;
     }
 
-    bool polygon2D::contains_origin() const { return contains_point(alg::vec2::zero); }
+    bool polygon::contains_origin() const { return contains_point(alg::vec2::zero); }
 
-    float polygon2D::distance_to(const alg::vec2 &p) const
+    float polygon::distance_to(const alg::vec2 &p) const
     {
         return towards_closest_edge_from(p).norm();
     }
 
-    float polygon2D::distance_to_origin() const { return distance_to(alg::vec2::zero); }
+    float polygon::distance_to_origin() const { return distance_to(alg::vec2::zero); }
 
-    alg::vec2 polygon2D::towards_segment_from(const alg::vec2 &p1,
+    alg::vec2 polygon::towards_segment_from(const alg::vec2 &p1,
                                               const alg::vec2 &p2,
                                               const alg::vec2 &p)
     {
@@ -153,7 +153,7 @@ namespace geo
         return proj - p;
     }
 
-    alg::vec2 polygon2D::towards_closest_edge_from(const alg::vec2 &p) const
+    alg::vec2 polygon::towards_closest_edge_from(const alg::vec2 &p) const
     {
         float min_dist = std::numeric_limits<float>::max();
         alg::vec2 closest;
@@ -170,7 +170,7 @@ namespace geo
         return closest;
     }
 
-    bool polygon2D::line_intersects_edge(const alg::vec2 &l1,
+    bool polygon::line_intersects_edge(const alg::vec2 &l1,
                                          const alg::vec2 &l2,
                                          const alg::vec2 &v1,
                                          const alg::vec2 &v2)
@@ -183,7 +183,7 @@ namespace geo
         return !((d1 > 0.f && d2 > 0.f) || (d1 < 0.f && d2 < 0.f));
     }
 
-    void polygon2D::sort_vertices()
+    void polygon::sort_vertices()
     {
         const alg::vec2 &centroid = m_centroid;
         const auto cmp = [&centroid](const alg::vec2 &v1, const alg::vec2 &v2)
@@ -191,7 +191,7 @@ namespace geo
         std::sort(m_vertices.begin(), m_vertices.end(), cmp);
     }
 
-    void polygon2D::write(ini::output &out) const
+    void polygon::write(ini::output &out) const
     {
         out.write("angle", m_angle);
         std::size_t index = 0;
@@ -204,7 +204,7 @@ namespace geo
             out.end_section();
         }
     }
-    void polygon2D::read(ini::input &in)
+    void polygon::read(ini::input &in)
     {
         m_angle = in.readf("angle");
         std::vector<alg::vec2> vertices;
@@ -223,36 +223,36 @@ namespace geo
             vertices.emplace_back().read(in);
             in.end_section();
         }
-        *this = geo::polygon2D(vertices);
+        *this = geo::polygon(vertices);
     }
 
-    void polygon2D::rotate(float dangle)
+    void polygon::rotate(float dangle)
     {
         for (alg::vec2 &v : m_vertices)
             v = (v - m_centroid).rotated(dangle) + m_centroid;
         m_angle += dangle;
     }
-    void polygon2D::rotation(float angle) { rotate(angle - m_angle); }
-    float polygon2D::rotation() const { return m_angle; }
+    void polygon::rotation(float angle) { rotate(angle - m_angle); }
+    float polygon::rotation() const { return m_angle; }
 
-    const std::vector<alg::vec2> &polygon2D::vertices() const { return m_vertices; }
+    const std::vector<alg::vec2> &polygon::vertices() const { return m_vertices; }
 
-    std::size_t polygon2D::size() const { return m_vertices.size(); }
+    std::size_t polygon::size() const { return m_vertices.size(); }
 
-    const alg::vec2 &polygon2D::centroid() const { return m_centroid; }
+    const alg::vec2 &polygon::centroid() const { return m_centroid; }
 
-    float polygon2D::area() const { return m_area; }
+    float polygon::area() const { return m_area; }
 
-    float polygon2D::inertia() const { return m_inertia; }
+    float polygon::inertia() const { return m_inertia; }
 
-    alg::vec2 polygon2D::relative(const std::size_t index) const { return this->operator[](index) - m_centroid; }
+    alg::vec2 polygon::relative(const std::size_t index) const { return this->operator[](index) - m_centroid; }
 
-    const alg::vec2 &polygon2D::operator[](const std::size_t index) const
+    const alg::vec2 &polygon::operator[](const std::size_t index) const
     {
         return m_vertices[index % m_vertices.size()];
     }
 
-    std::vector<alg::vec2> polygon2D::box(const float size)
+    std::vector<alg::vec2> polygon::box(const float size)
     {
         return {
             {-size / 2.f, -size / 2.f},
@@ -260,7 +260,7 @@ namespace geo
             {size / 2.f, size / 2.f},
             {-size / 2.f, size / 2.f}};
     }
-    std::vector<alg::vec2> polygon2D::rect(const float width, const float height)
+    std::vector<alg::vec2> polygon::rect(const float width, const float height)
     {
         return {
             {-width / 2.f, -height / 2.f},
@@ -268,7 +268,7 @@ namespace geo
             {width / 2.f, height / 2.f},
             {-width / 2.f, height / 2.f}};
     }
-    std::vector<alg::vec2> polygon2D::ngon(const float radius, const std::uint32_t sides)
+    std::vector<alg::vec2> polygon::ngon(const float radius, const std::uint32_t sides)
     {
         std::vector<alg::vec2> vertices;
         vertices.reserve(sides);
@@ -282,7 +282,7 @@ namespace geo
         return vertices;
     }
 
-    polygon2D polygon2D::minkowski_sum(const polygon2D &poly1, const polygon2D &poly2)
+    polygon polygon::minkowski_sum(const polygon &poly1, const polygon &poly2)
     {
         std::vector<alg::vec2> sum;
         sum.reserve(poly1.size() + poly2.size());
@@ -308,29 +308,29 @@ namespace geo
             if (cross <= 0.f)
                 j++;
         }
-        return polygon2D(sum);
+        return polygon(sum);
     }
 
-    polygon2D operator+(const polygon2D &poly) { return poly; }
+    polygon operator+(const polygon &poly) { return poly; }
 
-    polygon2D &operator+(polygon2D &poly) { return poly; }
+    polygon &operator+(polygon &poly) { return poly; }
 
-    polygon2D operator-(const polygon2D &poly)
+    polygon operator-(const polygon &poly)
     {
         std::vector<alg::vec2> vertices;
         vertices.reserve(poly.size());
         for (const alg::vec2 &v : poly.vertices())
             vertices.emplace_back(-v);
-        return polygon2D(vertices);
+        return polygon(vertices);
     }
 
-    polygon2D operator+(const polygon2D &poly1, const polygon2D &poly2)
+    polygon operator+(const polygon &poly1, const polygon &poly2)
     {
-        return polygon2D::minkowski_sum(poly1, poly2);
+        return polygon::minkowski_sum(poly1, poly2);
     }
 
-    polygon2D operator-(const polygon2D &poly1, const polygon2D &poly2)
+    polygon operator-(const polygon &poly1, const polygon &poly2)
     {
-        return polygon2D::minkowski_sum(poly1, -poly2);
+        return polygon::minkowski_sum(poly1, -poly2);
     }
 }
