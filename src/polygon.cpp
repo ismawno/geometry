@@ -17,7 +17,7 @@ namespace geo
     }
 
     polygon::polygon(const alg::vec2 &pos,
-                         const std::vector<alg::vec2> &vertices) : polygon(vertices)
+                     const std::vector<alg::vec2> &vertices) : polygon(vertices)
     {
         this->pos(pos);
     }
@@ -145,8 +145,8 @@ namespace geo
     float polygon::distance_to_origin() const { return distance_to(alg::vec2::zero); }
 
     alg::vec2 polygon::towards_segment_from(const alg::vec2 &p1,
-                                              const alg::vec2 &p2,
-                                              const alg::vec2 &p)
+                                            const alg::vec2 &p2,
+                                            const alg::vec2 &p)
     {
         const float t = std::clamp((p - p1).dot(p2 - p1) / p1.sq_dist(p2), 0.f, 1.f);
         const alg::vec2 proj = p1 + t * (p2 - p1);
@@ -171,9 +171,9 @@ namespace geo
     }
 
     bool polygon::line_intersects_edge(const alg::vec2 &l1,
-                                         const alg::vec2 &l2,
-                                         const alg::vec2 &v1,
-                                         const alg::vec2 &v2)
+                                       const alg::vec2 &l2,
+                                       const alg::vec2 &v1,
+                                       const alg::vec2 &v2)
     {
         const float a = l2.y - l1.y, b = l1.x - l2.x;
         const float c = l2.x * l1.y - l1.x * l2.y;
@@ -195,13 +195,12 @@ namespace geo
     {
         out.write("angle", m_angle);
         std::size_t index = 0;
-        const std::string section = "vertex";
+        const std::string key = "vertex";
 
         for (const alg::vec2 &v : m_vertices)
         {
-            out.begin_section(section + std::to_string(index++));
-            v.write(out);
-            out.end_section();
+            out.write(key + std::to_string(index) + "x", v.x);
+            out.write(key + std::to_string(index++) + "y", v.y);
         }
     }
     void polygon::read(ini::input &in)
@@ -211,17 +210,17 @@ namespace geo
         vertices.reserve(m_vertices.capacity());
 
         std::size_t index = 0;
-        const std::string section = "vertex";
+        const std::string key = "vertex";
         while (true)
         {
-            in.begin_section(section + std::to_string(index++));
-            if (!in.contains_section())
-            {
-                in.end_section();
+            const std::string kx = key + std::to_string(index) + "x",
+                              ky = key + std::to_string(index++) + "y";
+            DBG_ASSERT((in.contains_key(kx) && in.contains_key(ky)) ||
+                           (!in.contains_key(kx) && !in.contains_key(ky)),
+                       "Vector key only contains a component of the vector! Weird.\n")
+            if (!in.contains_key(kx) || !in.contains_key(ky)) // Just for ick reasons
                 break;
-            }
-            vertices.emplace_back().read(in);
-            in.end_section();
+            vertices.emplace_back(in.readf(kx), in.readf(ky));
         }
         *this = geo::polygon(vertices);
     }
