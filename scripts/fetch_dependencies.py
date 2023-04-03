@@ -1,11 +1,15 @@
 import subprocess
 import os
 from argparse import ArgumentParser
+from typing import Union
 
 
 def add_dependencies(
-    dependencies: list[str], exec: str, branch: str, folder: str = "."
+    dependencies: Union[str, list[str]], exec: str, branch: str, folder: str = "."
 ) -> None:
+    if isinstance(dependencies, str):
+        dependencies = [dependencies]
+
     for dependency in dependencies:
         if os.path.exists(dependency):
             print(f"{dependency} dependency already satisfied. Skipping...")
