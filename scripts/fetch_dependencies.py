@@ -23,6 +23,11 @@ def add_dependencies(
                 f"{folder}/{dependency}",
             ]
         )
+        prev_dir = os.getcwd()
+        os.chdir(f"{folder}/{dependency}")
+        subprocess.run(["git", "checkout", branch])
+        os.chdir(prev_dir)
+
         if not os.path.exists(f"{folder}/{dependency}/scripts"):
             print(f"No further dependencies for {dependency}")
             continue
