@@ -19,7 +19,7 @@ def add_dependencies(
                 "git",
                 "submodule",
                 "add",
-                f"https://github.com/Ismael99Bueno/{dependency}",
+                f"https://github.com/Ismael99Bueno/{dependency}.git",
                 f"{folder}/{dependency}",
             ]
         )
