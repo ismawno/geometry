@@ -13,9 +13,9 @@ shapes-2D is a library for working with convex polygons in 2D space. It provides
 
 shapes-2D depends on two other projects, all created by the same author:
 
-- [vec-2D](https://github.com/Ismael99Bueno/vec-2D): a 2D vector implementation with usual operations
-- [debug-tools](https://github.com/Ismael99Bueno/debug-tools): a set of tools for debugging poly-physx simulations
-- [ini-parser](https://github.com/Ismael99Bueno/ini-parser): a simple INI file parser that allows for reading and writing the state of a polygon to and from a file
+- [vec-2D](https://github.com/Ismael99Bueno/vec-2D): A 2D vector implementation with usual operations
+- [debug-tools](https://github.com/Ismael99Bueno/debug-tools): A set of tools for debugging poly-physx simulations
+- [ini-parser](https://github.com/Ismael99Bueno/ini-parser): A simple INI file parser that allows for reading and writing the state of a polygon to and from a file
 
 ## Usage
 
