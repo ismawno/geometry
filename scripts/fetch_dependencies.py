@@ -20,7 +20,7 @@ def add_dependencies(
                 "submodule",
                 "add",
                 f"https://github.com/Ismael99Bueno/{dependency}",
-                folder,
+                f"{folder}/{dependency}",
             ]
         )
         if not os.path.exists(f"{folder}/{dependency}/scripts"):
