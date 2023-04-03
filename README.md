@@ -19,7 +19,7 @@ shapes-2D depends on two other projects, all created by the same author:
 
 ## Usage
 
-To use shapes-2D, simply include the polygon.hpp ot the aabb2D.hpp header in your project.
+To use shapes-2D, simply include the `polygon.hpp` ot the `aabb2D.hpp` header in your project.
 
 shapes-2D is built using premake5 as a static library. To use it, you must create a premake5 workspace that includes the shapes-2D library and the ini-parser library. You can then build the workspace with premake5 to create an executable.
 
