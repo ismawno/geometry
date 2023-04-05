@@ -1,6 +1,6 @@
 project "shapes-2D"
    language "C++"
-   cppdialect "C++20"
+   cppdialect "C++17"
    staticruntime "on"
    kind "StaticLib"
 
