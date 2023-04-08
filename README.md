@@ -13,9 +13,9 @@ shapes-2D is a library for working with convex polygons in 2D space. It provides
 
 shapes-2D depends on two other projects, all created by the same author:
 
-- [vec-2D](https://github.com/Ismael99Bueno/vec-2D): A 2D vector implementation with usual operations
-- [debug-tools](https://github.com/Ismael99Bueno/debug-tools): A set of tools for debugging poly-physx simulations
-- [ini-parser](https://github.com/Ismael99Bueno/ini-parser): A simple INI file parser that allows for reading and writing the state of a polygon to and from a file
+- [vec-2D](https://github.com/ismawno/vec-2D): A 2D vector implementation with usual operations
+- [debug-tools](https://github.com/ismawno/debug-tools): A set of tools for debugging poly-physx simulations
+- [ini-parser](https://github.com/ismawno/ini-parser): A simple INI file parser that allows for reading and writing the state of a polygon to and from a file
 
 There is a Python script located in the `scripts` folder named `fetch_dependencies.py`. This script will automatically add all the dependencies as git submodules, provided that the user has already created their own repository and included the current project as a git submodule (or at least downloaded it into the repository). To ensure all runs smoothly once the script has been executed, do not rename the folders containing the various dependencies. All external dependencies, those not created by the same author, will be added as submodules within a folder called `vendor`.
 
