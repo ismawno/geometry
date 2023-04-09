@@ -1,7 +1,7 @@
 project "shapes-2D"
    language "C++"
    cppdialect "C++17"
-   staticruntime "on"
+   
    kind "StaticLib"
 
    targetdir("bin/" .. outputdir)
