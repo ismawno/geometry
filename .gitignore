@@ -17,3 +17,5 @@
 # Project files
 *.xcworkspace/
 **.xcodeproj
+*.sln
+**.vcxproj*
