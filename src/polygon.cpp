@@ -273,7 +273,7 @@ namespace geo
         std::vector<alg::vec2> vertices;
         vertices.reserve(sides);
 
-        const float dangle = 2.f * M_PI / sides;
+        const float dangle = 2.f * (float)M_PI / sides;
         for (std::size_t i = 0; i < sides; i++)
         {
             const float angle = i * dangle;
@@ -289,13 +289,13 @@ namespace geo
 
         const auto cmp = [](const alg::vec2 &v1, const alg::vec2 &v2)
         { return v1.x < v2.x; };
-        const std::size_t m1 = std::distance(poly1.vertices().begin(),
-                                             std::min_element(poly1.vertices().begin(),
-                                                              poly1.vertices().end(), cmp)),
+        const std::size_t m1 = (std::size_t)std::distance(poly1.vertices().begin(),
+                                                          std::min_element(poly1.vertices().begin(),
+                                                                           poly1.vertices().end(), cmp)),
 
-                          m2 = std::distance(poly2.vertices().begin(),
-                                             std::min_element(poly2.vertices().begin(),
-                                                              poly2.vertices().end(), cmp));
+                          m2 = (std::size_t)std::distance(poly2.vertices().begin(),
+                                                          std::min_element(poly2.vertices().begin(),
+                                                                           poly2.vertices().end(), cmp));
 
         std::size_t i = 0, j = 0;
         while (i < poly1.size() || j < poly2.size())
