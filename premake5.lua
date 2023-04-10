@@ -1,7 +1,9 @@
 project "shapes-2D"
    language "C++"
    cppdialect "C++17"
-   buildoptions {"-Wall", "-Wextra", "-Wpedantic", "-Wconversion", "-Wno-unused-parameter"}
+   filter "system:macosx"
+      buildoptions {"-Wall", "-Wextra", "-Wpedantic", "-Wconversion", "-Wno-unused-parameter"}
+   filter{}
    
    staticruntime "off"
    kind "StaticLib"
