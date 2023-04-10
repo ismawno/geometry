@@ -206,7 +206,7 @@ namespace geo
     }
     void polygon::read(ini::input &in)
     {
-        m_angle = in.readf("angle");
+        m_angle = in.readf32("angle");
         std::vector<alg::vec2> vertices;
         vertices.reserve(m_vertices.capacity());
 
@@ -221,7 +221,7 @@ namespace geo
                        "Vector key only contains a component of the vector! Weird.\n")
             if (!in.contains_key(kx) || !in.contains_key(ky)) // Just for ick reasons
                 break;
-            vertices.emplace_back(in.readf(kx), in.readf(ky));
+            vertices.emplace_back(in.readf32(kx), in.readf32(ky));
         }
         *this = geo::polygon(vertices);
     }
