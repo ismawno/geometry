@@ -11,10 +11,10 @@ namespace geo
     polygon::polygon(const std::vector<alg::vec2> &vertices) : m_vertices(vertices)
     {
         DBG_ASSERT(m_vertices.size() >= 3, "Cannot make polygon with less than 3 vertices - vertices: %zu\n", m_vertices.size())
+        sort_vertices();
         m_centroid = centre_of_mass(*this);
         m_area = area(*this);
         m_inertia = inertia(*this);
-        sort_vertices();
     }
 
     polygon::polygon(const alg::vec2 &pos,
@@ -186,9 +186,9 @@ namespace geo
 
     void polygon::sort_vertices()
     {
-        const alg::vec2 &centroid = m_centroid;
-        const auto cmp = [&centroid](const alg::vec2 &v1, const alg::vec2 &v2)
-        { return (v1 - centroid).angle() < (v2 - centroid).angle(); };
+        const alg::vec2 centre = centre_of_vertices(*this);
+        const auto cmp = [&centre](const alg::vec2 &v1, const alg::vec2 &v2)
+        { return (v1 - centre).angle() < (v2 - centre).angle(); };
         std::sort(m_vertices.begin(), m_vertices.end(), cmp);
     }
 
