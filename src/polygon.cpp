@@ -186,9 +186,23 @@ namespace geo
 
     void polygon::sort_vertices()
     {
-        const alg::vec2 centre = centre_of_vertices(*this);
-        const auto cmp = [&centre](const alg::vec2 &v1, const alg::vec2 &v2)
-        { return (v1 - centre).angle() < (v2 - centre).angle(); };
+        const alg::vec2 centre = centre_of_vertices(*this),
+                        ref = m_vertices[0] - centre;
+        const auto cmp = [&centre, &ref](const alg::vec2 &v1, const alg::vec2 &v2)
+        {
+            const alg::vec2 dir1 = v1 - centre, dir2 = v2 - centre;
+
+            const double det2 = ref.cross(dir2);
+            if (det2 == 0.f && dir2.dot(ref) >= 0.f)
+                return false;
+            const double det1 = ref.cross(dir1);
+            if (det1 == 0.f && dir1.dot(ref) >= 0.f)
+                return true;
+
+            if (det1 * det2 >= 0.f)
+                return dir1.cross(dir2) > 0.f;
+            return det1 > 0.f;
+        };
         std::sort(m_vertices.begin(), m_vertices.end(), cmp);
     }
 
