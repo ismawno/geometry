@@ -194,7 +194,6 @@ namespace geo
 
     void polygon::write(ini::output &out) const
     {
-        out.write("angle", m_angle);
         std::size_t index = 0;
         const std::string key = "vertex";
 
@@ -206,7 +205,6 @@ namespace geo
     }
     void polygon::read(ini::input &in)
     {
-        m_angle = in.readf32("angle");
         std::vector<alg::vec2> vertices;
         vertices.reserve(m_vertices.capacity());
 
