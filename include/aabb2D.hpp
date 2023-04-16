@@ -1,7 +1,7 @@
 #ifndef AABB2D_HPP
 #define AABB2D_HPP
 
-#include "vec2.hpp"
+#include "glm/vec2.hpp"
 #include <vector>
 
 namespace geo
@@ -10,17 +10,17 @@ namespace geo
     {
     public:
         aabb2D() = default;
-        aabb2D(const alg::vec2 &point);
-        aabb2D(const alg::vec2 &min, const alg::vec2 &max);
+        aabb2D(const glm::vec2 &point);
+        aabb2D(const glm::vec2 &min, const glm::vec2 &max);
 
-        void bound(const std::vector<alg::vec2> &vertices);
+        void bound(const std::vector<glm::vec2> &vertices);
         bool overlaps(const aabb2D &box) const;
 
-        const alg::vec2 &min() const;
-        const alg::vec2 &max() const;
+        const glm::vec2 &min() const;
+        const glm::vec2 &max() const;
 
     private:
-        alg::vec2 m_min, m_max;
+        glm::vec2 m_min, m_max;
     };
 }
 
