@@ -60,7 +60,7 @@ namespace geo
 
     private:
         std::vector<glm::vec2> m_vertices;
-        glm::vec2 m_centroid;
+        glm::vec2 m_centroid{0.f};
         float m_angle = 0.f, m_area = 0.f, m_inertia = 0.f;
 
         static glm::vec2 towards_segment_from(const glm::vec2 &p1,

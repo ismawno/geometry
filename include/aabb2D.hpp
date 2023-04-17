@@ -20,7 +20,7 @@ namespace geo
         const glm::vec2 &max() const;
 
     private:
-        glm::vec2 m_min, m_max;
+        glm::vec2 m_min{0.f}, m_max{0.f};
     };
 }
 
