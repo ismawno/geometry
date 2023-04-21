@@ -299,7 +299,7 @@ namespace geo
         for (std::size_t i = 0; i < sides; i++)
         {
             const float angle = i * dangle;
-            vertices.emplace_back(glm::vec2(radius * std::sinf(angle), radius * std::cosf(angle)));
+            vertices.emplace_back(glm::vec2(radius * sinf(angle), radius * cosf(angle)));
         }
         return vertices;
     }
