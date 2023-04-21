@@ -5,9 +5,12 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <algorithm>
 #include <cstdint>
-#define _USE_MATH_DEFINES
-#include <math.h>
+#include <cmath>
 #include <limits>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846f
+#endif
 
 namespace geo
 {
