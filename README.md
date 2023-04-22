@@ -27,7 +27,7 @@ The [fetch_dependencies.py](https://github.com/ismawno/shapes-2D/scripts/fetch_d
 4. Create an entry point project with a `premake5` file, where the `main.cpp` will be located. Link all libraries and specify the kind of the executable as `ConsoleApp`. Don't forget to specify the different configurations for the project.
 5. Create a `premake5` file at the root of the repository describing the `premake` workspace and including all dependency projects.
 6. Build the entire project by running the `make` command in your terminal. You can specify the configuration by using `make config=the_configuration`.
-7. To use shapes-2D, simply include the [polygon.hpp](https://github.com/ismawno/shapes-2D/include/polygon.hpp) ot the [aabb2D.hpp](https://github.com/ismawno/shapes-2D/include/aabb2D.hpp) header in your project.
+7. To use shapes-2D, simply include the [polygon.hpp](https://github.com/ismawno/shapes-2D/include/geo/polygon.hpp) ot the [aabb2D.hpp](https://github.com/ismawno/shapes-2D/include/geo/aabb2D.hpp) header in your project.
 
 For more information on how to use shapes-2D, please refer to the documentation.
 
