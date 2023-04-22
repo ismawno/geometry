@@ -1,5 +1,5 @@
 #include <limits>
-#include "aabb2D.hpp"
+#include "geo/aabb2D.hpp"
 
 namespace geo
 {

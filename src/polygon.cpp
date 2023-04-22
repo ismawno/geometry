@@ -1,5 +1,5 @@
-#include "polygon.hpp"
-#include "debug.hpp"
+#include "geo/polygon.hpp"
+#include "debug/debug.hpp"
 #include <glm/geometric.hpp>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/rotate_vector.hpp>
