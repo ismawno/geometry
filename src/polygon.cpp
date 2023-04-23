@@ -146,15 +146,6 @@ namespace geo
         return true;
     }
 
-    bool polygon::contains_origin() const { return contains_point(glm::vec2(0.f)); }
-
-    float polygon::distance_to(const glm::vec2 &p) const
-    {
-        return glm::length(closest_direction_from(p));
-    }
-
-    float polygon::distance_to_origin() const { return distance_to(glm::vec2(0.f)); }
-
     glm::vec2 polygon::towards_segment_from(const glm::vec2 &p1,
                                             const glm::vec2 &p2,
                                             const glm::vec2 &p)
