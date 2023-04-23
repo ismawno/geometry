@@ -28,7 +28,7 @@ namespace geo
         float distance_to(const glm::vec2 &p) const;
         float distance_to_origin() const;
 
-        glm::vec2 towards_closest_edge_from(const glm::vec2 &p) const;
+        glm::vec2 closest_direction_from(const glm::vec2 &p) const;
 
         void rotate(float dangle);
         void rotation(float angle);

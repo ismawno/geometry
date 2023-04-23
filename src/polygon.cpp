@@ -150,7 +150,7 @@ namespace geo
 
     float polygon::distance_to(const glm::vec2 &p) const
     {
-        return glm::length(towards_closest_edge_from(p));
+        return glm::length(closest_direction_from(p));
     }
 
     float polygon::distance_to_origin() const { return distance_to(glm::vec2(0.f)); }
@@ -164,7 +164,7 @@ namespace geo
         return proj - p;
     }
 
-    glm::vec2 polygon::towards_closest_edge_from(const glm::vec2 &p) const
+    glm::vec2 polygon::closest_direction_from(const glm::vec2 &p) const
     {
         float min_dist = std::numeric_limits<float>::max();
         glm::vec2 closest(0.f);
