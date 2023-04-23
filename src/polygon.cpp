@@ -146,6 +146,8 @@ namespace geo
         return true;
     }
 
+    bool polygon::contains_origin() const { return contains_point(glm::vec2(0.f)); }
+
     glm::vec2 polygon::towards_segment_from(const glm::vec2 &p1,
                                             const glm::vec2 &p2,
                                             const glm::vec2 &p)
