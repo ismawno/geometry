@@ -69,10 +69,6 @@ namespace geo
                                          const glm::vec2 &v2);
     };
 
-    polygon operator+(const polygon &poly);
-
-    polygon &operator+(polygon &poly);
-
     polygon operator-(const polygon &poly);
 
     polygon operator+(const polygon &poly1, const polygon &poly2);

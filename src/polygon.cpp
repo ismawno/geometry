@@ -327,10 +327,6 @@ namespace geo
         return polygon(sum);
     }
 
-    polygon operator+(const polygon &poly) { return poly; }
-
-    polygon &operator+(polygon &poly) { return poly; }
-
     polygon operator-(const polygon &poly)
     {
         std::vector<glm::vec2> vertices;
