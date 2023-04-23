@@ -3,33 +3,31 @@
 
 #include "glm/vec2.hpp"
 #include "ini/saveable.hpp"
+#include "geo/shape2D.hpp"
 #include <vector>
 #include <array>
 #include <utility>
 
 namespace geo
 {
-    class polygon : public ini::saveable
+    class polygon : public shape2D
     {
     public:
         polygon(const std::vector<glm::vec2> &vertices = box(1.f));
         polygon(const glm::vec2 &pos,
                 const std::vector<glm::vec2> &vertices = box(1.f));
 
-        void translate(const glm::vec2 &dpos);
-        void pos(const glm::vec2 &pos);
+        void translate(const glm::vec2 &dpos) override;
 
-        const glm::vec2 &support_vertex(const glm::vec2 &direction) const;
+        glm::vec2 support_point(const glm::vec2 &direction) const override;
 
         bool is_convex() const;
-        bool contains_point(const glm::vec2 &p) const;
-        bool contains_origin() const;
+        bool contains_point(const glm::vec2 &p) const override;
+        bool contains_origin() const override;
 
-        glm::vec2 closest_direction_from(const glm::vec2 &p) const;
+        glm::vec2 closest_direction_from(const glm::vec2 &p) const override;
 
-        void rotate(float dangle);
-        void rotation(float angle);
-        float rotation() const;
+        void rotate(float dangle) override;
         void sort_vertices();
 
         void write(ini::output &out) const override;
@@ -38,9 +36,8 @@ namespace geo
         const std::vector<glm::vec2> &vertices() const;
 
         std::size_t size() const;
-        const glm::vec2 &centroid() const;
-        float area() const;
-        float inertia() const;
+        float area() const override;
+        float inertia() const override;
 
         glm::vec2 relative(std::size_t index) const;
         const glm::vec2 &operator[](std::size_t index) const;
@@ -57,8 +54,7 @@ namespace geo
 
     private:
         std::vector<glm::vec2> m_vertices;
-        glm::vec2 m_centroid{0.f};
-        float m_angle = 0.f, m_area = 0.f, m_inertia = 0.f;
+        float m_area = 0.f, m_inertia = 0.f;
 
         static glm::vec2 towards_segment_from(const glm::vec2 &p1,
                                               const glm::vec2 &p2,

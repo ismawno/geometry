@@ -110,9 +110,7 @@ namespace geo
         m_centroid += dpos;
     }
 
-    void polygon::pos(const glm::vec2 &pos) { translate(pos - m_centroid); }
-
-    const glm::vec2 &polygon::support_vertex(const glm::vec2 &direction) const
+    glm::vec2 polygon::support_point(const glm::vec2 &direction) const
     {
         const auto cmp = [&direction, this](const glm::vec2 &v1, const glm::vec2 &v2)
         { return glm::dot(direction, v1 - m_centroid) < glm::dot(direction, v2 - m_centroid); };
@@ -247,17 +245,12 @@ namespace geo
             v = glm::rotate(v - m_centroid, dangle) + m_centroid;
         m_angle += dangle;
     }
-    void polygon::rotation(float angle) { rotate(angle - m_angle); }
-    float polygon::rotation() const { return m_angle; }
 
     const std::vector<glm::vec2> &polygon::vertices() const { return m_vertices; }
 
     std::size_t polygon::size() const { return m_vertices.size(); }
 
-    const glm::vec2 &polygon::centroid() const { return m_centroid; }
-
     float polygon::area() const { return m_area; }
-
     float polygon::inertia() const { return m_inertia; }
 
     glm::vec2 polygon::relative(const std::size_t index) const { return this->operator[](index) - m_centroid; }
