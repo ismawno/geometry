@@ -24,6 +24,9 @@ namespace geo
         float radius() const;
         void radius(float radius);
 
+        void write(ini::output &out) const override;
+        void read(ini::input &in) override;
+
     private:
         float m_radius;
     };
