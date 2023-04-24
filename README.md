@@ -13,9 +13,10 @@ shapes-2D is a library for working with convex polygons in 2D space. It provides
 
 shapes-2D depends on two other projects, all created by the same author:
 
-- [vec-2D](https://github.com/ismawno/vec-2D)
+- [glm](https://github.com/g-truc/glm)
 - [debug-tools](https://github.com/ismawno/debug-tools)
 - [ini-parser](https://github.com/ismawno/ini-parser)
+- [profile-tools](https://github.com/ismawno/profile-tools)
 
 The [fetch_dependencies.py](https://github.com/ismawno/shapes-2D/scripts/fetch_dependencies.py) script will automatically add all the dependencies as git submodules, provided that the user has already created their own repository and included the current project as a git submodule (or at least downloaded it into the repository). To ensure all runs smoothly once the script has been executed, do not rename the folders containing the various dependencies. All external dependencies, those not created by the same author, will be added as submodules within the [vendor](https://github.com/ismawno/shapes-2D/vendor) folder.
 
