@@ -2,6 +2,8 @@
 
 namespace geo
 {
+    shape2D::shape2D(const glm::vec2 &centroid) : m_centroid(centroid) {}
+
     void shape2D::translate(const glm::vec2 &dpos) { m_centroid += dpos; }
     void shape2D::pos(const glm::vec2 &pos) { translate(pos - m_centroid); }
 

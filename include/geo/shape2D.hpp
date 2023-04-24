@@ -9,6 +9,8 @@ namespace geo
     class shape2D : public ini::saveable
     {
     public:
+        shape2D(const glm::vec2 &centroid = glm::vec2(0.f));
+
         virtual void translate(const glm::vec2 &dpos);
         void pos(const glm::vec2 &pos);
 
@@ -27,7 +29,7 @@ namespace geo
         float rotation() const;
 
     protected:
-        glm::vec2 m_centroid{0.f};
+        glm::vec2 m_centroid;
         float m_angle = 0.f;
     };
 }
