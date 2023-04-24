@@ -18,6 +18,7 @@ namespace geo
         float area() const override;
         float inertia() const override;
 
+        aabb2D bounding_box() const override;
         glm::vec2 closest_direction_from(const glm::vec2 &p) const override;
 
         float radius() const;
