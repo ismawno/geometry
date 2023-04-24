@@ -73,7 +73,9 @@ def main() -> None:
     root_path = os.path.abspath(args.src)
     os.chdir(root_path)
 
-    add_dependencies(["debug-toolg", "ini-parser"], args.exec, args.branch)
+    add_dependencies(
+        ["debug-tools", "ini-parser", "profile-tools"], args.exec, args.branch
+    )
     add_dependencies("glm", args.exec, args.branch, folder="vendor", user="g-truc")
 
 
