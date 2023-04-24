@@ -1,8 +1,6 @@
 #ifndef POLYGON_HPP
 #define POLYGON_HPP
 
-#include "glm/vec2.hpp"
-#include "ini/saveable.hpp"
 #include "geo/shape2D.hpp"
 #include <vector>
 #include <array>
