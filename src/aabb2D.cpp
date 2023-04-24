@@ -3,13 +3,17 @@
 
 namespace geo
 {
+    aabb2D::aabb2D(const std::vector<glm::vec2> &vertices) { bound(vertices); }
+    aabb2D::aabb2D(const polygon &poly) { bound(poly); }
+    aabb2D::aabb2D(const circle &c) { bound(c); }
+
     aabb2D::aabb2D(const glm::vec2 &point) : aabb2D(point, point) {}
     aabb2D::aabb2D(const glm::vec2 &min, const glm::vec2 &max) : m_min(min), m_max(max) {}
 
     void aabb2D::bound(const std::vector<glm::vec2> &vertices)
     {
-        m_min.x = m_min.y = std::numeric_limits<float>::max();
-        m_max.x = m_max.y = -std::numeric_limits<float>::max();
+        m_min = glm::vec2(std::numeric_limits<float>::max());
+        m_max = -glm::vec2(std::numeric_limits<float>::max());
         for (const glm::vec2 &v : vertices)
         {
             if (m_min.x > v.x)
@@ -22,16 +26,11 @@ namespace geo
                 m_max.y = v.y;
         }
     }
-
-    bool aabb2D::overlaps(const aabb2D &box) const
+    void aabb2D::bound(const polygon &poly) { bound(poly.vertices()); }
+    void aabb2D::bound(const circle &c)
     {
-        const glm::vec2 df1 = box.m_min - m_max,
-                        df2 = m_min - box.m_max;
-        if (df1.x > 0.f || df1.y > 0.f)
-            return false;
-        if (df2.x > 0.f || df2.y > 0.f)
-            return false;
-        return true;
+        m_min = c.centroid() - glm::vec2(c.radius());
+        m_max = c.centroid() + glm::vec2(c.radius());
     }
 
     const glm::vec2 &aabb2D::min() const { return m_min; }

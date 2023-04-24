@@ -2,6 +2,8 @@
 #define AABB2D_HPP
 
 #include "glm/vec2.hpp"
+#include "geo/polygon.hpp"
+#include "geo/circle.hpp"
 #include <vector>
 
 namespace geo
@@ -9,12 +11,16 @@ namespace geo
     class aabb2D
     {
     public:
-        aabb2D() = default;
+        aabb2D(const std::vector<glm::vec2> &vertices);
+        aabb2D(const polygon &poly);
+        aabb2D(const circle &c);
+
         aabb2D(const glm::vec2 &point);
         aabb2D(const glm::vec2 &min, const glm::vec2 &max);
 
         void bound(const std::vector<glm::vec2> &vertices);
-        bool overlaps(const aabb2D &box) const;
+        void bound(const polygon &poly);
+        void bound(const circle &c);
 
         const glm::vec2 &min() const;
         const glm::vec2 &max() const;
