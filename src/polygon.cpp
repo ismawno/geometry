@@ -146,6 +146,7 @@ namespace geo
 
     bool polygon::contains_origin() const { return contains_point(glm::vec2(0.f)); }
 
+    aabb2D polygon::bounding_box() const { return aabb2D(m_vertices); }
     glm::vec2 polygon::towards_segment_from(const glm::vec2 &p1,
                                             const glm::vec2 &p2,
                                             const glm::vec2 &p)

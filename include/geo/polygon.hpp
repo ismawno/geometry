@@ -23,6 +23,7 @@ namespace geo
         bool contains_point(const glm::vec2 &p) const override;
         bool contains_origin() const override;
 
+        aabb2D bounding_box() const override;
         glm::vec2 closest_direction_from(const glm::vec2 &p) const override;
 
         void rotate(float dangle) override;
