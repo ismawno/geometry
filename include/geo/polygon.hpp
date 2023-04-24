@@ -45,8 +45,11 @@ namespace geo
         static std::vector<glm::vec2> ngon(float radius, std::uint32_t sides);
 
         static polygon minkowski_sum(const polygon &poly1, const polygon &poly2);
+        static polygon minkowski_difference(const polygon &poly1, const polygon &poly2);
+
         static glm::vec2 centre_of_vertices(const polygon &poly);
         static glm::vec2 centre_of_mass(const polygon &poly);
+
         static float area(const polygon &poly);
         static float inertia(const polygon &poly);
 

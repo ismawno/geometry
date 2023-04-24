@@ -320,6 +320,11 @@ namespace geo
         return polygon(sum);
     }
 
+    polygon polygon::minkowski_difference(const polygon &poly1, const polygon &poly2)
+    {
+        return minkowski_sum(poly1, -poly2);
+    }
+
     polygon operator-(const polygon &poly)
     {
         std::vector<glm::vec2> vertices;
@@ -336,6 +341,6 @@ namespace geo
 
     polygon operator-(const polygon &poly1, const polygon &poly2)
     {
-        return polygon::minkowski_sum(poly1, -poly2);
+        return polygon::minkowski_difference(poly1, poly2);
     }
 }
