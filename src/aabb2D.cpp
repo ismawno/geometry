@@ -1,5 +1,7 @@
 #include <limits>
 #include "geo/aabb2D.hpp"
+#include "geo/polygon.hpp"
+#include "geo/circle.hpp"
 
 namespace geo
 {

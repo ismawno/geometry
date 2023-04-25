@@ -2,12 +2,12 @@
 #define AABB2D_HPP
 
 #include "glm/vec2.hpp"
-#include "geo/polygon.hpp"
-#include "geo/circle.hpp"
 #include <vector>
 
 namespace geo
 {
+    class polygon;
+    class circle;
     class aabb2D
     {
     public:
