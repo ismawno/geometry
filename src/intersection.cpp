@@ -48,14 +48,14 @@ namespace geo
         simplex.reserve(3);
         const glm::vec2 supp = sh2.support_point(dir) - sh1.support_point(-dir);
         dir = -supp;
-        simplex.emplace_back(supp);
+        simplex.push_back(supp);
 
         for (;;)
         {
             const glm::vec2 A = sh2.support_point(dir) - sh1.support_point(-dir);
             if (glm::dot(A, dir) <= 0.f)
                 return false;
-            simplex.emplace_back(A);
+            simplex.push_back(A);
             if (simplex.size() == 2)
                 line_case(simplex, dir);
             else if (triangle_case(simplex, dir))
@@ -118,6 +118,10 @@ namespace geo
         return std::make_pair(sup2 + mtv, sup2);
     }
 
+    bool may_intersect(const shape2D &sh1, const shape2D &sh2)
+    {
+        return intersect(sh1.bounding_box(), sh2.bounding_box());
+    }
     bool intersect(const aabb2D &bb1, const aabb2D &bb2)
     {
         const glm::vec2 df1 = bb2.min() - bb1.max(),
