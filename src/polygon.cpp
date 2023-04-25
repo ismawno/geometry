@@ -31,6 +31,13 @@ namespace geo
         this->pos(pos);
     }
 
+    polygon::polygon(const glm::vec2 &pos, const float angle,
+                     const std::vector<glm::vec2> &vertices) : polygon(vertices)
+    {
+        this->pos(pos);
+        rotate(angle);
+    }
+
     glm::vec2 polygon::centre_of_vertices(const polygon &poly)
     {
         glm::vec2 centre(0.f);

@@ -10,6 +10,7 @@ namespace geo
     public:
         circle(float radius = 1.f);
         circle(const glm::vec2 &pos, float radius = 1.f);
+        circle(const glm::vec2 &pos, float radius, float angle);
 
         glm::vec2 support_point(const glm::vec2 &direction) const override;
         bool contains_point(const glm::vec2 &p) const override;

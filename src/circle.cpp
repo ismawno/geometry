@@ -12,6 +12,11 @@ namespace geo
     circle::circle(const glm::vec2 &pos, const float radius) : shape2D(pos),
                                                                m_radius(radius) {}
 
+    circle::circle(const glm::vec2 &pos,
+                   const float radius,
+                   const float angle) : shape2D(pos),
+                                        m_radius(radius) { rotate(angle); }
+
     glm::vec2 circle::support_point(const glm::vec2 &direction) const
     {
         return m_centroid + glm::normalize(direction) * m_radius;

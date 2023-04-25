@@ -14,6 +14,8 @@ namespace geo
         polygon(const std::vector<glm::vec2> &vertices = box(1.f));
         polygon(const glm::vec2 &pos,
                 const std::vector<glm::vec2> &vertices = box(1.f));
+        polygon(const glm::vec2 &pos, float angle,
+                const std::vector<glm::vec2> &vertices = box(1.f));
 
         void translate(const glm::vec2 &dpos) override;
 
