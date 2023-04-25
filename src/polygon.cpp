@@ -286,7 +286,7 @@ namespace geo
         for (std::size_t i = 0; i < sides; i++)
         {
             const float angle = i * dangle;
-            vertices.emplace_back(glm::vec2(radius * sinf(angle), radius * cosf(angle)));
+            vertices.emplace_back(radius * sinf(angle), radius * cosf(angle));
         }
         return vertices;
     }
@@ -310,7 +310,7 @@ namespace geo
         while (i < poly1.size() || j < poly2.size())
         {
             const std::size_t index1 = i + m1, index2 = j + m2;
-            sum.emplace_back(poly1[index1] + poly2[index2]);
+            sum.push_back(poly1[index1] + poly2[index2]);
             const float crs = cross(poly1[index1 + 1] - poly1[index1],
                                     poly2[index2 + 1] - poly2[index2]);
             if (crs >= 0.f)
@@ -331,7 +331,7 @@ namespace geo
         std::vector<glm::vec2> vertices;
         vertices.reserve(poly.size());
         for (const glm::vec2 &v : poly.vertices())
-            vertices.emplace_back(-v);
+            vertices.push_back(-v);
         return polygon(vertices);
     }
 
