@@ -44,15 +44,15 @@ namespace geo
     bool gjk(const shape2D &sh1, const shape2D &sh2, std::vector<glm::vec2> &simplex)
     {
         PERF_FUNCTION()
-        glm::vec2 dir = sh1.centroid() - sh2.centroid();
+        glm::vec2 dir = sh2.centroid() - sh1.centroid();
         simplex.reserve(3);
-        const glm::vec2 supp = sh2.support_point(dir) - sh1.support_point(-dir);
+        const glm::vec2 supp = sh1.support_point(dir) - sh2.support_point(-dir);
         dir = -supp;
         simplex.push_back(supp);
 
         for (;;)
         {
-            const glm::vec2 A = sh2.support_point(dir) - sh1.support_point(-dir);
+            const glm::vec2 A = sh1.support_point(dir) - sh2.support_point(-dir);
             if (glm::dot(A, dir) <= 0.f)
                 return false;
             simplex.push_back(A);
@@ -104,15 +104,15 @@ namespace geo
         return mtv * min_dist;
     }
 
-    std::pair<glm::vec2, glm::vec2> contact_points(const shape2D &poly1,
-                                                   const shape2D &poly2,
+    std::pair<glm::vec2, glm::vec2> contact_points(const shape2D &sh1,
+                                                   const shape2D &sh2,
                                                    const glm::vec2 &mtv)
     {
         PERF_FUNCTION()
-        const glm::vec2 sup1 = poly1.support_point(mtv),
-                        sup2 = poly2.support_point(-mtv);
-        const float d1 = glm::length2(poly2.closest_direction_from(sup1 - mtv)),
-                    d2 = glm::length2(poly1.closest_direction_from(sup2 + mtv));
+        const glm::vec2 sup1 = sh1.support_point(mtv),
+                        sup2 = sh2.support_point(-mtv);
+        const float d1 = glm::length2(sh2.closest_direction_from(sup1 - mtv)),
+                    d2 = glm::length2(sh1.closest_direction_from(sup2 + mtv));
         if (d1 < d2)
             return std::make_pair(sup1, sup1 - mtv);
         return std::make_pair(sup2 + mtv, sup2);
