@@ -190,7 +190,7 @@ namespace geo
 
         const float d1 = a * v1.x + b * v1.y + c;
         const float d2 = a * v2.x + b * v2.y + c;
-        return !((d1 > 0.f && d2 > 0.f) || (d1 < 0.f && d2 < 0.f));
+        return !((d1 >= 0.f && d2 >= 0.f) || (d1 <= 0.f && d2 <= 0.f));
     }
 
     void polygon::sort_vertices()

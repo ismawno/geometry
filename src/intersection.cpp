@@ -3,6 +3,7 @@
 #include "perf/perf.hpp"
 #include <glm/geometric.hpp>
 #include <glm/gtx/norm.hpp>
+#include <signal.h>
 
 #define EPA_EPSILON 1.e-3f
 
@@ -45,10 +46,9 @@ namespace geo
     {
         PERF_FUNCTION()
         glm::vec2 dir = sh2.centroid() - sh1.centroid();
-        simplex.reserve(3);
         const glm::vec2 supp = sh1.support_point(dir) - sh2.support_point(-dir);
-        dir = -supp;
         simplex.push_back(supp);
+        dir = -supp;
 
         for (;;)
         {
