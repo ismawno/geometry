@@ -10,7 +10,7 @@
 namespace geo
 {
     bool gjk(const shape2D &sh1, const shape2D &sh2, std::vector<glm::vec2> &simplex);
-    glm::vec2 epa(const shape2D &sh1, const shape2D &sh2, std::vector<glm::vec2> &simplex);
+    bool epa(const shape2D &sh1, const shape2D &sh2, std::vector<glm::vec2> &simplex, glm::vec2 &mtv);
     std::pair<glm::vec2, glm::vec2> contact_points(const shape2D &sh1, const shape2D &sh2, const glm::vec2 &mtv);
 
     bool may_intersect(const shape2D &sh1, const shape2D &sh2);

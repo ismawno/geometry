@@ -63,12 +63,12 @@ namespace geo
         }
     }
 
-    glm::vec2 epa(const shape2D &sh1, const shape2D &sh2, std::vector<glm::vec2> &simplex)
+    bool epa(const shape2D &sh1, const shape2D &sh2, std::vector<glm::vec2> &simplex, glm::vec2 &mtv)
     {
         PERF_FUNCTION()
         DBG_LOG_IF(!polygon(simplex).contains_origin(), "Simplex passed to EPA algorithm does not contain the origin!\nx1: %f, y1: %f\nx2: %f, y2: %f\nx3: %f, y3: %f\n", simplex[0].x, simplex[0].y, simplex[1].x, simplex[1].y, simplex[2].x, simplex[2].y)
         float min_dist = std::numeric_limits<float>::max();
-        glm::vec2 mtv(0.f);
+        mtv = {0.f, 0.f};
         for (;;)
         {
             std::size_t min_index;
@@ -93,6 +93,9 @@ namespace geo
                     mtv = normal;
                 }
             }
+            if (mtv.x == 0.f && mtv.y == 0.f)
+                return false;
+
             const glm::vec2 support = sh1.support_point(mtv) - sh2.support_point(-mtv);
             const float sup_dist = glm::dot(mtv, support);
             const float diff = std::abs(sup_dist - min_dist);
@@ -101,7 +104,9 @@ namespace geo
             simplex.insert(simplex.begin() + (long)min_index, support);
             min_dist = std::numeric_limits<float>::max();
         }
-        return mtv * min_dist;
+
+        mtv *= min_dist;
+        return mtv.x != 0.f || mtv.y != 0.f;
     }
 
     std::pair<glm::vec2, glm::vec2> contact_points(const shape2D &sh1,
