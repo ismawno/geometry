@@ -3,7 +3,6 @@
 #include "perf/perf.hpp"
 #include <glm/geometric.hpp>
 #include <glm/gtx/norm.hpp>
-#include <signal.h>
 
 #define EPA_EPSILON 1.e-3f
 
