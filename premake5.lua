@@ -5,7 +5,7 @@ project "shapes-2D"
       buildoptions {"-Wall", "-Wextra", "-Wpedantic", "-Wconversion", "-Wno-unused-parameter"}
    filter{}
 
-   pchheader "include/geo/pch.hpp"
+   pchheader "geo/pch.hpp"
    pchsource "src/pch.cpp"
    
    staticruntime "off"
