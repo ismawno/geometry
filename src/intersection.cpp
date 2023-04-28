@@ -1,8 +1,7 @@
+#include "geo/pch.hpp"
 #include "geo/intersection.hpp"
 #include "geo/polygon.hpp"
 #include "perf/perf.hpp"
-#include <glm/geometric.hpp>
-#include <glm/gtx/norm.hpp>
 
 #define EPA_EPSILON 1.e-3f
 

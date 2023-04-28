@@ -1,6 +1,5 @@
+#include "geo/pch.hpp"
 #include "geo/circle.hpp"
-#include <glm/geometric.hpp>
-#include <glm/gtx/norm.hpp>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846f

@@ -4,6 +4,9 @@ project "shapes-2D"
    filter "system:macosx"
       buildoptions {"-Wall", "-Wextra", "-Wpedantic", "-Wconversion", "-Wno-unused-parameter"}
    filter{}
+
+   pchheader "include/geo/pch.hpp"
+   pchsource "src/pch.cpp"
    
    staticruntime "off"
    kind "StaticLib"

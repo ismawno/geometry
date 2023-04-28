@@ -1,13 +1,6 @@
+#include "geo/pch.hpp"
 #include "geo/polygon.hpp"
 #include "debug/debug.hpp"
-#include <glm/geometric.hpp>
-#include <glm/gtx/norm.hpp>
-#include <glm/gtx/rotate_vector.hpp>
-#include <glm/mat2x2.hpp>
-#include <algorithm>
-#include <cstdint>
-#include <cmath>
-#include <limits>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846f

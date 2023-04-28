@@ -1,7 +1,7 @@
 #ifndef AABB2D_HPP
 #define AABB2D_HPP
 
-#include "glm/vec2.hpp"
+#include <glm/vec2.hpp>
 #include <vector>
 
 namespace geo
