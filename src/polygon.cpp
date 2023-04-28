@@ -3,6 +3,7 @@
 #include <glm/geometric.hpp>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/rotate_vector.hpp>
+#include <glm/mat2x2.hpp>
 #include <algorithm>
 #include <cstdint>
 #include <cmath>
@@ -249,8 +250,12 @@ namespace geo
 
     void polygon::rotate(float dangle)
     {
+        const float cos = cosf(dangle),
+                    sin = sinf(dangle);
+
+        const glm::mat2 rot_matrix(cos, sin, -sin, cos);
         for (glm::vec2 &v : m_vertices)
-            v = glm::rotate(v - m_centroid, dangle) + m_centroid;
+            v = rot_matrix * (v - m_centroid) + m_centroid;
         m_angle += dangle;
     }
 
@@ -260,8 +265,6 @@ namespace geo
 
     float polygon::area() const { return m_area; }
     float polygon::inertia() const { return m_inertia; }
-
-    glm::vec2 polygon::relative(const std::size_t index) const { return this->operator[](index) - m_centroid; }
 
     const glm::vec2 &polygon::operator[](const std::size_t index) const
     {

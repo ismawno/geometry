@@ -40,7 +40,6 @@ namespace geo
         float area() const override;
         float inertia() const override;
 
-        glm::vec2 relative(std::size_t index) const;
         const glm::vec2 &operator[](std::size_t index) const;
 
         static std::vector<glm::vec2> box(float size);
