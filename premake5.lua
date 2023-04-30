@@ -1,14 +1,15 @@
 project "shapes-2D"
 language "C++"
 cppdialect "C++17"
+
 filter "system:macosx"
-buildoptions {
-   "-Wall",
-   "-Wextra",
-   "-Wpedantic",
-   "-Wconversion",
-   "-Wno-unused-parameter"
-}
+   buildoptions {
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Wconversion",
+      "-Wno-unused-parameter"
+   }
 filter {}
 
 pchheader "geo/pch.hpp"
@@ -26,6 +27,9 @@ files {
 }
 
 includedirs {
-   "../**/include",
-   "../vendor/glm"
+   "include",
+   "%{wks.location}/debug-tools/include",
+   "%{wks.location}/profile-tools/include",
+   "%{wks.location}/ini-parser/include",
+   "%{wks.location}/vendor/glm",
 }
