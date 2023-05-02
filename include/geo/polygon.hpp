@@ -31,8 +31,8 @@ namespace geo
         void rotate(float dangle) override;
         void sort_vertices();
 
-        void write(ini::output &out) const override;
-        void read(ini::input &in) override;
+        void serialize(ini::serializer &out) const override;
+        void deserialize(ini::deserializer &in) override;
 
         const std::vector<glm::vec2> &vertices() const;
 

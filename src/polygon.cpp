@@ -209,7 +209,7 @@ namespace geo
         std::sort(m_vertices.begin(), m_vertices.end(), cmp);
     }
 
-    void polygon::write(ini::output &out) const
+    void polygon::serialize(ini::serializer &out) const
     {
         std::size_t index = 0;
         const std::string key = "vertex";
@@ -220,7 +220,7 @@ namespace geo
             out.write(key + std::to_string(index++) + "y", v.y);
         }
     }
-    void polygon::read(ini::input &in)
+    void polygon::deserialize(ini::deserializer &in)
     {
         std::vector<glm::vec2> vertices;
         vertices.reserve(m_vertices.capacity());

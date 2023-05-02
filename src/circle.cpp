@@ -37,13 +37,13 @@ namespace geo
     float circle::radius() const { return m_radius; }
     void circle::radius(float radius) { m_radius = radius; }
 
-    void circle::write(ini::output &out) const
+    void circle::serialize(ini::serializer &out) const
     {
         out.write("centroidx", m_centroid.x);
         out.write("centroidy", m_centroid.y);
         out.write("radius", m_radius);
     }
-    void circle::read(ini::input &in)
+    void circle::deserialize(ini::deserializer &in)
     {
         m_centroid = glm::vec2(in.readf32("centroidx"), in.readf32("centroidy"));
         m_radius = in.readf32("radius");

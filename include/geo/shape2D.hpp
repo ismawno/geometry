@@ -2,12 +2,12 @@
 #define SHAPE2D_HPP
 
 #include "glm/vec2.hpp"
-#include "ini/saveable.hpp"
+#include "ini/serializable.hpp"
 #include "geo/aabb2D.hpp"
 
 namespace geo
 {
-    class shape2D : public ini::saveable
+    class shape2D : public ini::serializable
     {
     public:
         shape2D(const glm::vec2 &centroid = glm::vec2(0.f));
