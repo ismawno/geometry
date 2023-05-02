@@ -56,12 +56,43 @@ namespace geo
                       {std::max(bb1.max().x, bb2.max().x),
                        std::max(bb1.max().y, bb2.max().y)});
     }
-    aabb2D
-    operator-(const aabb2D &bb1, const aabb2D &bb2)
+    aabb2D operator-(const aabb2D &bb1, const aabb2D &bb2)
     {
         return aabb2D({std::max(bb1.min().x, bb2.min().x),
                        std::max(bb1.min().y, bb2.min().y)},
                       {std::min(bb1.max().x, bb2.max().x),
                        std::min(bb1.max().y, bb2.max().y)});
     }
+
+#ifdef HAS_YAML_CPP
+    YAML::Emitter &operator<<(YAML::Emitter &out, const aabb2D &bb)
+    {
+        out << YAML::BeginMap;
+        out << YAML::Key << "min" << YAML::Value << bb.min();
+        out << YAML::Key << "max" << YAML::Value << bb.max();
+        out << YAML::EndMap;
+        return out;
+    }
+#endif
 }
+
+#ifdef HAS_YAML_CPP
+namespace YAML
+{
+    Node convert<geo::aabb2D>::encode(const geo::aabb2D &bb)
+    {
+        Node node;
+        node.push_back(bb.min());
+        node.push_back(bb.max());
+        return node;
+    }
+    bool convert<geo::aabb2D>::decode(const Node &node, geo::aabb2D &bb)
+    {
+        if (!node.IsSequence() || node.size() != 2)
+            return false;
+
+        bb = {node[0].as<glm::vec2>(), node[1].as<glm::vec2>()};
+        return true;
+    };
+}
+#endif

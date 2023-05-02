@@ -3,6 +3,7 @@
 
 #include <glm/vec2.hpp>
 #include <vector>
+#include <yaml-cpp/yaml.h>
 
 namespace geo
 {
@@ -34,6 +35,22 @@ namespace geo
 
     aabb2D operator+(const aabb2D &bb1, const aabb2D &bb2);
     aabb2D operator-(const aabb2D &bb1, const aabb2D &bb2);
+
+#ifdef HAS_YAML_CPP
+    YAML::Emitter &operator<<(YAML::Emitter &out, const aabb2D &bb);
+#endif
 }
+
+#ifdef HAS_YAML_CPP
+namespace YAML
+{
+    template <>
+    struct convert<geo::aabb2D>
+    {
+        static Node encode(const geo::aabb2D &bb);
+        static bool decode(const Node &node, geo::aabb2D &bb);
+    };
+}
+#endif
 
 #endif

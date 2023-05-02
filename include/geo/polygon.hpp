@@ -31,9 +31,6 @@ namespace geo
         void rotate(float dangle) override;
         void sort_vertices();
 
-        void serialize(ini::serializer &out) const override;
-        void deserialize(ini::deserializer &in) override;
-
         const std::vector<glm::vec2> &vertices() const;
 
         std::size_t size() const;
@@ -41,6 +38,10 @@ namespace geo
         float inertia() const override;
 
         const glm::vec2 &operator[](std::size_t index) const;
+
+#ifdef HAS_YAML_CPP
+        void write(YAML::Emitter &out) const override;
+#endif
 
         static std::vector<glm::vec2> box(float size);
         static std::vector<glm::vec2> rect(float width, float height);

@@ -24,9 +24,9 @@ namespace geo
 
         float radius() const;
         void radius(float radius);
-
-        void serialize(ini::serializer &out) const override;
-        void deserialize(ini::deserializer &in) override;
+#ifdef HAS_YAML_CPP
+        void write(YAML::Emitter &out) const override;
+#endif
 
     private:
         float m_radius;

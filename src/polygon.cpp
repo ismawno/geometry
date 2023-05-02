@@ -209,37 +209,44 @@ namespace geo
         std::sort(m_vertices.begin(), m_vertices.end(), cmp);
     }
 
-    void polygon::serialize(ini::serializer &out) const
-    {
-        std::size_t index = 0;
-        const std::string key = "vertex";
+    // void polygon::serialize(ini::serializer &out) const
+    // {
+    //     std::size_t index = 0;
+    //     const std::string key = "vertex";
 
-        for (const glm::vec2 &v : m_vertices)
-        {
-            out.write(key + std::to_string(index) + "x", v.x);
-            out.write(key + std::to_string(index++) + "y", v.y);
-        }
-    }
-    void polygon::deserialize(ini::deserializer &in)
-    {
-        std::vector<glm::vec2> vertices;
-        vertices.reserve(m_vertices.capacity());
+    //     for (const glm::vec2 &v : m_vertices)
+    //     {
+    //         out.write(key + std::to_string(index) + "x", v.x);
+    //         out.write(key + std::to_string(index++) + "y", v.y);
+    //     }
+    // }
+    // void polygon::deserialize(ini::deserializer &in)
+    // {
+    //     std::vector<glm::vec2> vertices;
+    //     vertices.reserve(m_vertices.capacity());
 
-        std::size_t index = 0;
-        const std::string key = "vertex";
-        while (true)
-        {
-            const std::string kx = key + std::to_string(index) + "x",
-                              ky = key + std::to_string(index++) + "y";
-            DBG_ASSERT((in.contains_key(kx) && in.contains_key(ky)) ||
-                           (!in.contains_key(kx) && !in.contains_key(ky)),
-                       "Vector key only contains a component of the vector! Weird.\n")
-            if (!in.contains_key(kx) || !in.contains_key(ky)) // Just for ick reasons
-                break;
-            vertices.emplace_back(in.readf32(kx), in.readf32(ky));
-        }
-        *this = geo::polygon(vertices);
+    //     std::size_t index = 0;
+    //     const std::string key = "vertex";
+    //     while (true)
+    //     {
+    //         const std::string kx = key + std::to_string(index) + "x",
+    //                           ky = key + std::to_string(index++) + "y";
+    //         DBG_ASSERT((in.contains_key(kx) && in.contains_key(ky)) ||
+    //                        (!in.contains_key(kx) && !in.contains_key(ky)),
+    //                    "Vector key only contains a component of the vector! Weird.\n")
+    //         if (!in.contains_key(kx) || !in.contains_key(ky)) // Just for ick reasons
+    //             break;
+    //         vertices.emplace_back(in.readf32(kx), in.readf32(ky));
+    //     }
+    //     *this = geo::polygon(vertices);
+    // }
+
+#ifdef HAS_YAML_CPP
+    void polygon::write(YAML::Emitter &out) const
+    {
+        out << YAML::Key << "vertices" << YAML::Value << YAML::Flow << m_vertices;
     }
+#endif
 
     void polygon::rotate(float dangle)
     {

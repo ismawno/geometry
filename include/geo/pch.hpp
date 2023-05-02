@@ -13,5 +13,8 @@
 #include <algorithm>
 #include <cstdint>
 #include <cmath>
+#ifdef HAS_YAML_CPP
+#include <yaml-cpp/yaml.h>
+#endif
 
 #endif

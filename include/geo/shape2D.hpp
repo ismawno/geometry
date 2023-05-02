@@ -2,12 +2,11 @@
 #define SHAPE2D_HPP
 
 #include "glm/vec2.hpp"
-#include "ini/serializable.hpp"
 #include "geo/aabb2D.hpp"
 
 namespace geo
 {
-    class shape2D : public ini::serializable
+    class shape2D
     {
     public:
         shape2D(const glm::vec2 &centroid = glm::vec2(0.f));
@@ -30,10 +29,18 @@ namespace geo
         void rotation(float angle);
         float rotation() const;
 
+#ifdef HAS_YAML_CPP
+        virtual void write(YAML::Emitter &out) const;
+#endif
+
     protected:
         glm::vec2 m_centroid;
         float m_angle = 0.f;
     };
+
+#ifdef HAS_YAML_CPP
+    YAML::Emitter &operator<<(YAML::Emitter &out, const shape2D &sh);
+#endif
 }
 
 #endif
