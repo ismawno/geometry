@@ -26,5 +26,35 @@ namespace geo
         out << YAML::Key << "centroid" << YAML::Value << m_centroid;
         out << YAML::Key << "angle" << YAML::Value << m_angle;
     }
+    YAML::Node shape2D::encode() const
+    {
+        YAML::Node node;
+        node.push_back(m_centroid);
+        node.push_back(m_angle);
+        return node;
+    }
+    bool shape2D::decode(const YAML::Node &node)
+    {
+        if (!node.IsSequence() || node.size() < 2)
+            return false;
+
+        m_centroid = node[0].as<glm::vec2>();
+        m_angle = node[1].as<float>();
+        return true;
+    }
 #endif
 }
+
+#ifdef HAS_YAML_CPP
+namespace YAML
+{
+    Node convert<geo::shape2D>::encode(const geo::shape2D &sh)
+    {
+        return sh.encode();
+    }
+    bool convert<geo::shape2D>::decode(const Node &node, geo::shape2D &sh)
+    {
+        return sh.decode(node);
+    };
+}
+#endif

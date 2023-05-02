@@ -43,5 +43,32 @@ namespace geo
         shape2D::write(out);
         out << YAML::Key << "radius" << YAML::Value << m_radius;
     }
+    YAML::Node circle::encode() const
+    {
+        YAML::Node node = shape2D::encode();
+        node.push_back(m_radius);
+        return node;
+    }
+    bool circle::decode(const YAML::Node &node)
+    {
+        if (shape2D::decode(node))
+            return false;
+        m_radius = node[2].as<float>();
+        return true;
+    }
 #endif
 }
+
+#ifdef HAS_YAML_CPP
+namespace YAML
+{
+    Node convert<geo::circle>::encode(const geo::circle &c)
+    {
+        return c.encode();
+    }
+    bool convert<geo::circle>::decode(const Node &node, geo::circle &c)
+    {
+        return c.decode(node);
+    };
+}
+#endif

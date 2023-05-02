@@ -31,6 +31,8 @@ namespace geo
 
 #ifdef HAS_YAML_CPP
         virtual void write(YAML::Emitter &out) const;
+        virtual YAML::Node encode() const;
+        virtual bool decode(const YAML::Node &node);
 #endif
 
     protected:
@@ -42,5 +44,17 @@ namespace geo
     YAML::Emitter &operator<<(YAML::Emitter &out, const shape2D &sh);
 #endif
 }
+
+#ifdef HAS_YAML_CPP
+namespace YAML
+{
+    template <>
+    struct convert<geo::shape2D>
+    {
+        static Node encode(const geo::shape2D &c);
+        static bool decode(const Node &node, geo::shape2D &c);
+    };
+}
+#endif
 
 #endif

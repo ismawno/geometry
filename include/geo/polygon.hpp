@@ -41,6 +41,8 @@ namespace geo
 
 #ifdef HAS_YAML_CPP
         void write(YAML::Emitter &out) const override;
+        YAML::Node encode() const override;
+        bool decode(const YAML::Node &node) override;
 #endif
 
         static std::vector<glm::vec2> box(float size);
@@ -73,5 +75,17 @@ namespace geo
     polygon operator+(const polygon &poly1, const polygon &poly2);
     polygon operator-(const polygon &poly1, const polygon &poly2);
 }
+
+#ifdef HAS_YAML_CPP
+namespace YAML
+{
+    template <>
+    struct convert<geo::polygon>
+    {
+        static Node encode(const geo::polygon &c);
+        static bool decode(const Node &node, geo::polygon &c);
+    };
+}
+#endif
 
 #endif

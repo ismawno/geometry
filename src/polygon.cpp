@@ -209,42 +209,30 @@ namespace geo
         std::sort(m_vertices.begin(), m_vertices.end(), cmp);
     }
 
-    // void polygon::serialize(ini::serializer &out) const
-    // {
-    //     std::size_t index = 0;
-    //     const std::string key = "vertex";
-
-    //     for (const glm::vec2 &v : m_vertices)
-    //     {
-    //         out.write(key + std::to_string(index) + "x", v.x);
-    //         out.write(key + std::to_string(index++) + "y", v.y);
-    //     }
-    // }
-    // void polygon::deserialize(ini::deserializer &in)
-    // {
-    //     std::vector<glm::vec2> vertices;
-    //     vertices.reserve(m_vertices.capacity());
-
-    //     std::size_t index = 0;
-    //     const std::string key = "vertex";
-    //     while (true)
-    //     {
-    //         const std::string kx = key + std::to_string(index) + "x",
-    //                           ky = key + std::to_string(index++) + "y";
-    //         DBG_ASSERT((in.contains_key(kx) && in.contains_key(ky)) ||
-    //                        (!in.contains_key(kx) && !in.contains_key(ky)),
-    //                    "Vector key only contains a component of the vector! Weird.\n")
-    //         if (!in.contains_key(kx) || !in.contains_key(ky)) // Just for ick reasons
-    //             break;
-    //         vertices.emplace_back(in.readf32(kx), in.readf32(ky));
-    //     }
-    //     *this = geo::polygon(vertices);
-    // }
-
 #ifdef HAS_YAML_CPP
     void polygon::write(YAML::Emitter &out) const
     {
         out << YAML::Key << "vertices" << YAML::Value << YAML::Flow << m_vertices;
+    }
+    YAML::Node polygon::encode() const
+    {
+        YAML::Node node = shape2D::encode();
+        for (const glm::vec2 &v : m_vertices)
+            node.push_back(v);
+        return node;
+    }
+    bool polygon::decode(const YAML::Node &node)
+    {
+        if (shape2D::decode(node))
+            return false;
+
+        std::vector<glm::vec2> vertices;
+        vertices.reserve(node.size());
+        for (std::size_t i = 2; i < node.size(); i++)
+            vertices.push_back(node[i].as<glm::vec2>());
+
+        *this = {m_centroid, m_angle, vertices};
+        return true;
     }
 #endif
 
@@ -355,3 +343,17 @@ namespace geo
         return polygon::minkowski_difference(poly1, poly2);
     }
 }
+
+#ifdef HAS_YAML_CPP
+namespace YAML
+{
+    Node convert<geo::polygon>::encode(const geo::polygon &poly)
+    {
+        return poly.encode();
+    }
+    bool convert<geo::polygon>::decode(const Node &node, geo::polygon &poly)
+    {
+        return poly.decode(node);
+    };
+}
+#endif

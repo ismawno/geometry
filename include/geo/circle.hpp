@@ -26,11 +26,25 @@ namespace geo
         void radius(float radius);
 #ifdef HAS_YAML_CPP
         void write(YAML::Emitter &out) const override;
+        YAML::Node encode() const override;
+        bool decode(const YAML::Node &node) override;
 #endif
 
     private:
         float m_radius;
     };
 }
+
+#ifdef HAS_YAML_CPP
+namespace YAML
+{
+    template <>
+    struct convert<geo::circle>
+    {
+        static Node encode(const geo::circle &c);
+        static bool decode(const Node &node, geo::circle &c);
+    };
+}
+#endif
 
 #endif
