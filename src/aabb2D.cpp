@@ -37,4 +37,31 @@ namespace geo
 
     const glm::vec2 &aabb2D::min() const { return m_min; }
     const glm::vec2 &aabb2D::max() const { return m_max; }
+
+    aabb2D &aabb2D::operator+=(const aabb2D &bb)
+    {
+        *this = *this + bb;
+        return *this;
+    }
+    aabb2D &aabb2D::operator-=(const aabb2D &bb)
+    {
+        *this = *this - bb;
+        return *this;
+    }
+
+    aabb2D operator+(const aabb2D &bb1, const aabb2D &bb2)
+    {
+        return aabb2D({std::min(bb1.min().x, bb2.min().x),
+                       std::min(bb1.min().y, bb2.min().y)},
+                      {std::max(bb1.max().x, bb2.max().x),
+                       std::max(bb1.max().y, bb2.max().y)});
+    }
+    aabb2D
+    operator-(const aabb2D &bb1, const aabb2D &bb2)
+    {
+        return aabb2D({std::max(bb1.min().x, bb2.min().x),
+                       std::max(bb1.min().y, bb2.min().y)},
+                      {std::min(bb1.max().x, bb2.max().x),
+                       std::min(bb1.max().y, bb2.max().y)});
+    }
 }

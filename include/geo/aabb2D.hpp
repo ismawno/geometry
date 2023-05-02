@@ -25,9 +25,15 @@ namespace geo
         const glm::vec2 &min() const;
         const glm::vec2 &max() const;
 
+        aabb2D &operator+=(const aabb2D &bb);
+        aabb2D &operator-=(const aabb2D &bb);
+
     private:
         glm::vec2 m_min{0.f}, m_max{0.f};
     };
+
+    aabb2D operator+(const aabb2D &bb1, const aabb2D &bb2);
+    aabb2D operator-(const aabb2D &bb1, const aabb2D &bb2);
 }
 
 #endif
