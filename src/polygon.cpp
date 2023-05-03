@@ -222,18 +222,19 @@ namespace geo
     {
         YAML::Node node = shape2D::encode();
         for (const glm::vec2 &v : m_vertices)
-            node.push_back(v);
+            node["vertices"].push_back(v);
         return node;
     }
     bool polygon::decode(const YAML::Node &node)
     {
-        if (shape2D::decode(node))
+        if (!shape2D::decode(node) || node.size() != 3 || !node["vertices"] || !node["vertices"].IsSequence())
             return false;
+        YAML::Node node_v = node["vertices"];
 
         std::vector<glm::vec2> vertices;
-        vertices.reserve(node.size());
-        for (std::size_t i = 2; i < node.size(); i++)
-            vertices.push_back(node[i].as<glm::vec2>());
+        vertices.reserve(node_v.size());
+        for (std::size_t i = 0; i < node_v.size(); i++)
+            vertices.push_back(node_v[i].as<glm::vec2>());
 
         *this = {m_centroid, m_angle, vertices};
         return true;

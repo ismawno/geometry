@@ -49,14 +49,14 @@ namespace geo
     YAML::Node circle::encode() const
     {
         YAML::Node node = shape2D::encode();
-        node.push_back(m_radius);
+        node["radius"] = m_radius;
         return node;
     }
     bool circle::decode(const YAML::Node &node)
     {
-        if (shape2D::decode(node))
+        if (!shape2D::decode(node) || node.size() != 3)
             return false;
-        m_radius = node[2].as<float>();
+        m_radius = node["radius"].as<float>();
         return true;
     }
 #endif

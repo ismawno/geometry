@@ -24,17 +24,17 @@ namespace geo
     YAML::Node shape2D::encode() const
     {
         YAML::Node node;
-        node.push_back(m_centroid);
-        node.push_back(m_angle);
+        node["centroid"] = m_centroid;
+        node["angle"] = m_angle;
         return node;
     }
     bool shape2D::decode(const YAML::Node &node)
     {
-        if (!node.IsSequence() || node.size() < 2)
+        if (!node.IsMap() || node.size() < 2)
             return false;
 
-        m_centroid = node[0].as<glm::vec2>();
-        m_angle = node[1].as<float>();
+        m_centroid = node["centroid"].as<glm::vec2>();
+        m_angle = node["angle"].as<float>();
         return true;
     }
 #endif

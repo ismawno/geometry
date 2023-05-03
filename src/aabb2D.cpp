@@ -86,16 +86,16 @@ namespace YAML
     Node convert<geo::aabb2D>::encode(const geo::aabb2D &bb)
     {
         Node node;
-        node.push_back(bb.min());
-        node.push_back(bb.max());
+        node["min"] = bb.min();
+        node["max"] = bb.max();
         return node;
     }
     bool convert<geo::aabb2D>::decode(const Node &node, geo::aabb2D &bb)
     {
-        if (!node.IsSequence() || node.size() != 2)
+        if (!node.IsMap() || node.size() != 2)
             return false;
 
-        bb = {node[0].as<glm::vec2>(), node[1].as<glm::vec2>()};
+        bb = {node["min"].as<glm::vec2>(), node["max"].as<glm::vec2>()};
         return true;
     };
 }
