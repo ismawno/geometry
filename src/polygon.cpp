@@ -212,7 +212,11 @@ namespace geo
 #ifdef HAS_YAML_CPP
     void polygon::write(YAML::Emitter &out) const
     {
-        out << YAML::Key << "vertices" << YAML::Value << YAML::Flow << m_vertices;
+        out << YAML::BeginMap;
+        out << YAML::Key << "centroid" << YAML::Value << m_centroid;
+        out << YAML::Key << "angle" << YAML::Value << m_angle;
+        out << YAML::Key << "vertices" << YAML::Value << m_vertices;
+        out << YAML::EndMap;
     }
     YAML::Node polygon::encode() const
     {

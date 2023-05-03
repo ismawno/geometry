@@ -30,7 +30,7 @@ namespace geo
         float rotation() const;
 
 #ifdef HAS_YAML_CPP
-        virtual void write(YAML::Emitter &out) const;
+        virtual void write(YAML::Emitter &out) const = 0;
         virtual YAML::Node encode() const;
         virtual bool decode(const YAML::Node &node);
 #endif

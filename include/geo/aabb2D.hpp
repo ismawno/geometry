@@ -12,6 +12,7 @@ namespace geo
     class aabb2D
     {
     public:
+        aabb2D() = default;
         aabb2D(const std::vector<glm::vec2> &vertices);
         aabb2D(const polygon &poly);
         aabb2D(const circle &c);

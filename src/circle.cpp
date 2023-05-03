@@ -40,8 +40,11 @@ namespace geo
 #ifdef HAS_YAML_CPP
     void circle::write(YAML::Emitter &out) const
     {
-        shape2D::write(out);
+        out << YAML::BeginMap;
+        out << YAML::Key << "centroid" << YAML::Value << m_centroid;
+        out << YAML::Key << "angle" << YAML::Value << m_angle;
         out << YAML::Key << "radius" << YAML::Value << m_radius;
+        out << YAML::EndMap;
     }
     YAML::Node circle::encode() const
     {

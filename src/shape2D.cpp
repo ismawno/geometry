@@ -21,11 +21,6 @@ namespace geo
     float shape2D::rotation() const { return m_angle; }
 
 #ifdef HAS_YAML_CPP
-    void shape2D::write(YAML::Emitter &out) const
-    {
-        out << YAML::Key << "centroid" << YAML::Value << m_centroid;
-        out << YAML::Key << "angle" << YAML::Value << m_angle;
-    }
     YAML::Node shape2D::encode() const
     {
         YAML::Node node;

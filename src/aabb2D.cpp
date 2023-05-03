@@ -2,6 +2,7 @@
 #include "geo/aabb2D.hpp"
 #include "geo/polygon.hpp"
 #include "geo/circle.hpp"
+#include "debug/debug.hpp"
 
 namespace geo
 {
@@ -10,7 +11,10 @@ namespace geo
     aabb2D::aabb2D(const circle &c) { bound(c); }
 
     aabb2D::aabb2D(const glm::vec2 &point) : aabb2D(point, point) {}
-    aabb2D::aabb2D(const glm::vec2 &min, const glm::vec2 &max) : m_min(min), m_max(max) {}
+    aabb2D::aabb2D(const glm::vec2 &min, const glm::vec2 &max) : m_min(min), m_max(max)
+    {
+        DBG_ASSERT(min.x <= max.x && min.y <= max.y, "min vector must be lower than max vector!")
+    }
 
     void aabb2D::bound(const std::vector<glm::vec2> &vertices)
     {
