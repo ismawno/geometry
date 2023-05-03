@@ -51,8 +51,8 @@ namespace YAML
     template <>
     struct convert<geo::shape2D>
     {
-        static Node encode(const geo::shape2D &c);
-        static bool decode(const Node &node, geo::shape2D &c);
+        static Node encode(const geo::shape2D &sh);
+        static bool decode(const Node &node, geo::shape2D &sh);
     };
 }
 #endif

@@ -82,8 +82,8 @@ namespace YAML
     template <>
     struct convert<geo::polygon>
     {
-        static Node encode(const geo::polygon &c);
-        static bool decode(const Node &node, geo::polygon &c);
+        static Node encode(const geo::polygon &poly);
+        static bool decode(const Node &node, geo::polygon &poly);
     };
 }
 #endif
