@@ -221,13 +221,15 @@ namespace geo
     YAML::Node polygon::encode() const
     {
         YAML::Node node = shape2D::encode();
-        for (const glm::vec2 &v : m_vertices)
-            node["vertices"].push_back(v);
+        node["vertices"] = m_vertices;
+
+        for (YAML::Node n : node["vertices"])
+            n.SetStyle(YAML::EmitterStyle::Flow);
         return node;
     }
     bool polygon::decode(const YAML::Node &node)
     {
-        if (!shape2D::decode(node) || node.size() != 3 || !node["vertices"] || !node["vertices"].IsSequence())
+        if (!shape2D::decode(node) || node.size() != 3)
             return false;
         YAML::Node node_v = node["vertices"];
 

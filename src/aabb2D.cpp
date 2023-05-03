@@ -88,6 +88,8 @@ namespace YAML
         Node node;
         node["min"] = bb.min();
         node["max"] = bb.max();
+        node["min"].SetStyle(YAML::EmitterStyle::Flow);
+        node["max"].SetStyle(YAML::EmitterStyle::Flow);
         return node;
     }
     bool convert<geo::aabb2D>::decode(const Node &node, geo::aabb2D &bb)

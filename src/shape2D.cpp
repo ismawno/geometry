@@ -25,6 +25,7 @@ namespace geo
     {
         YAML::Node node;
         node["centroid"] = m_centroid;
+        node["centroid"].SetStyle(YAML::EmitterStyle::Flow);
         node["angle"] = m_angle;
         return node;
     }
