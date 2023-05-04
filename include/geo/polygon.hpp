@@ -52,8 +52,8 @@ namespace geo
         static polygon minkowski_sum(const polygon &poly1, const polygon &poly2);
         static polygon minkowski_difference(const polygon &poly1, const polygon &poly2);
 
-        static glm::vec2 centre_of_vertices(const polygon &poly);
-        static glm::vec2 centre_of_mass(const polygon &poly);
+        static glm::vec2 center_of_vertices(const polygon &poly);
+        static glm::vec2 center_of_mass(const polygon &poly);
 
         static float area(const polygon &poly);
         static float inertia(const polygon &poly);

@@ -14,7 +14,7 @@ namespace geo
     {
         DBG_ASSERT(m_vertices.size() >= 3, "Cannot make polygon with less than 3 vertices - vertices: %zu\n", m_vertices.size())
         sort_vertices();
-        m_centroid = centre_of_mass(*this);
+        m_centroid = center_of_mass(*this);
         m_area = area(*this);
         m_inertia = inertia(*this);
     }
@@ -32,15 +32,15 @@ namespace geo
         rotate(angle);
     }
 
-    glm::vec2 polygon::centre_of_vertices(const polygon &poly)
+    glm::vec2 polygon::center_of_vertices(const polygon &poly)
     {
-        glm::vec2 centre(0.f);
+        glm::vec2 center(0.f);
         for (const glm::vec2 &v : poly.vertices())
-            centre += v;
-        return centre / (float)poly.size();
+            center += v;
+        return center / (float)poly.size();
     }
 
-    glm::vec2 polygon::centre_of_mass(const polygon &poly)
+    glm::vec2 polygon::center_of_mass(const polygon &poly)
     {
         const glm::vec2 &p1 = poly[0];
         glm::vec2 num(0.f), den(0.f);
@@ -189,11 +189,11 @@ namespace geo
 
     void polygon::sort_vertices()
     {
-        const glm::vec2 centre = centre_of_vertices(*this),
-                        ref = m_vertices[0] - centre;
-        const auto cmp = [&centre, &ref](const glm::vec2 &v1, const glm::vec2 &v2)
+        const glm::vec2 center = center_of_vertices(*this),
+                        ref = m_vertices[0] - center;
+        const auto cmp = [&center, &ref](const glm::vec2 &v1, const glm::vec2 &v2)
         {
-            const glm::vec2 dir1 = v1 - centre, dir2 = v2 - centre;
+            const glm::vec2 dir1 = v1 - center, dir2 = v2 - center;
 
             const double det2 = cross(ref, dir2);
             if (det2 == 0.f && glm::dot(ref, dir2) >= 0.f)
