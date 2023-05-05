@@ -235,7 +235,7 @@ namespace geo
         for (std::size_t i = 0; i < node_v.size(); i++)
             vertices.push_back(node_v[i].as<glm::vec2>());
 
-        *this = {m_centroid, m_angle, vertices};
+        *this = {vertices}; // ADD ANGLE
         return true;
     }
 #endif

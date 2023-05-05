@@ -3,7 +3,8 @@
 
 namespace geo
 {
-    shape2D::shape2D(const glm::vec2 &centroid) : m_centroid(centroid) {}
+    shape2D::shape2D(const glm::vec2 &centroid, const float angle) : m_centroid(centroid),
+                                                                     m_angle(angle) {}
 
     void shape2D::translate(const glm::vec2 &dpos) { m_centroid += dpos; }
     void shape2D::pos(const glm::vec2 &pos) { translate(pos - m_centroid); }
@@ -17,15 +18,14 @@ namespace geo
 #ifdef HAS_YAML_CPP
     void shape2D::write(YAML::Emitter &out) const
     {
-        out << YAML::Key << "centroid" << YAML::Value << m_centroid;
-        out << YAML::Key << "angle" << YAML::Value << m_angle;
+        out << YAML::Key << "Centroid" << YAML::Value << m_centroid;
+        out << YAML::Key << "Angle" << YAML::Value << m_angle;
     }
     YAML::Node shape2D::encode() const
     {
         YAML::Node node;
-        node["centroid"] = m_centroid;
-        node["centroid"].SetStyle(YAML::EmitterStyle::Flow);
-        node["angle"] = m_angle;
+        node["Centroid"] = m_centroid;
+        node["Angle"] = m_angle;
         return node;
     }
     bool shape2D::decode(const YAML::Node &node)
@@ -33,8 +33,8 @@ namespace geo
         if (!node.IsMap() || node.size() < 2)
             return false;
 
-        m_centroid = node["centroid"].as<glm::vec2>();
-        m_angle = node["angle"].as<float>();
+        pos(node["Centroid"].as<glm::vec2>());
+        rotation(node["Angle"].as<float>()); // Should call rotation
         return true;
     }
     YAML::Emitter &operator<<(YAML::Emitter &out, const shape2D &sh)

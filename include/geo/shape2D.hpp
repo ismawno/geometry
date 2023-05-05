@@ -9,7 +9,8 @@ namespace geo
     class shape2D
     {
     public:
-        shape2D(const glm::vec2 &centroid = glm::vec2(0.f));
+        shape2D(const glm::vec2 &centroid = glm::vec2(0.f),
+                float angle = 0.f);
 
         virtual void translate(const glm::vec2 &dpos);
         void pos(const glm::vec2 &pos);
