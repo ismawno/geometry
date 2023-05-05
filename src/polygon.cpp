@@ -213,14 +213,14 @@ namespace geo
     void polygon::write(YAML::Emitter &out) const
     {
         shape2D::write(out);
-        out << YAML::Key << "vertices" << YAML::Value << m_vertices;
+        out << YAML::Key << "Vertices" << YAML::Value << m_vertices;
     }
     YAML::Node polygon::encode() const
     {
         YAML::Node node = shape2D::encode();
-        node["vertices"] = m_vertices;
+        node["Vertices"] = m_vertices;
 
-        for (YAML::Node n : node["vertices"])
+        for (YAML::Node n : node["Vertices"])
             n.SetStyle(YAML::EmitterStyle::Flow);
         return node;
     }
@@ -228,7 +228,7 @@ namespace geo
     {
         if (!shape2D::decode(node) || node.size() != 3)
             return false;
-        YAML::Node node_v = node["vertices"];
+        YAML::Node node_v = node["Vertices"];
 
         std::vector<glm::vec2> vertices;
         vertices.reserve(node_v.size());

@@ -72,8 +72,8 @@ namespace geo
     YAML::Emitter &operator<<(YAML::Emitter &out, const aabb2D &bb)
     {
         out << YAML::BeginMap;
-        out << YAML::Key << "min" << YAML::Value << bb.min();
-        out << YAML::Key << "max" << YAML::Value << bb.max();
+        out << YAML::Key << "Min" << YAML::Value << bb.min();
+        out << YAML::Key << "Max" << YAML::Value << bb.max();
         out << YAML::EndMap;
         return out;
     }
@@ -86,10 +86,10 @@ namespace YAML
     Node convert<geo::aabb2D>::encode(const geo::aabb2D &bb)
     {
         Node node;
-        node["min"] = bb.min();
-        node["max"] = bb.max();
-        node["min"].SetStyle(YAML::EmitterStyle::Flow);
-        node["max"].SetStyle(YAML::EmitterStyle::Flow);
+        node["Min"] = bb.min();
+        node["Max"] = bb.max();
+        node["Min"].SetStyle(YAML::EmitterStyle::Flow);
+        node["Max"].SetStyle(YAML::EmitterStyle::Flow);
         return node;
     }
     bool convert<geo::aabb2D>::decode(const Node &node, geo::aabb2D &bb)
@@ -97,7 +97,7 @@ namespace YAML
         if (!node.IsMap() || node.size() != 2)
             return false;
 
-        bb = {node["min"].as<glm::vec2>(), node["max"].as<glm::vec2>()};
+        bb = {node["Min"].as<glm::vec2>(), node["Max"].as<glm::vec2>()};
         return true;
     };
 }

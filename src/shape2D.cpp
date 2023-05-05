@@ -39,7 +39,9 @@ namespace geo
     }
     YAML::Emitter &operator<<(YAML::Emitter &out, const shape2D &sh)
     {
+        out << YAML::BeginMap;
         sh.write(out);
+        out << YAML::EndMap;
         return out;
     }
 #endif

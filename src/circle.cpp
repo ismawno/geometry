@@ -41,19 +41,19 @@ namespace geo
     void circle::write(YAML::Emitter &out) const
     {
         shape2D::write(out);
-        out << YAML::Key << "radius" << YAML::Value << m_radius;
+        out << YAML::Key << "Radius" << YAML::Value << m_radius;
     }
     YAML::Node circle::encode() const
     {
         YAML::Node node = shape2D::encode();
-        node["radius"] = m_radius;
+        node["Radius"] = m_radius;
         return node;
     }
     bool circle::decode(const YAML::Node &node)
     {
         if (!shape2D::decode(node) || node.size() != 3)
             return false;
-        m_radius = node["radius"].as<float>();
+        m_radius = node["Radius"].as<float>();
         return true;
     }
 #endif
