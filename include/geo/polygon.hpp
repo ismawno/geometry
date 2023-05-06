@@ -40,9 +40,7 @@ namespace geo
         const glm::vec2 &operator[](std::size_t index) const;
 
 #ifdef HAS_YAML_CPP
-        void write(YAML::Emitter &out) const override;
-        YAML::Node encode() const override;
-        bool decode(const YAML::Node &node) override;
+
 #endif
 
         static std::vector<glm::vec2> box(float size);
@@ -61,6 +59,13 @@ namespace geo
     private:
         std::vector<glm::vec2> m_vertices;
         float m_area = 0.f, m_inertia = 0.f;
+
+#ifdef HAS_YAML_CPP
+        void write(YAML::Emitter &out) const override;
+        YAML::Node encode() const override;
+        bool decode(const YAML::Node &node) override;
+        friend struct YAML::convert<polygon>;
+#endif
     };
 
     polygon operator-(const polygon &poly);

@@ -30,15 +30,17 @@ namespace geo
         void rotation(float angle);
         float rotation() const;
 
+    protected:
+        glm::vec2 m_centroid;
+        float m_angle = 0.f;
+
 #ifdef HAS_YAML_CPP
         virtual void write(YAML::Emitter &out) const;
         virtual YAML::Node encode() const;
         virtual bool decode(const YAML::Node &node);
+        friend YAML::Emitter &operator<<(YAML::Emitter &, const shape2D &);
+        friend struct YAML::convert<shape2D>;
 #endif
-
-    protected:
-        glm::vec2 m_centroid;
-        float m_angle = 0.f;
     };
 
 #ifdef HAS_YAML_CPP
