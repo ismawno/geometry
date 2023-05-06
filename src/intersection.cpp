@@ -66,7 +66,7 @@ namespace geo
     {
         PERF_FUNCTION()
         DBG_LOG_IF(!polygon(simplex).contains_origin(), "Simplex passed to EPA algorithm does not contain the origin!\nx1: %f, y1: %f\nx2: %f, y2: %f\nx3: %f, y3: %f\n", simplex[0].x, simplex[0].y, simplex[1].x, simplex[1].y, simplex[2].x, simplex[2].y)
-        float min_dist = std::numeric_limits<float>::max();
+        float min_dist = FLT_MAX;
         mtv = {0.f, 0.f};
         for (;;)
         {
@@ -101,7 +101,7 @@ namespace geo
             if (diff <= EPA_EPSILON)
                 break;
             simplex.insert(simplex.begin() + (long)min_index, support);
-            min_dist = std::numeric_limits<float>::max();
+            min_dist = FLT_MAX;
         }
 
         mtv *= min_dist;

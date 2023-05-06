@@ -18,8 +18,8 @@ namespace geo
 
     void aabb2D::bound(const std::vector<glm::vec2> &vertices)
     {
-        m_min = glm::vec2(std::numeric_limits<float>::max());
-        m_max = -glm::vec2(std::numeric_limits<float>::max());
+        m_min = glm::vec2(FLT_MAX);
+        m_max = -glm::vec2(FLT_MAX);
         for (const glm::vec2 &v : vertices)
         {
             if (m_min.x > v.x)

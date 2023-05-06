@@ -159,7 +159,7 @@ namespace geo
 
     glm::vec2 polygon::closest_direction_from(const glm::vec2 &p) const
     {
-        float min_dist = std::numeric_limits<float>::max();
+        float min_dist = FLT_MAX;
         glm::vec2 closest(0.f);
         for (std::size_t i = 0; i < m_vertices.size(); i++)
         {
