@@ -61,14 +61,6 @@ namespace geo
     private:
         std::vector<glm::vec2> m_vertices;
         float m_area = 0.f, m_inertia = 0.f;
-
-        static glm::vec2 towards_segment_from(const glm::vec2 &p1,
-                                              const glm::vec2 &p2,
-                                              const glm::vec2 &p);
-        static bool line_intersects_edge(const glm::vec2 &l1,
-                                         const glm::vec2 &l2,
-                                         const glm::vec2 &v1,
-                                         const glm::vec2 &v2);
     };
 
     polygon operator-(const polygon &poly);

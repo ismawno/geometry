@@ -133,6 +133,19 @@ namespace geo
         return true;
     }
 
+    static bool line_intersects_edge(const glm::vec2 &l1,
+                                     const glm::vec2 &l2,
+                                     const glm::vec2 &v1,
+                                     const glm::vec2 &v2)
+    {
+        const float a = l2.y - l1.y, b = l1.x - l2.x;
+        const float c = l2.x * l1.y - l1.x * l2.y;
+
+        const float d1 = a * v1.x + b * v1.y + c;
+        const float d2 = a * v2.x + b * v2.y + c;
+        return !((d1 >= 0.f && d2 >= 0.f) || (d1 <= 0.f && d2 <= 0.f));
+    }
+
     bool polygon::contains_point(const glm::vec2 &p) const
     {
         DBG_LOG_IF(!is_convex(), "Checking if a point is contained in a non convex polygon yields undefined behaviour.\n")
@@ -148,9 +161,9 @@ namespace geo
     bool polygon::contains_origin() const { return contains_point(glm::vec2(0.f)); }
 
     aabb2D polygon::bounding_box() const { return aabb2D(m_vertices); }
-    glm::vec2 polygon::towards_segment_from(const glm::vec2 &p1,
-                                            const glm::vec2 &p2,
-                                            const glm::vec2 &p)
+    static glm::vec2 towards_segment_from(const glm::vec2 &p1,
+                                          const glm::vec2 &p2,
+                                          const glm::vec2 &p)
     {
         const float t = std::clamp(glm::dot(p - p1, p2 - p1) / glm::distance2(p1, p2), 0.f, 1.f);
         const glm::vec2 proj = p1 + t * (p2 - p1);
@@ -172,19 +185,6 @@ namespace geo
             }
         }
         return closest;
-    }
-
-    bool polygon::line_intersects_edge(const glm::vec2 &l1,
-                                       const glm::vec2 &l2,
-                                       const glm::vec2 &v1,
-                                       const glm::vec2 &v2)
-    {
-        const float a = l2.y - l1.y, b = l1.x - l2.x;
-        const float c = l2.x * l1.y - l1.x * l2.y;
-
-        const float d1 = a * v1.x + b * v1.y + c;
-        const float d2 = a * v2.x + b * v2.y + c;
-        return !((d1 >= 0.f && d2 >= 0.f) || (d1 <= 0.f && d2 <= 0.f));
     }
 
     void polygon::sort_vertices()
