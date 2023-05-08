@@ -22,13 +22,13 @@ namespace geo
     polygon::polygon(const glm::vec2 &pos,
                      const std::vector<glm::vec2> &vertices) : polygon(vertices)
     {
-        this->pos(pos);
+        this->centroid(pos);
     }
 
     polygon::polygon(const glm::vec2 &pos, const float angle,
                      const std::vector<glm::vec2> &vertices) : polygon(vertices)
     {
-        this->pos(pos);
+        this->centroid(pos);
         rotate(angle);
     }
 

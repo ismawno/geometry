@@ -7,7 +7,7 @@ namespace geo
                                                                      m_angle(angle) {}
 
     void shape2D::translate(const glm::vec2 &dpos) { m_centroid += dpos; }
-    void shape2D::pos(const glm::vec2 &pos) { translate(pos - m_centroid); }
+    void shape2D::centroid(const glm::vec2 &pos) { translate(pos - m_centroid); }
 
     const glm::vec2 &shape2D::centroid() const { return m_centroid; }
 
@@ -33,7 +33,7 @@ namespace geo
         if (!node.IsMap() || node.size() < 2)
             return false;
 
-        pos(node["Centroid"].as<glm::vec2>());
+        centroid(node["Centroid"].as<glm::vec2>());
         rotation(node["Angle"].as<float>()); // Should call rotation
         return true;
     }

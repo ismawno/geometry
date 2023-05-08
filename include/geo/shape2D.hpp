@@ -13,7 +13,6 @@ namespace geo
                 float angle = 0.f);
 
         virtual void translate(const glm::vec2 &dpos);
-        void pos(const glm::vec2 &pos);
 
         virtual glm::vec2 support_point(const glm::vec2 &direction) const = 0;
         virtual bool contains_point(const glm::vec2 &p) const = 0;
@@ -23,6 +22,7 @@ namespace geo
         virtual glm::vec2 closest_direction_from(const glm::vec2 &p) const = 0;
 
         const glm::vec2 &centroid() const;
+        void centroid(const glm::vec2 &pos);
         virtual float area() const = 0;
         virtual float inertia() const = 0;
 
