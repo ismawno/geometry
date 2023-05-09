@@ -6,7 +6,6 @@
 
 namespace geo
 {
-    aabb2D::aabb2D(const std::vector<glm::vec2> &vertices) { bound(vertices); }
     aabb2D::aabb2D(const polygon &poly) { bound(poly); }
     aabb2D::aabb2D(const circle &c) { bound(c); }
 
