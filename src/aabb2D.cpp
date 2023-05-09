@@ -16,12 +16,13 @@ namespace geo
         DBG_ASSERT(min.x <= max.x && min.y <= max.y, "min vector must be lower than max vector!")
     }
 
-    void aabb2D::bound(const std::vector<glm::vec2> &vertices)
+    void aabb2D::bound(const polygon &poly)
     {
         m_min = glm::vec2(FLT_MAX);
         m_max = -glm::vec2(FLT_MAX);
-        for (const glm::vec2 &v : vertices)
+        for (std::size_t i = 0; i < poly.size(); i++)
         {
+            const glm::vec2 v = poly.global(i);
             if (m_min.x > v.x)
                 m_min.x = v.x;
             if (m_min.y > v.y)
@@ -32,7 +33,6 @@ namespace geo
                 m_max.y = v.y;
         }
     }
-    void aabb2D::bound(const polygon &poly) { bound(poly.vertices()); }
     void aabb2D::bound(const circle &c)
     {
         m_min = c.centroid() - glm::vec2(c.radius());

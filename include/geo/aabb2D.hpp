@@ -20,7 +20,6 @@ namespace geo
         aabb2D(const glm::vec2 &point);
         aabb2D(const glm::vec2 &min, const glm::vec2 &max);
 
-        void bound(const std::vector<glm::vec2> &vertices);
         void bound(const polygon &poly);
         void bound(const circle &c);
 

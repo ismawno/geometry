@@ -22,7 +22,6 @@ namespace geo
     }
 
     bool circle::contains_point(const glm::vec2 &p) const { return glm::length2(p - m_centroid) < m_radius * m_radius; }
-    bool circle::contains_origin() const { return contains_point(glm::vec2(0.f)); }
 
     float circle::area() const { return (float)M_PI * m_radius * m_radius; }
     float circle::inertia() const { return 0.5f * m_radius * m_radius; }

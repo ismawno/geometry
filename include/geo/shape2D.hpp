@@ -16,7 +16,7 @@ namespace geo
 
         virtual glm::vec2 support_point(const glm::vec2 &direction) const = 0;
         virtual bool contains_point(const glm::vec2 &p) const = 0;
-        virtual bool contains_origin() const = 0;
+        bool contains_origin() const;
 
         virtual aabb2D bounding_box() const = 0;
         virtual glm::vec2 closest_direction_from(const glm::vec2 &p) const = 0;

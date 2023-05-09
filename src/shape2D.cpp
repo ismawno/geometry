@@ -7,7 +7,8 @@ namespace geo
                                                                      m_angle(angle) {}
 
     void shape2D::translate(const glm::vec2 &dpos) { m_centroid += dpos; }
-    void shape2D::centroid(const glm::vec2 &pos) { translate(pos - m_centroid); }
+    void shape2D::centroid(const glm::vec2 &centroid) { translate(centroid - m_centroid); }
+    bool shape2D::contains_origin() const { return contains_point(glm::vec2(0.f)); }
 
     const glm::vec2 &shape2D::centroid() const { return m_centroid; }
 

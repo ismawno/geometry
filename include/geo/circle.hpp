@@ -14,7 +14,6 @@ namespace geo
 
         glm::vec2 support_point(const glm::vec2 &direction) const override;
         bool contains_point(const glm::vec2 &p) const override;
-        bool contains_origin() const override;
 
         float area() const override;
         float inertia() const override;
