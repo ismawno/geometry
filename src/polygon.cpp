@@ -81,7 +81,11 @@ namespace geo
         return std::abs(inertia) / poly.area();
     }
 
-    polygon::polygon(const std::vector<glm::vec2> &vertices) : polygon({0.f, 0.f}, 0.f, vertices) {}
+    polygon::polygon(const std::vector<glm::vec2> &vertices) : m_local_vertices(vertices)
+    {
+        m_centroid = initialize_polygon();
+        m_angle = 0.f;
+    }
 
     polygon::polygon(const glm::vec2 &centroid,
                      const std::vector<glm::vec2> &vertices) : polygon(centroid, 0.f, vertices) {}
@@ -90,13 +94,20 @@ namespace geo
                      const std::vector<glm::vec2> &vertices) : shape2D(centroid, angle),
                                                                m_local_vertices(vertices)
     {
+        initialize_polygon();
+    }
+
+    glm::vec2 polygon::initialize_polygon()
+    {
         DBG_ASSERT(m_local_vertices.size() >= 3, "Cannot make polygon with less than 3 vertices - vertices: %zu\n", m_local_vertices.size())
         sort_vertices();
         const glm::vec2 current_centroid = ::geo::center_of_mass(*this);
         for (glm::vec2 &v : m_local_vertices)
             v -= current_centroid;
+
         m_area = ::geo::area(*this);
         m_inertia = ::geo::inertia(*this);
+        return current_centroid;
     }
 
     glm::vec2 polygon::support_point(const glm::vec2 &direction) const

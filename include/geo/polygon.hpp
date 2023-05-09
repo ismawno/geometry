@@ -55,6 +55,7 @@ namespace geo
     private:
         std::vector<glm::vec2> m_local_vertices;
         float m_area = 0.f, m_inertia = 0.f;
+        glm::vec2 initialize_polygon();
 
 #ifdef HAS_YAML_CPP
         void write(YAML::Emitter &out) const override;
