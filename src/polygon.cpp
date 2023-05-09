@@ -216,12 +216,6 @@ namespace geo
     }
     glm::vec2 polygon::global(const glm::vec2 &p) const { return m_centroid + glm::rotate(p, m_angle); }
 
-    glm::vec2 polygon::translated(std::size_t index) const { return m_centroid + m_local_vertices[index % m_local_vertices.size()]; }
-    glm::vec2 polygon::translated(const glm::vec2 &p) const { return m_centroid + p; }
-
-    glm::vec2 polygon::rotated(std::size_t index) const { return glm::rotate(m_local_vertices[index % m_local_vertices.size()], m_angle); }
-    glm::vec2 polygon::rotated(const glm::vec2 &p) const { return glm::rotate(p, m_angle); }
-
     std::size_t polygon::size() const { return m_local_vertices.size(); }
 
     float polygon::area() const { return m_area; }

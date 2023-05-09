@@ -35,12 +35,6 @@ namespace geo
         glm::vec2 global(std::size_t index) const;
         glm::vec2 global(const glm::vec2 &p) const;
 
-        glm::vec2 translated(std::size_t index) const;
-        glm::vec2 translated(const glm::vec2 &p) const;
-
-        glm::vec2 rotated(std::size_t index) const;
-        glm::vec2 rotated(const glm::vec2 &p) const;
-
         std::size_t size() const;
         float area() const override;
         float inertia() const override;
