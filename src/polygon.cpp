@@ -19,11 +19,11 @@ namespace geo
 
     static glm::vec2 center_of_mass(const polygon &poly)
     {
-        const glm::vec2 &p1 = poly.local(0); // It is actually not local yet
+        const glm::vec2 &p1 = poly.locals(0); // It is actually not local yet
         glm::vec2 num(0.f), den(0.f);
         for (std::size_t i = 1; i < poly.size() - 1; i++)
         {
-            const glm::vec2 e1 = poly.local(i) - p1, e2 = poly.local(i + 1) - p1;
+            const glm::vec2 e1 = poly.locals(i) - p1, e2 = poly.locals(i + 1) - p1;
             const float crs = std::abs(cross(e1, e2));
             num += (e1 + e2) * crs;
             den += crs;
@@ -34,10 +34,10 @@ namespace geo
     static float area(const polygon &poly)
     {
         float area = 0.f;
-        const glm::vec2 &p1 = poly.local(0);
+        const glm::vec2 &p1 = poly.locals(0);
         for (std::size_t i = 1; i < poly.size() - 1; i++)
         {
-            const glm::vec2 e1 = poly.local(i) - p1, e2 = poly.local(i + 1) - p1;
+            const glm::vec2 e1 = poly.locals(i) - p1, e2 = poly.locals(i + 1) - p1;
             area += std::abs(cross(e1, e2));
         }
         return area * 0.5f;
@@ -45,11 +45,11 @@ namespace geo
 
     static float inertia(const polygon &poly)
     {
-        const glm::vec2 &p1 = poly.local(0);
+        const glm::vec2 &p1 = poly.locals(0);
         float inertia = 0.f;
         for (std::size_t i = 1; i < poly.size() - 1; i++)
         {
-            const glm::vec2 &p2 = poly.local(i), &p3 = poly.local(i + 1);
+            const glm::vec2 &p2 = poly.locals(i), &p3 = poly.locals(i + 1);
             const glm::vec2 e1 = p1 - p2, e2 = p3 - p2;
 
             const float w = glm::length(e1),
@@ -85,6 +85,7 @@ namespace geo
     {
         m_centroid = initialize_polygon();
         m_angle = 0.f;
+        update();
     }
 
     polygon::polygon(const glm::vec2 &centroid,
@@ -95,6 +96,7 @@ namespace geo
                                                                m_local_vertices(vertices)
     {
         initialize_polygon();
+        update();
     }
 
     glm::vec2 polygon::initialize_polygon()
@@ -112,12 +114,11 @@ namespace geo
 
     glm::vec2 polygon::support_point(const glm::vec2 &direction) const
     {
-        const glm::vec2 rot_dir = glm::rotate(direction, -m_angle);
-        const auto cmp = [&rot_dir](const glm::vec2 &v1, const glm::vec2 &v2)
-        { return glm::dot(rot_dir, v1) < glm::dot(rot_dir, v2); };
+        const auto cmp = [&direction, this](const glm::vec2 &v1, const glm::vec2 &v2)
+        { return glm::dot(direction, v1 - m_centroid) < glm::dot(direction, v2 - m_centroid); };
 
-        const auto &support = std::max_element(m_local_vertices.begin(), m_local_vertices.end(), cmp);
-        return global(*support);
+        const auto &support = std::max_element(m_global_vertices.begin(), m_global_vertices.end(), cmp);
+        return *support;
     }
 
     bool polygon::is_convex() const
@@ -125,8 +126,8 @@ namespace geo
         for (std::size_t i = 0; i < m_local_vertices.size(); i++)
         {
             const glm::vec2 &prev = m_local_vertices[i],
-                            &mid = local(i + 1),
-                            &next = local(i + 2);
+                            &mid = locals(i + 1),
+                            &next = locals(i + 2);
             if (cross(mid - prev, next - mid) < 0.f)
                 return false;
         }
@@ -149,17 +150,15 @@ namespace geo
     bool polygon::contains_point(const glm::vec2 &p) const
     {
         DBG_LOG_IF(!is_convex(), "Checking if a point is contained in a non convex polygon yields undefined behaviour.\n")
-        const glm::vec2 local_p = local(p);
-        for (std::size_t i = 0; i < m_local_vertices.size(); i++)
+        for (std::size_t i = 0; i < m_global_vertices.size(); i++)
         {
-            const glm::vec2 &v1 = m_local_vertices[i], &v2 = local(i + 1);
-            if (line_intersects_edge(v2, v1, local_p, m_centroid) && line_intersects_edge(local_p, m_centroid, v2, v1))
+            const glm::vec2 &v1 = m_global_vertices[i], &v2 = globals(i + 1);
+            if (line_intersects_edge(v2, v1, p, m_centroid) && line_intersects_edge(p, m_centroid, v2, v1))
                 return false;
         }
         return true;
     }
 
-    aabb2D polygon::bounding_box() const { return aabb2D(*this); }
     static glm::vec2 towards_segment_from(const glm::vec2 &p1,
                                           const glm::vec2 &p2,
                                           const glm::vec2 &p)
@@ -173,10 +172,9 @@ namespace geo
     {
         float min_dist = FLT_MAX;
         glm::vec2 closest(0.f);
-        const glm::vec2 local_p = local(p);
-        for (std::size_t i = 0; i < m_local_vertices.size(); i++)
+        for (std::size_t i = 0; i < m_global_vertices.size(); i++)
         {
-            const glm::vec2 towards = towards_segment_from(m_local_vertices[i], local(i + 1), local_p);
+            const glm::vec2 towards = towards_segment_from(m_global_vertices[i], globals(i + 1), p);
             const float dist = glm::length2(towards);
             if (min_dist > dist)
             {
@@ -209,29 +207,27 @@ namespace geo
         std::sort(m_local_vertices.begin(), m_local_vertices.end(), cmp);
     }
 
-    const std::vector<glm::vec2> &polygon::locals() const { return m_local_vertices; }
-    const glm::vec2 &polygon::local(const std::size_t index) const { return m_local_vertices[index % m_local_vertices.size()]; }
-    glm::vec2 polygon::local(const glm::vec2 &p) const { return glm::rotate(p - m_centroid, -m_angle); }
+    void polygon::update()
+    {
+        const float cos = cosf(m_angle),
+                    sin = sinf(m_angle);
+        const glm::mat2 rot_matrix(cos, sin, -sin, cos);
 
-    std::vector<glm::vec2> polygon::globals() const
-    {
-        std::vector<glm::vec2> vertices;
-        vertices.reserve(m_local_vertices.size());
-        for (const glm::vec2 &v : m_local_vertices)
-            vertices.push_back(global(v));
-        return vertices;
+        for (std::size_t i = 0; i < m_local_vertices.size(); i++)
+            m_global_vertices[i] = m_centroid + rot_matrix * m_local_vertices[i];
+        m_aabb.bound(*this);
     }
-    glm::vec2 polygon::global(const std::size_t index) const
-    {
-        return m_centroid + glm::rotate(m_local_vertices[index % m_local_vertices.size()], m_angle);
-    }
-    glm::vec2 polygon::global(const glm::vec2 &p) const { return m_centroid + glm::rotate(p, m_angle); }
+
+    const std::vector<glm::vec2> &polygon::locals() const { return m_local_vertices; }
+    const std::vector<glm::vec2> &polygon::globals() const { return m_global_vertices; }
+
+    const glm::vec2 &polygon::locals(const std::size_t index) const { return m_local_vertices[index % m_local_vertices.size()]; }
+    const glm::vec2 &polygon::globals(const std::size_t index) const { return m_global_vertices[index % m_global_vertices.size()]; }
 
     std::size_t polygon::size() const { return m_local_vertices.size(); }
 
     float polygon::area() const { return m_area; }
     float polygon::inertia() const { return m_inertia; }
-    glm::vec2 polygon::operator[](const std::size_t index) const { return global(index); }
 
     std::vector<glm::vec2> polygon::box(const float size)
     {
@@ -282,9 +278,9 @@ namespace geo
         while (i < poly1.size() || j < poly2.size())
         {
             const std::size_t index1 = i + m1, index2 = j + m2;
-            sum.push_back(poly1[index1] + poly2[index2]);
-            const float crs = cross(poly1[index1 + 1] - poly1[index1],
-                                    poly2[index2 + 1] - poly2[index2]);
+            sum.push_back(poly1.globals(index1) + poly2.globals(index2));
+            const float crs = cross(poly1.globals(index1 + 1) - poly1.globals(index1),
+                                    poly2.globals(index2 + 1) - poly2.globals(index2));
             if (crs >= 0.f)
                 i++;
             if (crs <= 0.f)

@@ -19,9 +19,8 @@ namespace geo
     {
         m_min = glm::vec2(FLT_MAX);
         m_max = -glm::vec2(FLT_MAX);
-        for (std::size_t i = 0; i < poly.size(); i++)
+        for (const glm::vec2 &v : poly.globals())
         {
-            const glm::vec2 v = poly.global(i);
             if (m_min.x > v.x)
                 m_min.x = v.x;
             if (m_min.y > v.y)

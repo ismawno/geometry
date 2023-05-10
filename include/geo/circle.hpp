@@ -18,7 +18,6 @@ namespace geo
         float area() const override;
         float inertia() const override;
 
-        aabb2D bounding_box() const override;
         glm::vec2 closest_direction_from(const glm::vec2 &p) const override;
 
         float radius() const;
@@ -26,6 +25,7 @@ namespace geo
 
     private:
         float m_radius;
+        void update() override;
 
 #ifdef HAS_YAML_CPP
         void write(YAML::Emitter &out) const override;

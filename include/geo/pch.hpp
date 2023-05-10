@@ -9,6 +9,7 @@
 #include <glm/geometric.hpp>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/rotate_vector.hpp>
+#include <glm/mat2x2.hpp>
 #include <algorithm>
 #include <cstdint>
 #include <cmath>

@@ -22,28 +22,19 @@ namespace geo
         bool is_convex() const;
         bool contains_point(const glm::vec2 &p) const override;
 
-        aabb2D bounding_box() const override;
         glm::vec2 closest_direction_from(const glm::vec2 &p) const override;
 
         void sort_vertices();
 
-        const std::vector<glm::vec2> &locals() const;
-        const glm::vec2 &local(std::size_t index) const;
-        glm::vec2 local(const glm::vec2 &p) const;
+        const glm::vec2 &locals(std::size_t index) const;
+        const glm::vec2 &globals(std::size_t index) const;
 
-        std::vector<glm::vec2> globals() const;
-        glm::vec2 global(std::size_t index) const;
-        glm::vec2 global(const glm::vec2 &p) const;
+        const std::vector<glm::vec2> &locals() const;
+        const std::vector<glm::vec2> &globals() const;
 
         std::size_t size() const;
         float area() const override;
         float inertia() const override;
-
-        glm::vec2 operator[](std::size_t index) const;
-
-#ifdef HAS_YAML_CPP
-
-#endif
 
         static std::vector<glm::vec2> box(float size);
         static std::vector<glm::vec2> rect(float width, float height);
@@ -53,8 +44,10 @@ namespace geo
         static polygon minkowski_difference(const polygon &poly1, const polygon &poly2);
 
     private:
-        std::vector<glm::vec2> m_local_vertices;
+        std::vector<glm::vec2> m_local_vertices, m_global_vertices;
         float m_area = 0.f, m_inertia = 0.f;
+
+        void update() override;
         glm::vec2 initialize_polygon();
 
 #ifdef HAS_YAML_CPP
