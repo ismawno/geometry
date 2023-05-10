@@ -81,7 +81,8 @@ namespace geo
         return std::abs(inertia) / poly.area();
     }
 
-    polygon::polygon(const std::vector<glm::vec2> &vertices) : m_local_vertices(vertices)
+    polygon::polygon(const std::vector<glm::vec2> &vertices) : m_local_vertices(vertices),
+                                                               m_global_vertices(vertices.size())
     {
         m_centroid = initialize_polygon();
         m_angle = 0.f;
@@ -93,7 +94,8 @@ namespace geo
 
     polygon::polygon(const glm::vec2 &centroid, const float angle,
                      const std::vector<glm::vec2> &vertices) : shape2D(centroid, angle),
-                                                               m_local_vertices(vertices)
+                                                               m_local_vertices(vertices),
+                                                               m_global_vertices(vertices.size())
     {
         initialize_polygon();
         update();
