@@ -28,7 +28,7 @@ files {
 
 includedirs {
    "include",
-   "%{wks.location}/debug-tools/include",
+   "%{wks.location}/debug-log-tools/include",
    "%{wks.location}/profile-tools/include",
    "%{wks.location}/vendor/yaml-cpp/include",
    "%{wks.location}/vendor/glm",
