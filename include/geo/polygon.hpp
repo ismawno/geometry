@@ -19,7 +19,7 @@ namespace geo
 
         glm::vec2 support_point(const glm::vec2 &direction) const override;
 
-        bool is_convex() const;
+        bool is_convex() const override;
         bool contains_point(const glm::vec2 &p) const override;
 
         glm::vec2 closest_direction_from(const glm::vec2 &p) const override;

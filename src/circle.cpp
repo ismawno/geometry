@@ -1,5 +1,6 @@
 #include "geo/pch.hpp"
 #include "geo/circle.hpp"
+#include "dbg/log.hpp"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846f
@@ -9,12 +10,18 @@ namespace geo
 {
     circle::circle(const float radius) : m_radius(radius) {}
     circle::circle(const glm::vec2 &pos, const float radius) : shape2D(pos),
-                                                               m_radius(radius) {}
+                                                               m_radius(radius)
+    {
+        DBG_ASSERT_WARN(radius >= 0.f, "Creating circle with negative radius: {0}", radius);
+    }
 
     circle::circle(const glm::vec2 &pos,
                    const float radius,
                    const float angle) : shape2D(pos),
-                                        m_radius(radius) { rotate(angle); }
+                                        m_radius(radius)
+    {
+        rotate(angle);
+    }
 
     glm::vec2 circle::support_point(const glm::vec2 &direction) const
     {
@@ -36,6 +43,7 @@ namespace geo
 
     float circle::radius() const { return m_radius; }
     void circle::radius(float radius) { m_radius = radius; }
+    bool circle::is_convex() const { return true; }
 
 #ifdef HAS_YAML_CPP
     void circle::write(YAML::Emitter &out) const

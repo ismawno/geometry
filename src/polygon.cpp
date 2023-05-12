@@ -103,7 +103,7 @@ namespace geo
 
     glm::vec2 polygon::initialize_polygon()
     {
-        DBG_ASSERT(m_local_vertices.size() >= 3, "Cannot make polygon with less than 3 vertices - vertices: %zu\n", m_local_vertices.size())
+        DBG_ASSERT_ERROR(m_local_vertices.size() >= 3, "Cannot make polygon with less than 3 vertices - vertices: {0}", m_local_vertices.size())
         sort_vertices();
         const glm::vec2 current_centroid = ::geo::center_of_mass(*this);
         for (glm::vec2 &v : m_local_vertices)
@@ -151,7 +151,7 @@ namespace geo
 
     bool polygon::contains_point(const glm::vec2 &p) const
     {
-        DBG_LOG_IF(!is_convex(), "Checking if a point is contained in a non convex polygon yields undefined behaviour.\n")
+        DBG_ASSERT_WARN(is_convex(), "Checking if a point is contained in a non convex polygon yields undefined behaviour.")
         for (std::size_t i = 0; i < m_global_vertices.size(); i++)
         {
             const glm::vec2 &v1 = m_global_vertices[i], &v2 = globals(i + 1);
@@ -189,6 +189,7 @@ namespace geo
 
     void polygon::sort_vertices()
     {
+        DBG_ASSERT_WARN(is_convex(), "Sorting the vertices of a non convex polygon yields undefined behaviour.")
         const glm::vec2 center = center_of_vertices(m_local_vertices),
                         ref = m_local_vertices[0] - center;
         const auto cmp = [&center, &ref](const glm::vec2 &v1, const glm::vec2 &v2)

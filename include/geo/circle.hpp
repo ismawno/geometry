@@ -23,6 +23,8 @@ namespace geo
         float radius() const;
         void radius(float radius);
 
+        bool is_convex() const override;
+
     private:
         float m_radius;
         void update() override;

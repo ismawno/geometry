@@ -44,6 +44,7 @@ namespace geo
     bool gjk(const shape2D &sh1, const shape2D &sh2, std::vector<glm::vec2> &simplex)
     {
         PERF_FUNCTION()
+        DBG_ASSERT_WARN(!dynamic_cast<const circle *>(&sh1) || !dynamic_cast<const circle *>(&sh1), "Using gjk algorithm to check if two circles are intersecting, which is overkill")
         glm::vec2 dir = sh2.centroid() - sh1.centroid();
         const glm::vec2 supp = sh1.support_point(dir) - sh2.support_point(-dir);
         simplex.push_back(supp);
@@ -65,7 +66,7 @@ namespace geo
     bool epa(const shape2D &sh1, const shape2D &sh2, std::vector<glm::vec2> &simplex, glm::vec2 &mtv)
     {
         PERF_FUNCTION()
-        DBG_LOG_IF(!polygon(simplex).contains_origin(), "Simplex passed to EPA algorithm does not contain the origin!\nx1: %f, y1: %f\nx2: %f, y2: %f\nx3: %f, y3: %f\n", simplex[0].x, simplex[0].y, simplex[1].x, simplex[1].y, simplex[2].x, simplex[2].y)
+        DBG_ASSERT_WARN(polygon(simplex).contains_origin(), "Simplex passed to EPA algorithm does not contain the origin!\nx1: {0}, y1: {1}\nx2: {2}, y2: {3}\nx3: {4}, y3: {5}", simplex[0].x, simplex[0].y, simplex[1].x, simplex[1].y, simplex[2].x, simplex[2].y)
         float min_dist = FLT_MAX;
         mtv = {0.f, 0.f};
         for (;;)

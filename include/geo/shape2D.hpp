@@ -28,6 +28,7 @@ namespace geo
 
         virtual float area() const = 0;
         virtual float inertia() const = 0;
+        virtual bool is_convex() const = 0;
 
         void rotate(float dangle);
         void rotation(float angle);

@@ -12,7 +12,7 @@ namespace geo
     aabb2D::aabb2D(const glm::vec2 &point) : aabb2D(point, point) {}
     aabb2D::aabb2D(const glm::vec2 &min, const glm::vec2 &max) : m_min(min), m_max(max)
     {
-        DBG_ASSERT(min.x <= max.x && min.y <= max.y, "min vector must be lower than max vector!")
+        DBG_ASSERT_WARN(min.x <= max.x && min.y <= max.y, "Vector min: {0}, {1} is lower than vector max {0}, {1} in aabb", min.x, min.y, max.x, max.y)
     }
 
     void aabb2D::bound(const polygon &poly)
