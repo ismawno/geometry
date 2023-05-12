@@ -1,6 +1,6 @@
 #include "geo/pch.hpp"
 #include "geo/polygon.hpp"
-#include "debug/debug.hpp"
+#include "dbg/log.hpp"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846f
