@@ -189,7 +189,6 @@ namespace geo
 
     void polygon::sort_vertices()
     {
-        DBG_ASSERT_WARN(is_convex(), "Sorting the vertices of a non convex polygon yields undefined behaviour.")
         const glm::vec2 center = center_of_vertices(m_local_vertices),
                         ref = m_local_vertices[0] - center;
         const auto cmp = [&center, &ref](const glm::vec2 &v1, const glm::vec2 &v2)
