@@ -32,4 +32,5 @@ includedirs {
    "%{wks.location}/profile-tools/include",
    "%{wks.location}/vendor/yaml-cpp/include",
    "%{wks.location}/vendor/glm",
+   "%{wks.location}/vendor/spdlog/include"
 }
