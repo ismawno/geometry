@@ -16,5 +16,8 @@
 #ifdef HAS_YAML_CPP
 #include <yaml-cpp/yaml.h>
 #endif
+#ifdef HAS_DEBUG_LOG_TOOLS
+#include "dbg/log.hpp"
+#endif
 
 #endif

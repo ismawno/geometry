@@ -2,7 +2,7 @@
 #include "geo/intersection.hpp"
 #include "geo/polygon.hpp"
 #include "perf/perf.hpp"
-#include "dbg/log.hpp"
+
 
 #define EPA_EPSILON 1.e-3f
 

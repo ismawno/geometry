@@ -3,7 +3,9 @@
 
 #include <glm/vec2.hpp>
 #include <vector>
+#ifdef HAS_YAML_CPP
 #include <yaml-cpp/yaml.h>
+#endif
 
 namespace geo
 {

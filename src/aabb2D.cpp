@@ -2,7 +2,7 @@
 #include "geo/aabb2D.hpp"
 #include "geo/polygon.hpp"
 #include "geo/circle.hpp"
-#include "dbg/log.hpp"
+
 
 namespace geo
 {
