@@ -22,5 +22,6 @@
 #ifdef HAS_PROFILE_TOOLS
 #include "perf/perf.hpp"
 #endif
+#include "geo/core.hpp"
 
 #endif
