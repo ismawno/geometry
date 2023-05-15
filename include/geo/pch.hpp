@@ -19,5 +19,8 @@
 #ifdef HAS_DEBUG_LOG_TOOLS
 #include "dbg/log.hpp"
 #endif
+#ifdef HAS_PROFILE_TOOLS
+#include "perf/perf.hpp"
+#endif
 
 #endif
