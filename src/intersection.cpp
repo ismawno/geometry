@@ -13,13 +13,13 @@ namespace geo
         return glm::vec2(-v3.y * crs, v3.x * crs);
     }
 
-    static void line_case(const blk_vector<glm::vec2> &simplex, glm::vec2 &dir)
+    static void line_case(const std::vector<glm::vec2> &simplex, glm::vec2 &dir)
     {
         const glm::vec2 AB = simplex[0] - simplex[1], AO = -simplex[1];
         dir = triple_cross(AB, AO, AB);
     }
 
-    static bool triangle_case(blk_vector<glm::vec2> &simplex, glm::vec2 &dir)
+    static bool triangle_case(std::vector<glm::vec2> &simplex, glm::vec2 &dir)
     {
         const glm::vec2 AB = simplex[1] - simplex[2], AC = simplex[0] - simplex[2], AO = -simplex[2];
         const glm::vec2 ABperp = triple_cross(AC, AB, AB);
@@ -39,7 +39,7 @@ namespace geo
         return true;
     }
 
-    bool gjk(const shape2D &sh1, const shape2D &sh2, blk_vector<glm::vec2> &simplex)
+    bool gjk(const shape2D &sh1, const shape2D &sh2, std::vector<glm::vec2> &simplex)
     {
         PERF_FUNCTION()
         DBG_ASSERT_WARN(!dynamic_cast<const circle *>(&sh1) || !dynamic_cast<const circle *>(&sh1), "Using gjk algorithm to check if two circles are intersecting, which is overkill")
@@ -61,10 +61,10 @@ namespace geo
         }
     }
 
-    bool epa(const shape2D &sh1, const shape2D &sh2, blk_vector<glm::vec2> &simplex, glm::vec2 &mtv)
+    bool epa(const shape2D &sh1, const shape2D &sh2, std::vector<glm::vec2> &simplex, glm::vec2 &mtv)
     {
         PERF_FUNCTION()
-        DBG_ASSERT_WARN(polygon(simplex).contains_origin(), "Simplex passed to EPA algorithm does not contain the origin!\nx1: {0}, y1: {1}\nx2: {2}, y2: {3}\nx3: {4}, y3: {5}", simplex[0].x, simplex[0].y, simplex[1].x, simplex[1].y, simplex[2].x, simplex[2].y)
+        // DBG_ASSERT_WARN(polygon(simplex).contains_origin(), "Simplex passed to EPA algorithm does not contain the origin!\nx1: {0}, y1: {1}\nx2: {2}, y2: {3}\nx3: {4}, y3: {5}", simplex[0].x, simplex[0].y, simplex[1].x, simplex[1].y, simplex[2].x, simplex[2].y)
         float min_dist = FLT_MAX;
         mtv = {0.f, 0.f};
         for (;;)
