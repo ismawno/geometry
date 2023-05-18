@@ -1,7 +1,6 @@
 #include "geo/pch.hpp"
 #include "geo/polygon.hpp"
 
-
 #ifndef M_PI
 #define M_PI 3.14159265358979323846f
 #endif
@@ -9,7 +8,7 @@
 namespace geo
 {
     static float cross(const glm::vec2 &v1, const glm::vec2 &v2) { return v1.x * v2.y - v1.y * v2.x; }
-    static glm::vec2 center_of_vertices(const std::vector<glm::vec2> &vertices)
+    static glm::vec2 center_of_vertices(const blk_vector<glm::vec2> &vertices)
     {
         glm::vec2 center(0.f);
         for (const glm::vec2 &v : vertices)
@@ -81,8 +80,8 @@ namespace geo
         return std::abs(inertia) / poly.area();
     }
 
-    polygon::polygon(const std::vector<glm::vec2> &vertices) : m_local_vertices(vertices),
-                                                               m_global_vertices(vertices.size())
+    polygon::polygon(const blk_vector<glm::vec2> &vertices) : m_local_vertices(vertices),
+                                                              m_global_vertices(vertices.size())
     {
         m_centroid = initialize_polygon();
         m_angle = 0.f;
@@ -90,12 +89,12 @@ namespace geo
     }
 
     polygon::polygon(const glm::vec2 &centroid,
-                     const std::vector<glm::vec2> &vertices) : polygon(centroid, 0.f, vertices) {}
+                     const blk_vector<glm::vec2> &vertices) : polygon(centroid, 0.f, vertices) {}
 
     polygon::polygon(const glm::vec2 &centroid, const float angle,
-                     const std::vector<glm::vec2> &vertices) : shape2D(centroid, angle),
-                                                               m_local_vertices(vertices),
-                                                               m_global_vertices(vertices.size())
+                     const blk_vector<glm::vec2> &vertices) : shape2D(centroid, angle),
+                                                              m_local_vertices(vertices),
+                                                              m_global_vertices(vertices.size())
     {
         initialize_polygon();
         update();
@@ -220,8 +219,8 @@ namespace geo
         m_aabb.bound(*this);
     }
 
-    const std::vector<glm::vec2> &polygon::locals() const { return m_local_vertices; }
-    const std::vector<glm::vec2> &polygon::globals() const { return m_global_vertices; }
+    const blk_vector<glm::vec2> &polygon::locals() const { return m_local_vertices; }
+    const blk_vector<glm::vec2> &polygon::globals() const { return m_global_vertices; }
 
     const glm::vec2 &polygon::locals(const std::size_t index) const { return m_local_vertices[index % m_local_vertices.size()]; }
     const glm::vec2 &polygon::globals(const std::size_t index) const { return m_global_vertices[index % m_global_vertices.size()]; }
@@ -231,7 +230,7 @@ namespace geo
     float polygon::area() const { return m_area; }
     float polygon::inertia() const { return m_inertia; }
 
-    std::vector<glm::vec2> polygon::box(const float size)
+    blk_vector<glm::vec2> polygon::box(const float size)
     {
         return {
             {-size / 2.f, -size / 2.f},
@@ -239,7 +238,7 @@ namespace geo
             {size / 2.f, size / 2.f},
             {-size / 2.f, size / 2.f}};
     }
-    std::vector<glm::vec2> polygon::rect(const float width, const float height)
+    blk_vector<glm::vec2> polygon::rect(const float width, const float height)
     {
         return {
             {-width / 2.f, -height / 2.f},
@@ -247,9 +246,9 @@ namespace geo
             {width / 2.f, height / 2.f},
             {-width / 2.f, height / 2.f}};
     }
-    std::vector<glm::vec2> polygon::ngon(const float radius, const std::uint32_t sides)
+    blk_vector<glm::vec2> polygon::ngon(const float radius, const std::uint32_t sides)
     {
-        std::vector<glm::vec2> vertices;
+        blk_vector<glm::vec2> vertices;
         vertices.reserve(sides);
 
         const float dangle = 2.f * (float)M_PI / sides;
@@ -263,7 +262,7 @@ namespace geo
 
     polygon polygon::minkowski_sum(const polygon &poly1, const polygon &poly2)
     {
-        std::vector<glm::vec2> sum;
+        blk_vector<glm::vec2> sum;
         sum.reserve(poly1.size() + poly2.size());
 
         const auto cmp = [](const glm::vec2 &v1, const glm::vec2 &v2)
@@ -298,7 +297,7 @@ namespace geo
 
     polygon operator-(const polygon &poly)
     {
-        std::vector<glm::vec2> vertices;
+        blk_vector<glm::vec2> vertices;
         vertices.reserve(poly.size());
         for (const glm::vec2 &v : poly.locals())
             vertices.push_back(-v);
@@ -336,7 +335,7 @@ namespace geo
             return false;
         YAML::Node node_v = node["Vertices"];
 
-        std::vector<glm::vec2> vertices;
+        blk_vector<glm::vec2> vertices;
         vertices.reserve(node_v.size());
         for (std::size_t i = 0; i < node_v.size(); i++)
             vertices.push_back(node_v[i].as<glm::vec2>());
