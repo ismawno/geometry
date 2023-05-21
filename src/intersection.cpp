@@ -13,68 +13,93 @@ namespace geo
         return glm::vec2(-v3.y * crs, v3.x * crs);
     }
 
-    static void line_case(const std::vector<glm::vec2> &simplex, glm::vec2 &dir)
+    struct arr3
     {
-        const glm::vec2 AB = simplex[0] - simplex[1], AO = -simplex[1];
+        std::array<glm::vec2, 3> data;
+        std::size_t size = 0;
+
+        void push(const glm::vec2 &val)
+        {
+            data[size++] = val;
+            DBG_ASSERT_ERROR(size <= 3, "Array size exceeds 3!")
+        }
+        void erase(const std::size_t index)
+        {
+            DBG_ASSERT_ERROR(size > 0, "Cannot erase element of empty array!")
+            for (std::size_t i = index; i < size - 1; i++)
+                data[i] = data[i + 1];
+            --size;
+        }
+    };
+
+    static void line_case(const arr3 &simplex, glm::vec2 &dir)
+    {
+        const glm::vec2 AB = simplex.data[0] - simplex.data[1], AO = -simplex.data[1];
         dir = triple_cross(AB, AO, AB);
     }
 
-    static bool triangle_case(std::vector<glm::vec2> &simplex, glm::vec2 &dir)
+    static bool triangle_case(arr3 &simplex, glm::vec2 &dir)
     {
-        const glm::vec2 AB = simplex[1] - simplex[2], AC = simplex[0] - simplex[2], AO = -simplex[2];
+        const glm::vec2 AB = simplex.data[1] - simplex.data[2], AC = simplex.data[0] - simplex.data[2], AO = -simplex.data[2];
         const glm::vec2 ABperp = triple_cross(AC, AB, AB);
         if (glm::dot(ABperp, AO) >= 0.f)
         {
-            simplex.erase(simplex.begin());
+            simplex.erase(0);
             dir = ABperp;
             return false;
         }
         const glm::vec2 ACperp = triple_cross(AB, AC, AC);
         if (glm::dot(ACperp, AO) >= 0.f)
         {
-            simplex.erase(simplex.begin() + 1);
+            simplex.erase(1);
             dir = ACperp;
             return false;
         }
         return true;
     }
 
-    bool gjk(const shape2D &sh1, const shape2D &sh2, std::vector<glm::vec2> &simplex)
+    std::optional<std::array<glm::vec2, 3>> gjk(const shape2D &sh1, const shape2D &sh2)
     {
         PERF_FUNCTION()
         DBG_ASSERT_WARN(!dynamic_cast<const circle *>(&sh1) || !dynamic_cast<const circle *>(&sh1), "Using gjk algorithm to check if two circles are intersecting, which is overkill")
+
+        arr3 simplex;
         glm::vec2 dir = sh2.centroid() - sh1.centroid();
         const glm::vec2 supp = sh1.support_point(dir) - sh2.support_point(-dir);
-        simplex.push_back(supp);
+        simplex.push(supp);
         dir = -supp;
 
         for (;;)
         {
             const glm::vec2 A = sh1.support_point(dir) - sh2.support_point(-dir);
             if (glm::dot(A, dir) <= 0.f)
-                return false;
-            simplex.push_back(A);
-            if (simplex.size() == 2)
+                return {};
+            simplex.push(A);
+            if (simplex.size == 2)
                 line_case(simplex, dir);
             else if (triangle_case(simplex, dir))
-                return true;
+                return simplex.data;
         }
     }
 
-    bool epa(const shape2D &sh1, const shape2D &sh2, std::vector<glm::vec2> &simplex, glm::vec2 &mtv)
+    std::optional<glm::vec2> epa(const shape2D &sh1, const shape2D &sh2, const std::array<glm::vec2, 3> &simplex)
     {
         PERF_FUNCTION()
-        // DBG_ASSERT_WARN(polygon(simplex).contains_origin(), "Simplex passed to EPA algorithm does not contain the origin!\nx1: {0}, y1: {1}\nx2: {2}, y2: {3}\nx3: {4}, y3: {5}", simplex[0].x, simplex[0].y, simplex[1].x, simplex[1].y, simplex[2].x, simplex[2].y)
+
+        std::vector<glm::vec2> hull;
+        hull.reserve(10);
+        hull.insert(hull.end(), simplex.begin(), simplex.end());
+
         float min_dist = FLT_MAX;
-        mtv = {0.f, 0.f};
+        glm::vec2 mtv{0.f, 0.f};
         for (;;)
         {
             std::size_t min_index;
-            for (std::size_t i = 0; i < simplex.size(); i++)
+            for (std::size_t i = 0; i < hull.size(); i++)
             {
-                const std::size_t j = (i + 1) % simplex.size();
+                const std::size_t j = (i + 1) % hull.size();
 
-                const glm::vec2 &p1 = simplex[i], &p2 = simplex[j];
+                const glm::vec2 &p1 = hull[i], &p2 = hull[j];
                 const glm::vec2 edge = p2 - p1;
 
                 glm::vec2 normal = glm::normalize(glm::vec2(edge.y, -edge.x));
@@ -92,19 +117,21 @@ namespace geo
                 }
             }
             if (mtv.x == 0.f && mtv.y == 0.f)
-                return false;
+                return {};
 
             const glm::vec2 support = sh1.support_point(mtv) - sh2.support_point(-mtv);
             const float sup_dist = glm::dot(mtv, support);
             const float diff = std::abs(sup_dist - min_dist);
             if (diff <= EPA_EPSILON)
                 break;
-            simplex.insert(simplex.begin() + (long)min_index, support);
+            hull.insert(hull.begin() + (long)min_index, support);
             min_dist = FLT_MAX;
         }
 
         mtv *= min_dist;
-        return mtv.x != 0.f || mtv.y != 0.f;
+        if (mtv.x == 0.f && mtv.y == 0.f)
+            return {};
+        return mtv;
     }
 
     std::pair<glm::vec2, glm::vec2> contact_points(const shape2D &sh1,

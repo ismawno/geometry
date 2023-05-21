@@ -4,13 +4,15 @@
 #include "geo/circle.hpp"
 #include "geo/aabb2D.hpp"
 #include <glm/vec2.hpp>
-#include <vector>
+#include <array>
 #include <utility>
+#include <optional>
 
 namespace geo
 {
-    bool gjk(const shape2D &sh1, const shape2D &sh2, std::vector<glm::vec2> &simplex);
-    bool epa(const shape2D &sh1, const shape2D &sh2, std::vector<glm::vec2> &simplex, glm::vec2 &mtv);
+    std::optional<std::array<glm::vec2, 3>> gjk(const shape2D &sh1, const shape2D &sh2);
+    std::optional<glm::vec2> epa(const shape2D &sh1, const shape2D &sh2, const std::array<glm::vec2, 3> &simplex);
+
     std::pair<glm::vec2, glm::vec2> contact_points(const shape2D &sh1, const shape2D &sh2, const glm::vec2 &mtv);
     bool may_intersect(const shape2D &sh1, const shape2D &sh2);
 
