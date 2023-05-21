@@ -11,6 +11,7 @@ namespace geo
     public:
         shape2D(const glm::vec2 &centroid = glm::vec2(0.f),
                 float angle = 0.f);
+        virtual ~shape2D() = default;
 
         virtual glm::vec2 support_point(const glm::vec2 &direction) const = 0;
         virtual bool contains_point(const glm::vec2 &p) const = 0;
