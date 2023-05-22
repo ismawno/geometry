@@ -61,7 +61,7 @@ namespace geo
     std::optional<std::array<glm::vec2, 3>> gjk(const shape2D &sh1, const shape2D &sh2)
     {
         PERF_FUNCTION()
-        DBG_ASSERT_WARN(!dynamic_cast<const circle *>(&sh1) || !dynamic_cast<const circle *>(&sh1), "Using gjk algorithm to check if two circles are intersecting, which is overkill")
+        DBG_ASSERT_WARN(!dynamic_cast<const circle *>(&sh1) || !dynamic_cast<const circle *>(&sh2), "Using gjk algorithm to check if two circles are intersecting, which is overkill")
 
         arr3 simplex;
         glm::vec2 dir = sh2.centroid() - sh1.centroid();
