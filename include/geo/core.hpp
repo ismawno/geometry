@@ -43,23 +43,19 @@
 
 namespace geo
 {
-    template <typename T>
-    using stk_vector = std::vector<T, mem::stack_allocator<T>>;
+template <typename T> using stk_vector = std::vector<T, mem::stack_allocator<T>>;
 
-    template <typename T>
-    using blk_vector = std::vector<T, mem::block_allocator<T>>;
-}
+template <typename T> using blk_vector = std::vector<T, mem::block_allocator<T>>;
+} // namespace geo
 #else
 
 #include <memory>
 namespace geo
 {
-    template <typename T>
-    using stk_vector = std::vector<T>;
+template <typename T> using stk_vector = std::vector<T>;
 
-    template <typename T>
-    using blk_vector = std::vector<T>;
-}
+template <typename T> using blk_vector = std::vector<T>;
+} // namespace geo
 
 #endif
 
