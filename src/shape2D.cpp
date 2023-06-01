@@ -10,13 +10,13 @@ shape2D::shape2D(const glm::vec2 &centroid, const float angle) : m_centroid(cent
 void shape2D::translate(const glm::vec2 &dpos)
 {
     m_centroid += dpos;
-    if (!m_updating)
+    if (!m_pushing)
         update();
 }
 void shape2D::centroid(const glm::vec2 &centroid)
 {
     m_centroid = centroid;
-    if (!m_updating)
+    if (!m_pushing)
         update();
 }
 const glm::vec2 &shape2D::centroid() const
@@ -35,24 +35,24 @@ const aabb2D &shape2D::bounding_box() const
 
 void shape2D::begin_update()
 {
-    m_updating = true;
+    m_pushing = true;
 }
 void shape2D::end_update()
 {
-    m_updating = false;
+    m_pushing = false;
     update();
 }
 
 void shape2D::rotate(const float dangle)
 {
     m_angle += dangle;
-    if (!m_updating)
+    if (!m_pushing)
         update();
 }
 void shape2D::rotation(const float angle)
 {
     m_angle = angle;
-    if (!m_updating)
+    if (!m_pushing)
         update();
 }
 float shape2D::rotation() const

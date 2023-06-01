@@ -2,6 +2,7 @@
 #define SHAPE2D_HPP
 
 #include "glm/vec2.hpp"
+#include "glm/mat2x2.hpp"
 #include "geo/aabb2D.hpp"
 
 namespace geo
@@ -48,7 +49,7 @@ class shape2D
 #endif
 
   private:
-    bool m_updating = false;
+    bool m_pushing = false;
 
 #ifdef HAS_YAML_CPP
     friend YAML::Emitter &operator<<(YAML::Emitter &, const shape2D &);
