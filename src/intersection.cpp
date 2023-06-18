@@ -121,7 +121,7 @@ std::optional<glm::vec2> epa(const shape2D &sh1, const shape2D &sh2, const std::
                 mtv = normal;
             }
         }
-        if (mtv.x == 0.f && mtv.y == 0.f)
+        if (glm::length2(mtv) <= std::numeric_limits<float>::epsilon())
             return {};
 
         const glm::vec2 support = sh1.support_point(mtv) - sh2.support_point(-mtv);
@@ -134,7 +134,7 @@ std::optional<glm::vec2> epa(const shape2D &sh1, const shape2D &sh2, const std::
     }
 
     mtv *= min_dist;
-    if (mtv.x == 0.f && mtv.y == 0.f)
+    if (glm::length2(mtv) <= std::numeric_limits<float>::epsilon())
         return {};
     return mtv;
 }

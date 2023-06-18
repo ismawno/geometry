@@ -186,10 +186,10 @@ void polygon::sort_vertices()
         const glm::vec2 dir1 = v1 - center, dir2 = v2 - center;
 
         const double det2 = cross(ref, dir2);
-        if (det2 == 0.f && glm::dot(ref, dir2) >= 0.f)
+        if (abs(det2) <= std::numeric_limits<float>::epsilon() && glm::dot(ref, dir2) >= 0.f)
             return false;
         const double det1 = cross(ref, dir1);
-        if (det1 == 0.f && glm::dot(ref, dir1) >= 0.f)
+        if (abs(det1) <= std::numeric_limits<float>::epsilon() && glm::dot(ref, dir1) >= 0.f)
             return true;
 
         if (det1 * det2 >= 0.f)
