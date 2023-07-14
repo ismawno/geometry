@@ -6,10 +6,14 @@
 #include <utility>
 #include <array>
 #include <limits>
+
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/geometric.hpp>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/mat2x2.hpp>
+
 #include <algorithm>
 #include <cstdint>
 #include <cmath>
