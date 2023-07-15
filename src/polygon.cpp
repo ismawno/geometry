@@ -102,7 +102,7 @@ polygon::polygon(const glm::vec2 &centroid, const float angle, const kit::block_
 
 glm::vec2 polygon::initialize_polygon()
 {
-    DBG_ASSERT_ERROR(m_local_vertices.size() >= 3, "Cannot make polygon with less than 3 vertices - vertices: {0}",
+    KIT_ASSERT_ERROR(m_local_vertices.size() >= 3, "Cannot make polygon with less than 3 vertices - vertices: {0}",
                      m_local_vertices.size())
     sort_vertices();
     const glm::vec2 current_centroid = ::geo::center_of_mass(*this);
@@ -147,7 +147,7 @@ static bool line_intersects_edge(const glm::vec2 &l1, const glm::vec2 &l2, const
 
 bool polygon::contains_point(const glm::vec2 &p) const
 {
-    DBG_ASSERT_WARN(is_convex(), "Checking if a point is contained in a non convex polygon yields undefined behaviour.")
+    KIT_ASSERT_WARN(is_convex(), "Checking if a point is contained in a non convex polygon yields undefined behaviour.")
     for (std::size_t i = 0; i < m_global_vertices.size(); i++)
     {
         const glm::vec2 &v1 = m_global_vertices[i], &v2 = globals(i + 1);

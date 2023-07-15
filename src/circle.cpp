@@ -12,7 +12,7 @@ circle::circle(const float radius) : m_radius(radius)
 }
 circle::circle(const glm::vec2 &pos, const float radius) : shape2D(pos), m_radius(radius)
 {
-    DBG_ASSERT_WARN(radius >= 0.f, "Creating circle with negative radius: {0}", radius);
+    KIT_ASSERT_WARN(radius >= 0.f, "Creating circle with negative radius: {0}", radius);
 }
 
 circle::circle(const glm::vec2 &pos, const float radius, const float angle) : shape2D(pos), m_radius(radius)

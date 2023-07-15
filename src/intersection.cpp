@@ -25,11 +25,11 @@ struct arr3
     void push(const glm::vec2 &val)
     {
         data[size++] = val;
-        DBG_ASSERT_ERROR(size <= 3, "Array size exceeds 3!")
+        KIT_ASSERT_ERROR(size <= 3, "Array size exceeds 3!")
     }
     void erase(const std::size_t index)
     {
-        DBG_ASSERT_ERROR(size > 0, "Cannot erase element of empty array!")
+        KIT_ASSERT_ERROR(size > 0, "Cannot erase element of empty array!")
         for (std::size_t i = index; i < size - 1; i++)
             data[i] = data[i + 1];
         --size;
@@ -66,7 +66,7 @@ static bool triangle_case(arr3 &simplex, glm::vec2 &dir)
 std::optional<std::array<glm::vec2, 3>> gjk(const shape2D &sh1, const shape2D &sh2)
 {
     PERF_FUNCTION()
-    DBG_ASSERT_WARN(!dynamic_cast<const circle *>(&sh1) || !dynamic_cast<const circle *>(&sh2),
+    KIT_ASSERT_WARN(!dynamic_cast<const circle *>(&sh1) || !dynamic_cast<const circle *>(&sh2),
                     "Using gjk algorithm to check if two circles are intersecting, which is overkill")
 
     arr3 simplex;
