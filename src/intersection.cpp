@@ -65,7 +65,7 @@ static bool triangle_case(arr3 &simplex, glm::vec2 &dir)
 
 std::optional<std::array<glm::vec2, 3>> gjk(const shape2D &sh1, const shape2D &sh2)
 {
-    PERF_FUNCTION()
+    KIT_PERF_FUNCTION()
     KIT_ASSERT_WARN(!dynamic_cast<const circle *>(&sh1) || !dynamic_cast<const circle *>(&sh2),
                     "Using gjk algorithm to check if two circles are intersecting, which is overkill")
 
@@ -90,7 +90,7 @@ std::optional<std::array<glm::vec2, 3>> gjk(const shape2D &sh1, const shape2D &s
 
 std::optional<glm::vec2> epa(const shape2D &sh1, const shape2D &sh2, const std::array<glm::vec2, 3> &simplex)
 {
-    PERF_FUNCTION()
+    KIT_PERF_FUNCTION()
 
     std::vector<glm::vec2> hull;
     hull.reserve(10);
@@ -142,7 +142,7 @@ std::optional<glm::vec2> epa(const shape2D &sh1, const shape2D &sh2, const std::
 
 std::pair<glm::vec2, glm::vec2> contact_points(const shape2D &sh1, const shape2D &sh2, const glm::vec2 &mtv)
 {
-    PERF_FUNCTION()
+    KIT_PERF_FUNCTION()
     const glm::vec2 sup1 = sh1.support_point(mtv), sup2 = sh2.support_point(-mtv);
     const float d1 = glm::length2(sh2.closest_direction_from(sup1 - mtv)),
                 d2 = glm::length2(sh1.closest_direction_from(sup2 + mtv));
