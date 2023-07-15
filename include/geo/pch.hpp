@@ -18,15 +18,10 @@
 #include <cstdint>
 #include <cmath>
 #include <optional>
-#ifdef HAS_YAML_CPP
+#ifdef YAML_CPP_COMPAT
 #include <yaml-cpp/yaml.h>
 #endif
-#ifdef HAS_DEBUG_LOG_TOOLS
-#include "dbg/log.hpp"
-#endif
-#ifdef HAS_PROFILE_TOOLS
-#include "perf/perf.hpp"
-#endif
-#include "geo/core.hpp"
+#include "kit/debug/log.hpp"
+#include "kit/profile/perf.hpp"
 
 #endif

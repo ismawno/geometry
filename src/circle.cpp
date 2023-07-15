@@ -63,7 +63,7 @@ bool circle::is_convex() const
     return true;
 }
 
-#ifdef HAS_YAML_CPP
+#ifdef YAML_CPP_COMPAT
 void circle::write(YAML::Emitter &out) const
 {
     shape2D::write(out);
@@ -85,7 +85,7 @@ bool circle::decode(const YAML::Node &node)
 #endif
 } // namespace geo
 
-#ifdef HAS_YAML_CPP
+#ifdef YAML_CPP_COMPAT
 namespace YAML
 {
 Node convert<geo::circle>::encode(const geo::circle &c)

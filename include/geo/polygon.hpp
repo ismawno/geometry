@@ -1,8 +1,8 @@
 #ifndef POLYGON_HPP
 #define POLYGON_HPP
 
-#include "geo/core.hpp"
 #include "geo/shape2D.hpp"
+#include "kit/memory/block_vector.hpp"
 #include <vector>
 #include <array>
 #include <utility>
@@ -12,9 +12,9 @@ namespace geo
 class polygon : public shape2D
 {
   public:
-    polygon(const blk_vector<glm::vec2> &vertices = box(1.f));
-    polygon(const glm::vec2 &centroid, const blk_vector<glm::vec2> &vertices = box(1.f));
-    polygon(const glm::vec2 &centroid, float angle, const blk_vector<glm::vec2> &vertices = box(1.f));
+    polygon(const kit::block_vector<glm::vec2> &vertices = box(1.f));
+    polygon(const glm::vec2 &centroid, const kit::block_vector<glm::vec2> &vertices = box(1.f));
+    polygon(const glm::vec2 &centroid, float angle, const kit::block_vector<glm::vec2> &vertices = box(1.f));
 
     glm::vec2 support_point(const glm::vec2 &direction) const override;
 
@@ -28,28 +28,28 @@ class polygon : public shape2D
     const glm::vec2 &locals(std::size_t index) const;
     const glm::vec2 &globals(std::size_t index) const;
 
-    const blk_vector<glm::vec2> &locals() const;
-    const blk_vector<glm::vec2> &globals() const;
+    const kit::block_vector<glm::vec2> &locals() const;
+    const kit::block_vector<glm::vec2> &globals() const;
 
     std::size_t size() const;
     float area() const override;
     float inertia() const override;
 
-    static blk_vector<glm::vec2> box(float size);
-    static blk_vector<glm::vec2> rect(float width, float height);
-    static blk_vector<glm::vec2> ngon(float radius, std::uint32_t sides);
+    static kit::block_vector<glm::vec2> box(float size);
+    static kit::block_vector<glm::vec2> rect(float width, float height);
+    static kit::block_vector<glm::vec2> ngon(float radius, std::uint32_t sides);
 
     static polygon minkowski_sum(const polygon &poly1, const polygon &poly2);
     static polygon minkowski_difference(const polygon &poly1, const polygon &poly2);
 
   private:
-    blk_vector<glm::vec2> m_local_vertices, m_global_vertices;
+    kit::block_vector<glm::vec2> m_local_vertices, m_global_vertices;
     float m_area = 0.f, m_inertia = 0.f;
 
     void update() override;
     glm::vec2 initialize_polygon();
 
-#ifdef HAS_YAML_CPP
+#ifdef YAML_CPP_COMPAT
     void write(YAML::Emitter &out) const override;
     YAML::Node encode() const override;
     bool decode(const YAML::Node &node) override;
@@ -62,7 +62,7 @@ polygon operator+(const polygon &poly1, const polygon &poly2);
 polygon operator-(const polygon &poly1, const polygon &poly2);
 } // namespace geo
 
-#ifdef HAS_YAML_CPP
+#ifdef YAML_CPP_COMPAT
 namespace YAML
 {
 template <> struct convert<geo::polygon>

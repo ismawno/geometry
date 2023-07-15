@@ -42,7 +42,7 @@ class shape2D
 
     virtual void update() = 0;
 
-#ifdef HAS_YAML_CPP
+#ifdef YAML_CPP_COMPAT
     virtual void write(YAML::Emitter &out) const;
     virtual YAML::Node encode() const;
     virtual bool decode(const YAML::Node &node);
@@ -51,18 +51,18 @@ class shape2D
   private:
     bool m_pushing = false;
 
-#ifdef HAS_YAML_CPP
+#ifdef YAML_CPP_COMPAT
     friend YAML::Emitter &operator<<(YAML::Emitter &, const shape2D &);
     friend struct YAML::convert<shape2D>;
 #endif
 };
 
-#ifdef HAS_YAML_CPP
+#ifdef YAML_CPP_COMPAT
 YAML::Emitter &operator<<(YAML::Emitter &out, const shape2D &sh);
 #endif
 } // namespace geo
 
-#ifdef HAS_YAML_CPP
+#ifdef YAML_CPP_COMPAT
 namespace YAML
 {
 template <> struct convert<geo::shape2D>
