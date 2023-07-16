@@ -2,7 +2,7 @@
 #define POLYGON_HPP
 
 #include "geo/shape2D.hpp"
-#include "kit/memory/block_vector.hpp"
+#include "kit/container/block_vector.hpp"
 #include <vector>
 #include <array>
 #include <utility>
