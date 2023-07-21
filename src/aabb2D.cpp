@@ -76,7 +76,7 @@ aabb2D operator-(const aabb2D &bb1, const aabb2D &bb2)
                   {std::min(bb1.max().x, bb2.max().x), std::min(bb1.max().y, bb2.max().y)});
 }
 
-#ifdef YAML_CPP_COMPAT
+#ifdef KIT_USE_YAML_CPP
 YAML::Emitter &operator<<(YAML::Emitter &out, const aabb2D &bb)
 {
     out << YAML::BeginMap;
@@ -88,7 +88,7 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const aabb2D &bb)
 #endif
 } // namespace geo
 
-#ifdef YAML_CPP_COMPAT
+#ifdef KIT_USE_YAML_CPP
 namespace YAML
 {
 Node convert<geo::aabb2D>::encode(const geo::aabb2D &bb)

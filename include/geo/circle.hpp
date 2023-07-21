@@ -29,7 +29,7 @@ class circle : public shape2D
     float m_radius;
     void update() override;
 
-#ifdef YAML_CPP_COMPAT
+#ifdef KIT_USE_YAML_CPP
     void write(YAML::Emitter &out) const override;
     YAML::Node encode() const override;
     bool decode(const YAML::Node &node) override;
@@ -38,7 +38,7 @@ class circle : public shape2D
 };
 } // namespace geo
 
-#ifdef YAML_CPP_COMPAT
+#ifdef KIT_USE_YAML_CPP
 namespace YAML
 {
 template <> struct convert<geo::circle>

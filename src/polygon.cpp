@@ -319,7 +319,7 @@ polygon operator-(const polygon &poly1, const polygon &poly2)
     return polygon::minkowski_difference(poly1, poly2);
 }
 
-#ifdef YAML_CPP_COMPAT
+#ifdef KIT_USE_YAML_CPP
 void polygon::write(YAML::Emitter &out) const
 {
     shape2D::write(out);
@@ -352,7 +352,7 @@ bool polygon::decode(const YAML::Node &node)
 
 } // namespace geo
 
-#ifdef YAML_CPP_COMPAT
+#ifdef KIT_USE_YAML_CPP
 namespace YAML
 {
 Node convert<geo::polygon>::encode(const geo::polygon &poly)

@@ -3,7 +3,7 @@
 
 #include <glm/vec2.hpp>
 #include <vector>
-#ifdef YAML_CPP_COMPAT
+#ifdef KIT_USE_YAML_CPP
 #include <yaml-cpp/yaml.h>
 #endif
 
@@ -37,12 +37,12 @@ class aabb2D
 aabb2D operator+(const aabb2D &bb1, const aabb2D &bb2);
 aabb2D operator-(const aabb2D &bb1, const aabb2D &bb2);
 
-#ifdef YAML_CPP_COMPAT
+#ifdef KIT_USE_YAML_CPP
 YAML::Emitter &operator<<(YAML::Emitter &out, const aabb2D &bb);
 #endif
 } // namespace geo
 
-#ifdef YAML_CPP_COMPAT
+#ifdef KIT_USE_YAML_CPP
 namespace YAML
 {
 template <> struct convert<geo::aabb2D>

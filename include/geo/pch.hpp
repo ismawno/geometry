@@ -18,7 +18,7 @@
 #include <cstdint>
 #include <cmath>
 #include <optional>
-#ifdef YAML_CPP_COMPAT
+#ifdef KIT_USE_YAML_CPP
 #include <yaml-cpp/yaml.h>
 #endif
 #include "kit/debug/log.hpp"
