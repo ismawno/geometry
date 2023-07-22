@@ -320,11 +320,6 @@ polygon operator-(const polygon &poly1, const polygon &poly2)
 }
 
 #ifdef KIT_USE_YAML_CPP
-void polygon::write(YAML::Emitter &out) const
-{
-    shape2D::write(out);
-    out << YAML::Key << "Vertices" << YAML::Value << m_local_vertices;
-}
 YAML::Node polygon::encode() const
 {
     YAML::Node node = shape2D::encode();
@@ -351,17 +346,3 @@ bool polygon::decode(const YAML::Node &node)
 #endif
 
 } // namespace geo
-
-#ifdef KIT_USE_YAML_CPP
-namespace YAML
-{
-Node convert<geo::polygon>::encode(const geo::polygon &poly)
-{
-    return poly.encode();
-}
-bool convert<geo::polygon>::decode(const Node &node, geo::polygon &poly)
-{
-    return poly.decode(node);
-};
-} // namespace YAML
-#endif

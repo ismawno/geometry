@@ -1,5 +1,5 @@
-#ifndef CIRCLE_HPP
-#define CIRCLE_HPP
+#ifndef GEO_CIRCLE_HPP
+#define GEO_CIRCLE_HPP
 
 #include "geo/shape2D.hpp"
 
@@ -30,23 +30,10 @@ class circle : public shape2D
     void update() override;
 
 #ifdef KIT_USE_YAML_CPP
-    void write(YAML::Emitter &out) const override;
     YAML::Node encode() const override;
     bool decode(const YAML::Node &node) override;
-    friend struct YAML::convert<circle>;
 #endif
 };
 } // namespace geo
-
-#ifdef KIT_USE_YAML_CPP
-namespace YAML
-{
-template <> struct convert<geo::circle>
-{
-    static Node encode(const geo::circle &c);
-    static bool decode(const Node &node, geo::circle &c);
-};
-} // namespace YAML
-#endif
 
 #endif

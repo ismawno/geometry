@@ -1,11 +1,9 @@
-#ifndef AABB2D_HPP
-#define AABB2D_HPP
+#ifndef GEO_AABB2D_HPP
+#define GEO_AABB2D_HPP
 
 #include <glm/vec2.hpp>
 #include <vector>
-#ifdef KIT_USE_YAML_CPP
-#include <yaml-cpp/yaml.h>
-#endif
+#include "kit/interface/serialization.hpp"
 
 namespace geo
 {
@@ -14,6 +12,14 @@ class circle;
 class aabb2D
 {
   public:
+#ifdef KIT_USE_YAML_CPP
+    class serializer : public kit::serializer<aabb2D>
+    {
+      public:
+        YAML::Node encode(const aabb2D &aabb) const override;
+        bool decode(const YAML::Node &node, aabb2D &aabb) const override;
+    };
+#endif
     aabb2D() = default;
     aabb2D(const polygon &poly);
     aabb2D(const circle &c);
@@ -37,20 +43,6 @@ class aabb2D
 aabb2D operator+(const aabb2D &bb1, const aabb2D &bb2);
 aabb2D operator-(const aabb2D &bb1, const aabb2D &bb2);
 
-#ifdef KIT_USE_YAML_CPP
-YAML::Emitter &operator<<(YAML::Emitter &out, const aabb2D &bb);
-#endif
 } // namespace geo
-
-#ifdef KIT_USE_YAML_CPP
-namespace YAML
-{
-template <> struct convert<geo::aabb2D>
-{
-    static Node encode(const geo::aabb2D &bb);
-    static bool decode(const Node &node, geo::aabb2D &bb);
-};
-} // namespace YAML
-#endif
 
 #endif

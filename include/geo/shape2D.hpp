@@ -1,13 +1,15 @@
-#ifndef SHAPE2D_HPP
-#define SHAPE2D_HPP
+#ifndef GEO_SHAPE2D_HPP
+#define GEO_SHAPE2D_HPP
 
 #include "glm/vec2.hpp"
 #include "glm/mat2x2.hpp"
 #include "geo/aabb2D.hpp"
 
+#include "kit/interface/serialization.hpp"
+
 namespace geo
 {
-class shape2D
+class shape2D : public kit::serializable
 {
   public:
     shape2D(const glm::vec2 &centroid = glm::vec2(0.f), float angle = 0.f);
@@ -35,6 +37,11 @@ class shape2D
     void rotation(float angle);
     float rotation() const;
 
+#ifdef KIT_USE_YAML_CPP
+    virtual YAML::Node encode() const override;
+    virtual bool decode(const YAML::Node &node) override;
+#endif
+
   protected:
     glm::vec2 m_centroid;
     float m_angle = 0.f;
@@ -42,35 +49,10 @@ class shape2D
 
     virtual void update() = 0;
 
-#ifdef KIT_USE_YAML_CPP
-    virtual void write(YAML::Emitter &out) const;
-    virtual YAML::Node encode() const;
-    virtual bool decode(const YAML::Node &node);
-#endif
-
   private:
     bool m_pushing = false;
-
-#ifdef KIT_USE_YAML_CPP
-    friend YAML::Emitter &operator<<(YAML::Emitter &, const shape2D &);
-    friend struct YAML::convert<shape2D>;
-#endif
 };
 
-#ifdef KIT_USE_YAML_CPP
-YAML::Emitter &operator<<(YAML::Emitter &out, const shape2D &sh);
-#endif
 } // namespace geo
-
-#ifdef KIT_USE_YAML_CPP
-namespace YAML
-{
-template <> struct convert<geo::shape2D>
-{
-    static Node encode(const geo::shape2D &sh);
-    static bool decode(const Node &node, geo::shape2D &sh);
-};
-} // namespace YAML
-#endif
 
 #endif

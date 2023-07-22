@@ -64,11 +64,6 @@ bool circle::is_convex() const
 }
 
 #ifdef KIT_USE_YAML_CPP
-void circle::write(YAML::Emitter &out) const
-{
-    shape2D::write(out);
-    out << YAML::Key << "Radius" << YAML::Value << m_radius;
-}
 YAML::Node circle::encode() const
 {
     YAML::Node node = shape2D::encode();
@@ -84,17 +79,3 @@ bool circle::decode(const YAML::Node &node)
 }
 #endif
 } // namespace geo
-
-#ifdef KIT_USE_YAML_CPP
-namespace YAML
-{
-Node convert<geo::circle>::encode(const geo::circle &c)
-{
-    return c.encode();
-}
-bool convert<geo::circle>::decode(const Node &node, geo::circle &c)
-{
-    return c.decode(node);
-};
-} // namespace YAML
-#endif

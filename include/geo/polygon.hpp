@@ -1,5 +1,5 @@
-#ifndef POLYGON_HPP
-#define POLYGON_HPP
+#ifndef GEO_POLYGON_HPP
+#define GEO_POLYGON_HPP
 
 #include "geo/shape2D.hpp"
 #include "kit/container/block_vector.hpp"
@@ -42,35 +42,22 @@ class polygon : public shape2D
     static polygon minkowski_sum(const polygon &poly1, const polygon &poly2);
     static polygon minkowski_difference(const polygon &poly1, const polygon &poly2);
 
+#ifdef KIT_USE_YAML_CPP
+    YAML::Node encode() const override;
+    bool decode(const YAML::Node &node) override;
+#endif
+
   private:
     kit::block_vector<glm::vec2> m_local_vertices, m_global_vertices;
     float m_area = 0.f, m_inertia = 0.f;
 
     void update() override;
     glm::vec2 initialize_polygon();
-
-#ifdef KIT_USE_YAML_CPP
-    void write(YAML::Emitter &out) const override;
-    YAML::Node encode() const override;
-    bool decode(const YAML::Node &node) override;
-    friend struct YAML::convert<polygon>;
-#endif
 };
 
 polygon operator-(const polygon &poly);
 polygon operator+(const polygon &poly1, const polygon &poly2);
 polygon operator-(const polygon &poly1, const polygon &poly2);
 } // namespace geo
-
-#ifdef KIT_USE_YAML_CPP
-namespace YAML
-{
-template <> struct convert<geo::polygon>
-{
-    static Node encode(const geo::polygon &poly);
-    static bool decode(const Node &node, geo::polygon &poly);
-};
-} // namespace YAML
-#endif
 
 #endif

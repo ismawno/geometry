@@ -61,11 +61,6 @@ float shape2D::rotation() const
 }
 
 #ifdef KIT_USE_YAML_CPP
-void shape2D::write(YAML::Emitter &out) const
-{
-    out << YAML::Key << "Centroid" << YAML::Value << m_centroid;
-    out << YAML::Key << "Angle" << YAML::Value << m_angle;
-}
 YAML::Node shape2D::encode() const
 {
     YAML::Node node;
@@ -82,26 +77,5 @@ bool shape2D::decode(const YAML::Node &node)
     rotation(node["Angle"].as<float>()); // Should call rotation
     return true;
 }
-YAML::Emitter &operator<<(YAML::Emitter &out, const shape2D &sh)
-{
-    out << YAML::BeginMap;
-    sh.write(out);
-    out << YAML::EndMap;
-    return out;
-}
 #endif
 } // namespace geo
-
-#ifdef KIT_USE_YAML_CPP
-namespace YAML
-{
-Node convert<geo::shape2D>::encode(const geo::shape2D &sh)
-{
-    return sh.encode();
-}
-bool convert<geo::shape2D>::decode(const Node &node, geo::shape2D &sh)
-{
-    return sh.decode(node);
-};
-} // namespace YAML
-#endif

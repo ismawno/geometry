@@ -1,5 +1,5 @@
-#ifndef INTERSECTION_HPP
-#define INTERSECTION_HPP
+#ifndef GEO_INTERSECTION_HPP
+#define GEO_INTERSECTION_HPP
 
 #include "geo/circle.hpp"
 #include "geo/aabb2D.hpp"
