@@ -2,7 +2,6 @@
 #define GEO_POLYGON_HPP
 
 #include "geo/shape2D.hpp"
-#include "kit/container/block_vector.hpp"
 #include <vector>
 #include <array>
 #include <utility>
@@ -12,9 +11,9 @@ namespace geo
 class polygon : public shape2D
 {
   public:
-    polygon(const kit::block_vector<glm::vec2> &vertices = box(1.f));
-    polygon(const glm::vec2 &centroid, const kit::block_vector<glm::vec2> &vertices = box(1.f));
-    polygon(const glm::vec2 &centroid, float angle, const kit::block_vector<glm::vec2> &vertices = box(1.f));
+    polygon(const std::vector<glm::vec2> &vertices = box(1.f));
+    polygon(const glm::vec2 &centroid, const std::vector<glm::vec2> &vertices = box(1.f));
+    polygon(const glm::vec2 &centroid, float angle, const std::vector<glm::vec2> &vertices = box(1.f));
 
     glm::vec2 support_point(const glm::vec2 &direction) const override;
 
@@ -28,16 +27,16 @@ class polygon : public shape2D
     const glm::vec2 &locals(std::size_t index) const;
     const glm::vec2 &globals(std::size_t index) const;
 
-    const kit::block_vector<glm::vec2> &locals() const;
-    const kit::block_vector<glm::vec2> &globals() const;
+    const std::vector<glm::vec2> &locals() const;
+    const std::vector<glm::vec2> &globals() const;
 
     std::size_t size() const;
     float area() const override;
     float inertia() const override;
 
-    static kit::block_vector<glm::vec2> box(float size);
-    static kit::block_vector<glm::vec2> rect(float width, float height);
-    static kit::block_vector<glm::vec2> ngon(float radius, std::uint32_t sides);
+    static std::vector<glm::vec2> box(float size);
+    static std::vector<glm::vec2> rect(float width, float height);
+    static std::vector<glm::vec2> ngon(float radius, std::uint32_t sides);
 
     static polygon minkowski_sum(const polygon &poly1, const polygon &poly2);
     static polygon minkowski_difference(const polygon &poly1, const polygon &poly2);
@@ -48,7 +47,7 @@ class polygon : public shape2D
 #endif
 
   private:
-    kit::block_vector<glm::vec2> m_local_vertices, m_global_vertices;
+    std::vector<glm::vec2> m_local_vertices, m_global_vertices;
     float m_area = 0.f, m_inertia = 0.f;
 
     void update() override;

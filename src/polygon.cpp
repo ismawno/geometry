@@ -11,7 +11,7 @@ static float cross(const glm::vec2 &v1, const glm::vec2 &v2)
 {
     return v1.x * v2.y - v1.y * v2.x;
 }
-static glm::vec2 center_of_vertices(const kit::block_vector<glm::vec2> &vertices)
+static glm::vec2 center_of_vertices(const std::vector<glm::vec2> &vertices)
 {
     glm::vec2 center(0.f);
     for (const glm::vec2 &v : vertices)
@@ -80,7 +80,7 @@ static float inertia(const polygon &poly)
     return std::abs(inertia) / poly.area();
 }
 
-polygon::polygon(const kit::block_vector<glm::vec2> &vertices)
+polygon::polygon(const std::vector<glm::vec2> &vertices)
     : m_local_vertices(vertices), m_global_vertices(vertices.size())
 {
     m_centroid = initialize_polygon();
@@ -88,12 +88,11 @@ polygon::polygon(const kit::block_vector<glm::vec2> &vertices)
     update();
 }
 
-polygon::polygon(const glm::vec2 &centroid, const kit::block_vector<glm::vec2> &vertices)
-    : polygon(centroid, 0.f, vertices)
+polygon::polygon(const glm::vec2 &centroid, const std::vector<glm::vec2> &vertices) : polygon(centroid, 0.f, vertices)
 {
 }
 
-polygon::polygon(const glm::vec2 &centroid, const float angle, const kit::block_vector<glm::vec2> &vertices)
+polygon::polygon(const glm::vec2 &centroid, const float angle, const std::vector<glm::vec2> &vertices)
     : shape2D(centroid, angle), m_local_vertices(vertices), m_global_vertices(vertices.size())
 {
     initialize_polygon();
@@ -211,11 +210,11 @@ void polygon::update()
     m_aabb.bound(*this);
 }
 
-const kit::block_vector<glm::vec2> &polygon::locals() const
+const std::vector<glm::vec2> &polygon::locals() const
 {
     return m_local_vertices;
 }
-const kit::block_vector<glm::vec2> &polygon::globals() const
+const std::vector<glm::vec2> &polygon::globals() const
 {
     return m_global_vertices;
 }
@@ -243,20 +242,20 @@ float polygon::inertia() const
     return m_inertia;
 }
 
-kit::block_vector<glm::vec2> polygon::box(const float size)
+std::vector<glm::vec2> polygon::box(const float size)
 {
     return {{-size / 2.f, -size / 2.f}, {size / 2.f, -size / 2.f}, {size / 2.f, size / 2.f}, {-size / 2.f, size / 2.f}};
 }
-kit::block_vector<glm::vec2> polygon::rect(const float width, const float height)
+std::vector<glm::vec2> polygon::rect(const float width, const float height)
 {
     return {{-width / 2.f, -height / 2.f},
             {width / 2.f, -height / 2.f},
             {width / 2.f, height / 2.f},
             {-width / 2.f, height / 2.f}};
 }
-kit::block_vector<glm::vec2> polygon::ngon(const float radius, const std::uint32_t sides)
+std::vector<glm::vec2> polygon::ngon(const float radius, const std::uint32_t sides)
 {
-    kit::block_vector<glm::vec2> vertices;
+    std::vector<glm::vec2> vertices;
     vertices.reserve(sides);
 
     const float dangle = 2.f * (float)M_PI / sides;
@@ -270,7 +269,7 @@ kit::block_vector<glm::vec2> polygon::ngon(const float radius, const std::uint32
 
 polygon polygon::minkowski_sum(const polygon &poly1, const polygon &poly2)
 {
-    kit::block_vector<glm::vec2> sum;
+    std::vector<glm::vec2> sum;
     sum.reserve(poly1.size() + poly2.size());
 
     const auto cmp = [](const glm::vec2 &v1, const glm::vec2 &v2) { return v1.x < v2.x; };
@@ -302,7 +301,7 @@ polygon polygon::minkowski_difference(const polygon &poly1, const polygon &poly2
 
 polygon operator-(const polygon &poly)
 {
-    kit::block_vector<glm::vec2> vertices;
+    std::vector<glm::vec2> vertices;
     vertices.reserve(poly.size());
     for (const glm::vec2 &v : poly.locals())
         vertices.push_back(-v);
@@ -335,7 +334,7 @@ bool polygon::decode(const YAML::Node &node)
         return false;
     YAML::Node node_v = node["Vertices"];
 
-    kit::block_vector<glm::vec2> vertices;
+    std::vector<glm::vec2> vertices;
     vertices.reserve(node_v.size());
     for (std::size_t i = 0; i < node_v.size(); i++)
         vertices.push_back(node_v[i].as<glm::vec2>());
