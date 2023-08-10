@@ -2,6 +2,7 @@
 #include "geo/intersection.hpp"
 #include "geo/polygon.hpp"
 #include "kit/profile/perf.hpp"
+#include "kit/utility/utils.hpp"
 
 #define EPA_EPSILON 1.e-3f
 
@@ -122,7 +123,7 @@ std::optional<glm::vec2> epa(const shape2D &sh1, const shape2D &sh2, const std::
                 mtv = normal;
             }
         }
-        if (glm::length2(mtv) <= std::numeric_limits<float>::epsilon())
+        if (kit::approaches_zero(glm::length2(mtv)))
             return {};
 
         const glm::vec2 support = sh1.support_point(mtv) - sh2.support_point(-mtv);
@@ -135,7 +136,7 @@ std::optional<glm::vec2> epa(const shape2D &sh1, const shape2D &sh2, const std::
     }
 
     mtv *= min_dist;
-    if (glm::length2(mtv) <= std::numeric_limits<float>::epsilon())
+    if (kit::approaches_zero(glm::length2(mtv)))
         return {};
     return mtv;
 }

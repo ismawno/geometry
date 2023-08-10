@@ -1,5 +1,6 @@
 #include "geo/pch.hpp"
 #include "geo/polygon.hpp"
+#include "kit/utility/utils.hpp"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846f
@@ -186,11 +187,11 @@ void polygon::sort_vertices()
     const auto cmp = [&center, &ref](const glm::vec2 &v1, const glm::vec2 &v2) {
         const glm::vec2 dir1 = v1 - center, dir2 = v2 - center;
 
-        const double det2 = cross(ref, dir2);
-        if (abs(det2) <= std::numeric_limits<float>::epsilon() && glm::dot(ref, dir2) >= 0.f)
+        const float det2 = cross(ref, dir2);
+        if (kit::approaches_zero(det2) && glm::dot(ref, dir2) >= 0.f)
             return false;
-        const double det1 = cross(ref, dir1);
-        if (abs(det1) <= std::numeric_limits<float>::epsilon() && glm::dot(ref, dir1) >= 0.f)
+        const float det1 = cross(ref, dir1);
+        if (kit::approaches_zero(det1) && glm::dot(ref, dir1) >= 0.f)
             return true;
 
         if (det1 * det2 >= 0.f)
