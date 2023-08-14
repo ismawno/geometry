@@ -12,8 +12,7 @@ class polygon : public shape2D
 {
   public:
     polygon(const std::vector<glm::vec2> &vertices = box(1.f));
-    polygon(const glm::vec2 &centroid, const std::vector<glm::vec2> &vertices = box(1.f));
-    polygon(const glm::vec2 &centroid, float angle, const std::vector<glm::vec2> &vertices = box(1.f));
+    polygon(const kit::transform2D &transform, const std::vector<glm::vec2> &vertices = box(1.f));
 
     glm::vec2 support_point(const glm::vec2 &direction) const override;
 
@@ -21,8 +20,6 @@ class polygon : public shape2D
     bool contains_point(const glm::vec2 &p) const override;
 
     glm::vec2 closest_direction_from(const glm::vec2 &p) const override;
-
-    void sort_vertices();
 
     const glm::vec2 &locals(std::size_t index) const;
     const glm::vec2 &globals(std::size_t index) const;
@@ -50,8 +47,10 @@ class polygon : public shape2D
     std::vector<glm::vec2> m_local_vertices, m_global_vertices;
     float m_area = 0.f, m_inertia = 0.f;
 
-    void update() override;
-    glm::vec2 initialize_polygon();
+    void on_shape_transform_update(const glm::mat3 &transform) override;
+
+    void sort_global_vertices();
+    glm::vec2 initialize_properties_and_local_vertices();
 };
 
 polygon operator-(const polygon &poly);

@@ -7,57 +7,46 @@
 
 namespace geo
 {
-circle::circle(const float radius) : m_radius(radius)
+circle::circle(const float radius) : radius(radius)
 {
+    KIT_ASSERT_WARN(radius >= 0.f, "Creating circle with negative radius: {0}", radius);
 }
-circle::circle(const glm::vec2 &pos, const float radius) : shape2D(pos), m_radius(radius)
+circle::circle(const kit::transform2D &transform, const float radius) : shape2D(transform), radius(radius)
 {
     KIT_ASSERT_WARN(radius >= 0.f, "Creating circle with negative radius: {0}", radius);
 }
 
-circle::circle(const glm::vec2 &pos, const float radius, const float angle) : shape2D(pos), m_radius(radius)
-{
-    rotate(angle);
-}
-
 glm::vec2 circle::support_point(const glm::vec2 &direction) const
 {
-    return m_centroid + glm::normalize(direction) * m_radius;
+    return m_transform.position + glm::normalize(direction) * radius;
 }
 
 bool circle::contains_point(const glm::vec2 &p) const
 {
-    return glm::length2(p - m_centroid) < m_radius * m_radius;
+    return glm::length2(p - m_transform.position) < radius * radius;
 }
 
 float circle::area() const
 {
-    return (float)M_PI * m_radius * m_radius;
+    return (float)M_PI * radius * radius;
 }
 float circle::inertia() const
 {
-    return 0.5f * m_radius * m_radius;
+    return 0.5f * radius * radius;
 }
 
 glm::vec2 circle::closest_direction_from(const glm::vec2 &p) const
 {
-    const glm::vec2 dir = m_centroid - p;
-    return dir - glm::normalize(dir) * m_radius;
+    const glm::vec2 dir = m_transform.position - p;
+    return dir - glm::normalize(dir) * radius;
 }
 
-void circle::update()
+void circle::on_shape_transform_update(const glm::mat3 &transform)
 {
+    shape2D::on_shape_transform_update(transform);
     m_aabb.bound(*this);
 }
 
-float circle::radius() const
-{
-    return m_radius;
-}
-void circle::radius(float radius)
-{
-    m_radius = radius;
-}
 bool circle::is_convex() const
 {
     return true;
@@ -67,14 +56,14 @@ bool circle::is_convex() const
 YAML::Node circle::encode() const
 {
     YAML::Node node = shape2D::encode();
-    node["Radius"] = m_radius;
+    node["Radius"] = radius;
     return node;
 }
 bool circle::decode(const YAML::Node &node)
 {
-    if (!shape2D::decode(node) || node.size() != 3)
+    if (!shape2D::decode(node) || node.size() != 2)
         return false;
-    m_radius = node["Radius"].as<float>();
+    radius = node["Radius"].as<float>();
     return true;
 }
 #endif

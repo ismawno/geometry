@@ -22,11 +22,11 @@ static glm::vec2 center_of_vertices(const std::vector<glm::vec2> &vertices)
 
 static glm::vec2 center_of_mass(const polygon &poly)
 {
-    const glm::vec2 &p1 = poly.locals(0); // It is actually not local yet
+    const glm::vec2 &p1 = poly.globals(0); // No locals yet available
     glm::vec2 num(0.f), den(0.f);
     for (std::size_t i = 1; i < poly.size() - 1; i++)
     {
-        const glm::vec2 e1 = poly.locals(i) - p1, e2 = poly.locals(i + 1) - p1;
+        const glm::vec2 e1 = poly.globals(i) - p1, e2 = poly.globals(i + 1) - p1;
         const float crs = std::abs(cross(e1, e2));
         num += (e1 + e2) * crs;
         den += crs;
@@ -82,32 +82,28 @@ static float inertia(const polygon &poly)
 }
 
 polygon::polygon(const std::vector<glm::vec2> &vertices)
-    : m_local_vertices(vertices), m_global_vertices(vertices.size())
+    : m_local_vertices(vertices.size()), m_global_vertices(vertices)
 {
-    m_centroid = initialize_polygon();
-    m_angle = 0.f;
+    m_transform.position = initialize_properties_and_local_vertices();
     update();
 }
 
-polygon::polygon(const glm::vec2 &centroid, const std::vector<glm::vec2> &vertices) : polygon(centroid, 0.f, vertices)
+polygon::polygon(const kit::transform2D &transform, const std::vector<glm::vec2> &vertices)
+    : shape2D(transform), m_local_vertices(vertices.size()), m_global_vertices(vertices)
 {
-}
-
-polygon::polygon(const glm::vec2 &centroid, const float angle, const std::vector<glm::vec2> &vertices)
-    : shape2D(centroid, angle), m_local_vertices(vertices), m_global_vertices(vertices.size())
-{
-    initialize_polygon();
+    initialize_properties_and_local_vertices();
     update();
 }
 
-glm::vec2 polygon::initialize_polygon()
+glm::vec2 polygon::initialize_properties_and_local_vertices()
 {
     KIT_ASSERT_ERROR(m_local_vertices.size() >= 3, "Cannot make polygon with less than 3 vertices - vertices: {0}",
                      m_local_vertices.size())
-    sort_vertices();
+    sort_global_vertices();
     const glm::vec2 current_centroid = ::geo::center_of_mass(*this);
-    for (glm::vec2 &v : m_local_vertices)
-        v -= current_centroid;
+
+    for (std::size_t i = 0; i < m_global_vertices.size(); i++)
+        m_local_vertices[i] = m_global_vertices[i] - current_centroid;
 
     m_area = ::geo::area(*this);
     m_inertia = ::geo::inertia(*this);
@@ -117,7 +113,7 @@ glm::vec2 polygon::initialize_polygon()
 glm::vec2 polygon::support_point(const glm::vec2 &direction) const
 {
     const auto cmp = [&direction, this](const glm::vec2 &v1, const glm::vec2 &v2) {
-        return glm::dot(direction, v1 - m_centroid) < glm::dot(direction, v2 - m_centroid);
+        return glm::dot(direction, v1 - m_global_centroid) < glm::dot(direction, v2 - m_global_centroid);
     };
 
     const auto &support = std::max_element(m_global_vertices.begin(), m_global_vertices.end(), cmp);
@@ -151,7 +147,7 @@ bool polygon::contains_point(const glm::vec2 &p) const
     for (std::size_t i = 0; i < m_global_vertices.size(); i++)
     {
         const glm::vec2 &v1 = m_global_vertices[i], &v2 = globals(i + 1);
-        if (line_intersects_edge(v2, v1, p, m_centroid) && line_intersects_edge(p, m_centroid, v2, v1))
+        if (line_intersects_edge(v2, v1, p, m_global_centroid) && line_intersects_edge(p, m_global_centroid, v2, v1))
             return false;
     }
     return true;
@@ -181,33 +177,33 @@ glm::vec2 polygon::closest_direction_from(const glm::vec2 &p) const
     return closest;
 }
 
-void polygon::sort_vertices()
+void polygon::sort_global_vertices()
 {
-    const glm::vec2 center = center_of_vertices(m_local_vertices), ref = m_local_vertices[0] - center;
-    const auto cmp = [&center, &ref](const glm::vec2 &v1, const glm::vec2 &v2) {
+    const glm::vec2 center = center_of_vertices(m_global_vertices);
+    const glm::vec2 reference = m_global_vertices[0] - center;
+
+    const auto cmp = [&center, &reference](const glm::vec2 &v1, const glm::vec2 &v2) {
         const glm::vec2 dir1 = v1 - center, dir2 = v2 - center;
 
-        const float det2 = cross(ref, dir2);
-        if (kit::approaches_zero(det2) && glm::dot(ref, dir2) >= 0.f)
+        const float det2 = cross(reference, dir2);
+        if (kit::approaches_zero(det2) && glm::dot(reference, dir2) >= 0.f)
             return false;
-        const float det1 = cross(ref, dir1);
-        if (kit::approaches_zero(det1) && glm::dot(ref, dir1) >= 0.f)
+        const float det1 = cross(reference, dir1);
+        if (kit::approaches_zero(det1) && glm::dot(reference, dir1) >= 0.f)
             return true;
 
         if (det1 * det2 >= 0.f)
             return cross(dir1, dir2) > 0.f;
         return det1 > 0.f;
     };
-    std::sort(m_local_vertices.begin(), m_local_vertices.end(), cmp);
+    std::sort(m_global_vertices.begin(), m_global_vertices.end(), cmp);
 }
 
-void polygon::update()
+void polygon::on_shape_transform_update(const glm::mat3 &transform)
 {
-    const float cos = cosf(m_angle), sin = sinf(m_angle);
-    const glm::mat2 rot_matrix(cos, sin, -sin, cos);
-
-    for (std::size_t i = 0; i < m_local_vertices.size(); i++)
-        m_global_vertices[i] = m_centroid + rot_matrix * m_local_vertices[i];
+    shape2D::on_shape_transform_update(transform);
+    for (std::size_t i = 0; i < m_global_vertices.size(); i++)
+        m_global_vertices[i] = transform * glm::vec3(m_local_vertices[i], 1.f);
     m_aabb.bound(*this);
 }
 
@@ -262,8 +258,8 @@ std::vector<glm::vec2> polygon::ngon(const float radius, const std::uint32_t sid
     const float dangle = 2.f * (float)M_PI / sides;
     for (std::size_t i = 0; i < sides; i++)
     {
-        const float angle = i * dangle;
-        vertices.emplace_back(radius * sinf(angle), radius * cosf(angle));
+        const float rotation = i * dangle;
+        vertices.emplace_back(radius * sinf(rotation), radius * cosf(rotation));
     }
     return vertices;
 }
@@ -306,7 +302,13 @@ polygon operator-(const polygon &poly)
     vertices.reserve(poly.size());
     for (const glm::vec2 &v : poly.locals())
         vertices.push_back(-v);
-    return polygon(-poly.centroid(), poly.rotation() - (float)M_PI, vertices);
+
+    const kit::transform2D &poly_transform = poly.transform();
+    const kit::transform2D transform = kit::transform2D::builder(poly_transform)
+                                           .position(-poly_transform.position)
+                                           .rotation(poly_transform.rotation - (float)M_PI)
+                                           .build();
+    return polygon(transform, vertices);
 }
 
 polygon operator+(const polygon &poly1, const polygon &poly2)
@@ -331,7 +333,7 @@ YAML::Node polygon::encode() const
 }
 bool polygon::decode(const YAML::Node &node)
 {
-    if (!shape2D::decode(node) || node.size() != 3)
+    if (!shape2D::decode(node) || node.size() != 2)
         return false;
     YAML::Node node_v = node["Vertices"];
 
@@ -340,7 +342,7 @@ bool polygon::decode(const YAML::Node &node)
     for (std::size_t i = 0; i < node_v.size(); i++)
         vertices.push_back(node_v[i].as<glm::vec2>());
 
-    *this = {m_centroid, m_angle, vertices};
+    *this = {m_transform, vertices};
     return true;
 }
 #endif

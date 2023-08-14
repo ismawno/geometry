@@ -9,8 +9,9 @@ class circle : public shape2D
 {
   public:
     circle(float radius = 1.f);
-    circle(const glm::vec2 &pos, float radius = 1.f);
-    circle(const glm::vec2 &pos, float radius, float angle);
+    circle(const kit::transform2D &transform, float radius = 1.f);
+
+    float radius;
 
     glm::vec2 support_point(const glm::vec2 &direction) const override;
     bool contains_point(const glm::vec2 &p) const override;
@@ -20,9 +21,6 @@ class circle : public shape2D
 
     glm::vec2 closest_direction_from(const glm::vec2 &p) const override;
 
-    float radius() const;
-    void radius(float radius);
-
     bool is_convex() const override;
 
 #ifdef KIT_USE_YAML_CPP
@@ -31,8 +29,7 @@ class circle : public shape2D
 #endif
 
   private:
-    float m_radius;
-    void update() override;
+    void on_shape_transform_update(const glm::mat3 &transform) override;
 };
 } // namespace geo
 

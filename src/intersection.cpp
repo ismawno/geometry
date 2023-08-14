@@ -168,17 +168,17 @@ bool intersect(const aabb2D &bb1, const aabb2D &bb2)
 
 bool intersect(const circle &c1, const circle &c2)
 {
-    const float R = c1.radius() + c2.radius();
+    const float R = c1.radius + c2.radius;
     return glm::distance2(c1.centroid(), c2.centroid()) < R * R;
 }
 glm::vec2 mtv(const circle &c1, const circle &c2)
 {
     const glm::vec2 dir = c1.centroid() - c2.centroid();
-    return dir - (c1.radius() + c2.radius()) * glm::normalize(dir);
+    return dir - (c1.radius + c2.radius) * glm::normalize(dir);
 }
 std::pair<glm::vec2, glm::vec2> contact_points(const circle &c1, const circle &c2)
 {
     const glm::vec2 dir = glm::normalize(c1.centroid() - c2.centroid());
-    return std::make_pair(c1.centroid() - dir * c1.radius(), c2.centroid() + dir * c2.radius());
+    return std::make_pair(c1.centroid() - dir * c1.radius, c2.centroid() + dir * c2.radius);
 }
 } // namespace geo

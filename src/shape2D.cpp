@@ -3,25 +3,68 @@
 
 namespace geo
 {
-shape2D::shape2D(const glm::vec2 &centroid, const float angle) : m_centroid(centroid), m_angle(angle)
+shape2D::shape2D(const kit::transform2D &transform) : m_transform(transform), m_global_centroid(transform.position)
 {
+}
+
+const kit::transform2D &shape2D::transform() const
+{
+    return m_transform;
+}
+
+const glm::vec2 &shape2D::centroid() const
+{
+    return m_global_centroid;
+}
+
+void shape2D::centroid(const glm::vec2 &centroid)
+{
+    translate(centroid - m_global_centroid);
+}
+
+void shape2D::update()
+{
+    const glm::mat3 transform = m_transform.center_scale_rotate_translate3();
+    on_shape_transform_update(transform);
+}
+
+void shape2D::on_shape_transform_update(const glm::mat3 &transform)
+{
+    m_global_centroid = transform * glm::vec3(-m_transform.origin, 1.f);
 }
 
 void shape2D::translate(const glm::vec2 &dpos)
 {
-    m_centroid += dpos;
-    if (!m_pushing)
+    m_transform.position += dpos;
+    if (!m_pushing_update)
         update();
 }
-void shape2D::centroid(const glm::vec2 &centroid)
+void shape2D::rotate(const float drotation)
 {
-    m_centroid = centroid;
-    if (!m_pushing)
+    m_transform.rotation += drotation;
+    if (!m_pushing_update)
         update();
 }
-const glm::vec2 &shape2D::centroid() const
+
+void shape2D::position(const glm::vec2 &position)
 {
-    return m_centroid;
+    m_transform.position = position;
+    if (!m_pushing_update)
+        update();
+}
+
+void shape2D::rotation(const float rotation)
+{
+    m_transform.rotation = rotation;
+    if (!m_pushing_update)
+        update();
+}
+
+void shape2D::origin(const glm::vec2 &origin)
+{
+    m_transform.origin = origin;
+    if (!m_pushing_update)
+        update();
 }
 
 bool shape2D::contains_origin() const
@@ -35,46 +78,28 @@ const aabb2D &shape2D::bounding_box() const
 
 void shape2D::begin_update()
 {
-    m_pushing = true;
+    m_pushing_update = true;
 }
 void shape2D::end_update()
 {
-    m_pushing = false;
+    m_pushing_update = false;
     update();
-}
-
-void shape2D::rotate(const float dangle)
-{
-    m_angle += dangle;
-    if (!m_pushing)
-        update();
-}
-void shape2D::rotation(const float angle)
-{
-    m_angle = angle;
-    if (!m_pushing)
-        update();
-}
-float shape2D::rotation() const
-{
-    return m_angle;
 }
 
 #ifdef KIT_USE_YAML_CPP
 YAML::Node shape2D::encode() const
 {
     YAML::Node node;
-    node["Centroid"] = m_centroid;
-    node["Angle"] = m_angle;
+    node["Transform"] = m_transform;
     return node;
 }
 bool shape2D::decode(const YAML::Node &node)
 {
-    if (!node.IsMap() || node.size() < 2)
+    if (!node.IsMap() || node.size() < 1)
         return false;
 
-    centroid(node["Centroid"].as<glm::vec2>());
-    rotation(node["Angle"].as<float>()); // Should call rotation
+    m_transform = node["Transform"].as<kit::transform2D>();
+    update();
     return true;
 }
 #endif

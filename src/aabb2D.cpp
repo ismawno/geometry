@@ -9,9 +9,9 @@ aabb2D::aabb2D(const polygon &poly)
 {
     bound(poly);
 }
-aabb2D::aabb2D(const circle &c)
+aabb2D::aabb2D(const circle &circ)
 {
-    bound(c);
+    bound(circ);
 }
 
 aabb2D::aabb2D(const glm::vec2 &point) : aabb2D(point, point)
@@ -39,10 +39,10 @@ void aabb2D::bound(const polygon &poly)
             m_max.y = v.y;
     }
 }
-void aabb2D::bound(const circle &c)
+void aabb2D::bound(const circle &circ)
 {
-    m_min = c.centroid() - glm::vec2(c.radius());
-    m_max = c.centroid() + glm::vec2(c.radius());
+    m_min = circ.centroid() - glm::vec2(circ.radius);
+    m_max = circ.centroid() + glm::vec2(circ.radius);
 }
 
 const glm::vec2 &aabb2D::min() const
