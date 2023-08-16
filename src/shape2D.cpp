@@ -30,7 +30,7 @@ void shape2D::update()
 
 void shape2D::on_shape_transform_update(const glm::mat3 &transform)
 {
-    m_global_centroid = transform * glm::vec3(-m_transform.origin, 1.f);
+    m_global_centroid = transform[2];
 }
 
 void shape2D::translate(const glm::vec2 &dpos)
