@@ -155,8 +155,8 @@ bool polygon::contains_point(const glm::vec2 &p) const
 
 static glm::vec2 towards_segment_from(const glm::vec2 &p1, const glm::vec2 &p2, const glm::vec2 &p)
 {
-    const float t = std::clamp(glm::dot(p - p1, p2 - p1) / glm::distance2(p1, p2), 0.f, 1.f);
-    const glm::vec2 proj = p1 + t * (p2 - p1);
+    const float interp = std::clamp(glm::dot(p - p1, p2 - p1) / glm::distance2(p1, p2), 0.f, 1.f);
+    const glm::vec2 proj = p1 + interp * (p2 - p1);
     return proj - p;
 }
 
