@@ -8,10 +8,6 @@
 
 namespace geo
 {
-static float cross(const glm::vec2 &v1, const glm::vec2 &v2)
-{
-    return v1.x * v2.y - v1.y * v2.x;
-}
 static glm::vec2 center_of_vertices(const std::vector<glm::vec2> &vertices)
 {
     glm::vec2 center(0.f);
@@ -27,7 +23,7 @@ static glm::vec2 center_of_mass(const polygon &poly)
     for (std::size_t i = 1; i < poly.size() - 1; i++)
     {
         const glm::vec2 e1 = poly.globals(i) - p1, e2 = poly.globals(i + 1) - p1;
-        const float crs = std::abs(cross(e1, e2));
+        const float crs = std::abs(kit::cross2D(e1, e2));
         num += (e1 + e2) * crs;
         den += crs;
     }
@@ -41,7 +37,7 @@ static float area(const polygon &poly)
     for (std::size_t i = 1; i < poly.size() - 1; i++)
     {
         const glm::vec2 e1 = poly.locals(i) - p1, e2 = poly.locals(i + 1) - p1;
-        area += std::abs(cross(e1, e2));
+        area += std::abs(kit::cross2D(e1, e2));
     }
     return area * 0.5f;
 }
@@ -57,7 +53,7 @@ static float inertia(const polygon &poly)
 
         const float w = glm::length(e1), w1 = std::abs(glm::dot(e1, e2) / w), w2 = std::abs(w - w1);
 
-        const float h = std::abs(cross(e2, e1)) / w;
+        const float h = std::abs(kit::cross2D(e2, e1)) / w;
         const glm::vec2 p4 = p2 + (p1 - p2) * w1 / w;
 
         const float i1 = w1 * h * (w1 * w1 / 3.f + h * h) / 4.f, i2 = w2 * h * (w2 * w2 / 3.f + h * h) / 4.f;
@@ -69,11 +65,11 @@ static float inertia(const polygon &poly)
                     icm2 = i2 + m2 * (glm::length2(cm2) - glm::distance2(cm2, p3));
 
         const glm::vec2 p13 = p1 - p3, p43 = p4 - p3, p23 = p2 - p3;
-        if (cross(p13, p43) < 0.f)
+        if (kit::cross2D(p13, p43) < 0.f)
             inertia += icm1;
         else
             inertia -= icm1;
-        if (cross(p43, p23) < 0.f)
+        if (kit::cross2D(p43, p23) < 0.f)
             inertia += icm2;
         else
             inertia -= icm2;
@@ -125,7 +121,7 @@ bool polygon::is_convex() const
     for (std::size_t i = 0; i < m_local_vertices.size(); i++)
     {
         const glm::vec2 &prev = m_local_vertices[i], &mid = locals(i + 1), &next = locals(i + 2);
-        if (cross(mid - prev, next - mid) < 0.f)
+        if (kit::cross2D(mid - prev, next - mid) < 0.f)
             return false;
     }
     return true;
@@ -185,15 +181,15 @@ void polygon::sort_global_vertices()
     const auto cmp = [&center, &reference](const glm::vec2 &v1, const glm::vec2 &v2) {
         const glm::vec2 dir1 = v1 - center, dir2 = v2 - center;
 
-        const float det2 = cross(reference, dir2);
+        const float det2 = kit::cross2D(reference, dir2);
         if (kit::approaches_zero(det2) && glm::dot(reference, dir2) >= 0.f)
             return false;
-        const float det1 = cross(reference, dir1);
+        const float det1 = kit::cross2D(reference, dir1);
         if (kit::approaches_zero(det1) && glm::dot(reference, dir1) >= 0.f)
             return true;
 
         if (det1 * det2 >= 0.f)
-            return cross(dir1, dir2) > 0.f;
+            return kit::cross2D(dir1, dir2) > 0.f;
         return det1 > 0.f;
     };
     std::sort(m_global_vertices.begin(), m_global_vertices.end(), cmp);
@@ -281,8 +277,8 @@ polygon polygon::minkowski_sum(const polygon &poly1, const polygon &poly2)
     {
         const std::size_t index1 = i + m1, index2 = j + m2;
         sum.push_back(poly1.globals(index1) + poly2.globals(index2));
-        const float crs =
-            cross(poly1.globals(index1 + 1) - poly1.globals(index1), poly2.globals(index2 + 1) - poly2.globals(index2));
+        const float crs = kit::cross2D(poly1.globals(index1 + 1) - poly1.globals(index1),
+                                       poly2.globals(index2 + 1) - poly2.globals(index2));
         if (crs >= 0.f)
             i++;
         if (crs <= 0.f)

@@ -8,13 +8,9 @@
 
 namespace geo
 {
-static float cross(const glm::vec2 &v1, const glm::vec2 &v2)
-{
-    return v1.x * v2.y - v1.y * v2.x;
-}
 static glm::vec2 triple_cross(const glm::vec2 &v1, const glm::vec2 &v2, const glm::vec2 &v3)
 {
-    const float crs = cross(v1, v2);
+    const float crs = kit::cross2D(v1, v2);
     return glm::vec2(-v3.y * crs, v3.x * crs);
 }
 
