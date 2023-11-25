@@ -150,9 +150,9 @@ std::pair<glm::vec2, glm::vec2> contact_points(const shape2D &sh1, const shape2D
 
 bool may_intersect(const shape2D &sh1, const shape2D &sh2)
 {
-    return intersect(sh1.bounding_box(), sh2.bounding_box());
+    return intersects(sh1.bounding_box(), sh2.bounding_box());
 }
-bool intersect(const aabb2D &bb1, const aabb2D &bb2)
+bool intersects(const aabb2D &bb1, const aabb2D &bb2)
 {
     const glm::vec2 df1 = bb2.min() - bb1.max(), df2 = bb1.min() - bb2.max();
     if (df1.x > 0.f || df1.y > 0.f)
@@ -162,7 +162,7 @@ bool intersect(const aabb2D &bb1, const aabb2D &bb2)
     return true;
 }
 
-bool intersect(const circle &c1, const circle &c2)
+bool intersects(const circle &c1, const circle &c2)
 {
     const float R = c1.radius + c2.radius;
     return glm::distance2(c1.centroid(), c2.centroid()) < R * R;
