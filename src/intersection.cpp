@@ -16,7 +16,7 @@ static glm::vec2 triple_cross(const glm::vec2 &v1, const glm::vec2 &v2, const gl
 
 struct arr3
 {
-    std::array<glm::vec2, 3> data;
+    std::array<glm::vec2, 3> &data;
     std::size_t size = 0;
 
     void push(const glm::vec2 &val)
@@ -60,13 +60,15 @@ static bool triangle_case(arr3 &simplex, glm::vec2 &dir)
     return true;
 }
 
-std::optional<std::array<glm::vec2, 3>> gjk(const shape2D &sh1, const shape2D &sh2)
+gjk_result gjk(const shape2D &sh1, const shape2D &sh2)
 {
     KIT_PERF_FUNCTION()
     KIT_ASSERT_WARN(!dynamic_cast<const circle *>(&sh1) || !dynamic_cast<const circle *>(&sh2),
                     "Using gjk algorithm to check if two circles are intersecting, which is overkill")
 
-    arr3 simplex;
+    gjk_result result{false, {}};
+    arr3 simplex{result.simplex};
+
     glm::vec2 dir = sh2.centroid() - sh1.centroid();
     const glm::vec2 supp = sh1.support_point(dir) - sh2.support_point(-dir);
     simplex.push(supp);
@@ -76,16 +78,20 @@ std::optional<std::array<glm::vec2, 3>> gjk(const shape2D &sh1, const shape2D &s
     {
         const glm::vec2 A = sh1.support_point(dir) - sh2.support_point(-dir);
         if (glm::dot(A, dir) <= 0.f)
-            return {};
+            return result;
+
         simplex.push(A);
         if (simplex.size == 2)
             line_case(simplex, dir);
         else if (triangle_case(simplex, dir))
-            return simplex.data;
+        {
+            result.intersect = true;
+            return result;
+        }
     }
 }
 
-std::optional<glm::vec2> epa(const shape2D &sh1, const shape2D &sh2, const std::array<glm::vec2, 3> &simplex)
+epa_result epa(const shape2D &sh1, const shape2D &sh2, const std::array<glm::vec2, 3> &simplex)
 {
     KIT_PERF_FUNCTION()
 
@@ -94,7 +100,7 @@ std::optional<glm::vec2> epa(const shape2D &sh1, const shape2D &sh2, const std::
     hull.insert(hull.end(), simplex.begin(), simplex.end());
 
     float min_dist = FLT_MAX;
-    glm::vec2 mtv{0.f, 0.f};
+    epa_result result{false, glm::vec2(0.f)};
     for (;;)
     {
         std::size_t min_index;
@@ -116,14 +122,14 @@ std::optional<glm::vec2> epa(const shape2D &sh1, const shape2D &sh2, const std::
             {
                 min_dist = dist;
                 min_index = j;
-                mtv = normal;
+                result.mtv = normal;
             }
         }
-        if (kit::approaches_zero(glm::length2(mtv)))
+        if (kit::approaches_zero(glm::length2(result.mtv)))
             return {};
 
-        const glm::vec2 support = sh1.support_point(mtv) - sh2.support_point(-mtv);
-        const float sup_dist = glm::dot(mtv, support);
+        const glm::vec2 support = sh1.support_point(result.mtv) - sh2.support_point(-result.mtv);
+        const float sup_dist = glm::dot(result.mtv, support);
         const float diff = std::abs(sup_dist - min_dist);
         if (diff <= EPA_EPSILON)
             break;
@@ -131,10 +137,12 @@ std::optional<glm::vec2> epa(const shape2D &sh1, const shape2D &sh2, const std::
         min_dist = FLT_MAX;
     }
 
-    mtv *= min_dist;
-    if (kit::approaches_zero(glm::length2(mtv)))
-        return {};
-    return mtv;
+    result.mtv *= min_dist;
+    if (kit::approaches_zero(glm::length2(result.mtv)))
+        return result;
+
+    result.valid = true;
+    return result;
 }
 
 glm::vec2 contact_point(const shape2D &sh1, const shape2D &sh2, const glm::vec2 &mtv)
