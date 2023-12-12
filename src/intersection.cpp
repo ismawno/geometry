@@ -137,15 +137,13 @@ std::optional<glm::vec2> epa(const shape2D &sh1, const shape2D &sh2, const std::
     return mtv;
 }
 
-std::pair<glm::vec2, glm::vec2> contact_points(const shape2D &sh1, const shape2D &sh2, const glm::vec2 &mtv)
+glm::vec2 contact_point(const shape2D &sh1, const shape2D &sh2, const glm::vec2 &mtv)
 {
     KIT_PERF_FUNCTION()
     const glm::vec2 sup1 = sh1.support_point(mtv), sup2 = sh2.support_point(-mtv);
     const float d1 = glm::length2(sh2.closest_direction_from(sup1 - mtv)),
                 d2 = glm::length2(sh1.closest_direction_from(sup2 + mtv));
-    if (d1 < d2)
-        return std::make_pair(sup1, sup1 - mtv);
-    return std::make_pair(sup2 + mtv, sup2);
+    return d1 < d2 ? sup1 : sup2 + mtv;
 }
 
 bool may_intersect(const shape2D &sh1, const shape2D &sh2)
@@ -172,9 +170,9 @@ glm::vec2 mtv(const circle &c1, const circle &c2)
     const glm::vec2 dir = c1.centroid() - c2.centroid();
     return dir - (c1.radius + c2.radius) * glm::normalize(dir);
 }
-std::pair<glm::vec2, glm::vec2> contact_points(const circle &c1, const circle &c2)
+glm::vec2 contact_point(const circle &c1, const circle &c2)
 {
     const glm::vec2 dir = glm::normalize(c1.centroid() - c2.centroid());
-    return std::make_pair(c1.centroid() - dir * c1.radius, c2.centroid() + dir * c2.radius);
+    return c1.centroid() - dir * c1.radius;
 }
 } // namespace geo
