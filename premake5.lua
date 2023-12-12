@@ -1,4 +1,4 @@
-project "shapes-2D"
+project "geometry"
 language "C++"
 cppdialect "C++17"
 
