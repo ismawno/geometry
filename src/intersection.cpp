@@ -64,7 +64,7 @@ gjk_result gjk(const shape2D &sh1, const shape2D &sh2)
 {
     KIT_PERF_FUNCTION()
     KIT_ASSERT_WARN(!dynamic_cast<const circle *>(&sh1) || !dynamic_cast<const circle *>(&sh2),
-                    "Using gjk algorithm to check if two circles are intersecting, which is overkill")
+                    "Using gjk algorithm to check if two circles are intersecting is overkill")
 
     gjk_result result{false, {}};
     arr3 simplex{result.simplex};
@@ -126,7 +126,7 @@ epa_result epa(const shape2D &sh1, const shape2D &sh2, const std::array<glm::vec
             }
         }
         if (kit::approaches_zero(glm::length2(result.mtv)))
-            return {};
+            return result;
 
         const glm::vec2 support = sh1.support_point(result.mtv) - sh2.support_point(-result.mtv);
         const float sup_dist = glm::dot(result.mtv, support);
