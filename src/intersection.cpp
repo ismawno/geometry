@@ -91,7 +91,7 @@ gjk_result gjk(const shape2D &sh1, const shape2D &sh2)
     }
 }
 
-epa_result epa(const shape2D &sh1, const shape2D &sh2, const std::array<glm::vec2, 3> &simplex)
+mtv_result epa(const shape2D &sh1, const shape2D &sh2, const std::array<glm::vec2, 3> &simplex)
 {
     KIT_PERF_FUNCTION()
 
@@ -100,7 +100,7 @@ epa_result epa(const shape2D &sh1, const shape2D &sh2, const std::array<glm::vec
     hull.insert(hull.end(), simplex.begin(), simplex.end());
 
     float min_dist = FLT_MAX;
-    epa_result result{false, glm::vec2(0.f)};
+    mtv_result result{false, glm::vec2(0.f)};
     for (;;)
     {
         std::size_t min_index;
@@ -173,10 +173,15 @@ bool intersects(const circle &c1, const circle &c2)
     const float R = c1.radius + c2.radius;
     return glm::distance2(c1.centroid(), c2.centroid()) < R * R;
 }
-glm::vec2 mtv(const circle &c1, const circle &c2)
+mtv_result mtv(const circle &c1, const circle &c2)
 {
+    mtv_result result;
+
     const glm::vec2 dir = c1.centroid() - c2.centroid();
-    return dir - (c1.radius + c2.radius) * glm::normalize(dir);
+    result.mtv = dir - (c1.radius + c2.radius) * glm::normalize(dir);
+    result.valid =
+        !std::isnan(result.mtv.x) && !std::isnan(result.mtv.y) && !kit::approaches_zero(glm::length2(result.mtv));
+    return result;
 }
 glm::vec2 contact_point(const circle &c1, const circle &c2)
 {

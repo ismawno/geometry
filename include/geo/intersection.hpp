@@ -14,14 +14,14 @@ struct gjk_result
     bool intersect;
     std::array<glm::vec2, 3> simplex;
 };
-struct epa_result
+struct mtv_result
 {
     bool valid;
     glm::vec2 mtv;
 };
 
 gjk_result gjk(const shape2D &sh1, const shape2D &sh2);
-epa_result epa(const shape2D &sh1, const shape2D &sh2, const std::array<glm::vec2, 3> &simplex);
+mtv_result epa(const shape2D &sh1, const shape2D &sh2, const std::array<glm::vec2, 3> &simplex);
 
 glm::vec2 contact_point(const shape2D &sh1, const shape2D &sh2, const glm::vec2 &mtv);
 bool may_intersect(const shape2D &sh1, const shape2D &sh2);
@@ -29,7 +29,7 @@ bool may_intersect(const shape2D &sh1, const shape2D &sh2);
 bool intersects(const aabb2D &bb1, const aabb2D &bb2);
 bool intersects(const circle &c1, const circle &c2);
 
-glm::vec2 mtv(const circle &c1, const circle &c2);
+mtv_result mtv(const circle &c1, const circle &c2);
 glm::vec2 contact_point(const circle &c1, const circle &c2);
 } // namespace geo
 
