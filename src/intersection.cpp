@@ -160,7 +160,7 @@ bool may_intersect(const shape2D &sh1, const shape2D &sh2)
 }
 bool intersects(const aabb2D &bb1, const aabb2D &bb2)
 {
-    const glm::vec2 df1 = bb2.min() - bb1.max(), df2 = bb1.min() - bb2.max();
+    const glm::vec2 df1 = bb2.min - bb1.max, df2 = bb1.min - bb2.max;
     if (df1.x > 0.f || df1.y > 0.f)
         return false;
     if (df2.x > 0.f || df2.y > 0.f)
