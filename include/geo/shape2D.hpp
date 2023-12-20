@@ -1,5 +1,4 @@
-#ifndef GEO_SHAPE2D_HPP
-#define GEO_SHAPE2D_HPP
+#pragma once
 
 #include "glm/vec2.hpp"
 #include "glm/mat2x2.hpp"
@@ -60,5 +59,3 @@ class shape2D : public kit::serializable
 };
 
 } // namespace geo
-
-#endif

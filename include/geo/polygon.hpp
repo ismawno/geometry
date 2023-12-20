@@ -1,5 +1,4 @@
-#ifndef GEO_POLYGON_HPP
-#define GEO_POLYGON_HPP
+#pragma once
 
 #include "geo/shape2D.hpp"
 #include <vector>
@@ -57,5 +56,3 @@ polygon operator-(const polygon &poly);
 polygon operator+(const polygon &poly1, const polygon &poly2);
 polygon operator-(const polygon &poly1, const polygon &poly2);
 } // namespace geo
-
-#endif

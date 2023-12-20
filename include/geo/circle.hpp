@@ -1,5 +1,4 @@
-#ifndef GEO_CIRCLE_HPP
-#define GEO_CIRCLE_HPP
+#pragma once
 
 #include "geo/shape2D.hpp"
 
@@ -32,5 +31,3 @@ class circle : public shape2D
     void on_shape_transform_update(const glm::mat3 &transform) override;
 };
 } // namespace geo
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef GEO_PCH_HPP
-#define GEO_PCH_HPP
+#pragma once
 
 #include <glm/vec2.hpp>
 #include <vector>
@@ -22,5 +21,3 @@
 #include <yaml-cpp/yaml.h>
 #endif
 #include "kit/debug/log.hpp"
-
-#endif

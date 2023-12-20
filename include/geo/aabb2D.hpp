@@ -1,5 +1,4 @@
-#ifndef GEO_AABB2D_HPP
-#define GEO_AABB2D_HPP
+#pragma once
 
 #include <glm/vec2.hpp>
 #include <vector>
@@ -41,5 +40,3 @@ aabb2D operator+(const aabb2D &bb1, const aabb2D &bb2);
 aabb2D operator-(const aabb2D &bb1, const aabb2D &bb2);
 
 } // namespace geo
-
-#endif

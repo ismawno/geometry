@@ -1,5 +1,4 @@
-#ifndef GEO_INTERSECTION_HPP
-#define GEO_INTERSECTION_HPP
+#pragma once
 
 #include "geo/circle.hpp"
 #include "geo/aabb2D.hpp"
@@ -32,5 +31,3 @@ bool intersects(const circle &c1, const circle &c2);
 mtv_result mtv(const circle &c1, const circle &c2);
 glm::vec2 contact_point(const circle &c1, const circle &c2);
 } // namespace geo
-
-#endif
