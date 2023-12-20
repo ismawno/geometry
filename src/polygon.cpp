@@ -235,7 +235,7 @@ float polygon::inertia() const
     return m_inertia;
 }
 
-std::vector<glm::vec2> polygon::box(const float size)
+std::vector<glm::vec2> polygon::square(const float size)
 {
     return {{-size / 2.f, -size / 2.f}, {size / 2.f, -size / 2.f}, {size / 2.f, size / 2.f}, {-size / 2.f, size / 2.f}};
 }

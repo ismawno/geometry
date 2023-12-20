@@ -11,8 +11,8 @@ namespace geo
 class polygon : public shape2D
 {
   public:
-    polygon(const std::vector<glm::vec2> &vertices = box(1.f));
-    polygon(const kit::transform2D &transform, const std::vector<glm::vec2> &vertices = box(1.f));
+    polygon(const std::vector<glm::vec2> &vertices = square(1.f));
+    polygon(const kit::transform2D &transform, const std::vector<glm::vec2> &vertices = square(1.f));
 
     glm::vec2 support_point(const glm::vec2 &direction) const override;
 
@@ -31,7 +31,7 @@ class polygon : public shape2D
     float area() const override;
     float inertia() const override;
 
-    static std::vector<glm::vec2> box(float size);
+    static std::vector<glm::vec2> square(float size);
     static std::vector<glm::vec2> rect(float width, float height);
     static std::vector<glm::vec2> ngon(float radius, std::uint32_t sides);
 
