@@ -2,7 +2,8 @@
 #include "geo/polygon.hpp"
 #include "kit/utility/utils.hpp"
 
-#pragma once
+#ifndef M_PI
+#define M_PI 3.14159265358979323846f
 #endif
 
 namespace geo
@@ -340,5 +341,6 @@ bool polygon::decode(const YAML::Node &node)
     *this = {m_transform, vertices};
     return true;
 }
+#endif
 
 } // namespace geo

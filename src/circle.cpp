@@ -1,7 +1,8 @@
 #include "geo/pch.hpp"
 #include "geo/circle.hpp"
 
-#pragma once
+#ifndef M_PI
+#define M_PI 3.14159265358979323846f
 #endif
 
 namespace geo
@@ -65,5 +66,6 @@ bool circle::decode(const YAML::Node &node)
     radius = node["Radius"].as<float>();
     return true;
 }
+#endif
 
 } // namespace geo
