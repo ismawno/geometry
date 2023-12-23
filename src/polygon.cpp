@@ -268,63 +268,6 @@ std::vector<glm::vec2> polygon::ngon(const float radius, const std::uint32_t sid
     return vertices;
 }
 
-polygon polygon::minkowski_sum(const polygon &poly1, const polygon &poly2)
-{
-    std::vector<glm::vec2> sum;
-    sum.reserve(poly1.size() + poly2.size());
-
-    const auto cmp = [](const glm::vec2 &v1, const glm::vec2 &v2) { return v1.x < v2.x; };
-    const std::size_t m1 = (std::size_t)std::distance(
-                          poly1.locals().begin(), std::min_element(poly1.locals().begin(), poly1.locals().end(), cmp)),
-
-                      m2 = (std::size_t)std::distance(
-                          poly2.locals().begin(), std::min_element(poly2.locals().begin(), poly2.locals().end(), cmp));
-
-    std::size_t i = 0, j = 0;
-    while (i < poly1.size() || j < poly2.size())
-    {
-        const std::size_t index1 = i + m1, index2 = j + m2;
-        sum.push_back(poly1.globals(index1) + poly2.globals(index2));
-        const float crs = kit::cross2D(poly1.globals(index1 + 1) - poly1.globals(index1),
-                                       poly2.globals(index2 + 1) - poly2.globals(index2));
-        if (crs >= 0.f)
-            i++;
-        if (crs <= 0.f)
-            j++;
-    }
-    return polygon(sum);
-}
-
-polygon polygon::minkowski_difference(const polygon &poly1, const polygon &poly2)
-{
-    return minkowski_sum(poly1, -poly2);
-}
-
-polygon operator-(const polygon &poly)
-{
-    std::vector<glm::vec2> vertices;
-    vertices.reserve(poly.size());
-    for (const glm::vec2 &v : poly.locals())
-        vertices.push_back(-v);
-
-    const kit::transform2D &poly_transform = poly.transform();
-    const kit::transform2D transform = kit::transform2D::builder(poly_transform)
-                                           .position(-poly_transform.position)
-                                           .rotation(poly_transform.rotation - (float)M_PI)
-                                           .build();
-    return polygon(transform, vertices);
-}
-
-polygon operator+(const polygon &poly1, const polygon &poly2)
-{
-    return polygon::minkowski_sum(poly1, poly2);
-}
-
-polygon operator-(const polygon &poly1, const polygon &poly2)
-{
-    return polygon::minkowski_difference(poly1, poly2);
-}
-
 #ifdef KIT_USE_YAML_CPP
 YAML::Node polygon::encode() const
 {

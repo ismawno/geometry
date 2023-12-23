@@ -34,9 +34,6 @@ class polygon : public shape2D
     static std::vector<glm::vec2> rect(float width, float height);
     static std::vector<glm::vec2> ngon(float radius, std::uint32_t sides);
 
-    static polygon minkowski_sum(const polygon &poly1, const polygon &poly2);
-    static polygon minkowski_difference(const polygon &poly1, const polygon &poly2);
-
 #ifdef KIT_USE_YAML_CPP
     YAML::Node encode() const override;
     bool decode(const YAML::Node &node) override;
@@ -51,8 +48,4 @@ class polygon : public shape2D
     void sort_global_vertices();
     glm::vec2 initialize_properties_and_local_vertices();
 };
-
-polygon operator-(const polygon &poly);
-polygon operator+(const polygon &poly1, const polygon &poly2);
-polygon operator-(const polygon &poly1, const polygon &poly2);
 } // namespace geo
