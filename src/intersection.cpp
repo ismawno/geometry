@@ -133,7 +133,7 @@ mtv_result epa(const shape2D &sh1, const shape2D &sh2, const std::array<glm::vec
         const float diff = std::abs(sup_dist - min_dist);
         if (diff <= EPA_EPSILON)
             break;
-        hull.insert(hull.begin() + (long)min_index, support);
+        hull.insert(hull.begin() + min_index, support);
         min_dist = FLT_MAX;
     }
 
