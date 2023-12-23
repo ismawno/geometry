@@ -18,12 +18,12 @@ static glm::vec2 center_of_vertices(const std::vector<glm::vec2> &vertices)
 
 static glm::vec2 center_of_mass(const polygon &poly)
 {
-    const glm::vec2 &p1 = poly.globals(0); // No locals available yet
+    const glm::vec2 &p1 = poly.global(0); // No locals available yet
     glm::vec2 num(0.f), den(0.f);
     for (std::size_t i = 1; i < poly.size() - 1; i++)
     {
-        const glm::vec2 e1 = poly.globals(i) - p1;
-        const glm::vec2 e2 = poly.globals(i + 1) - p1;
+        const glm::vec2 e1 = poly.global(i) - p1;
+        const glm::vec2 e2 = poly.global(i + 1) - p1;
 
         const float crs = std::abs(kit::cross2D(e1, e2));
         num += (e1 + e2) * crs;
@@ -35,10 +35,10 @@ static glm::vec2 center_of_mass(const polygon &poly)
 static float area(const polygon &poly)
 {
     float area = 0.f;
-    const glm::vec2 &p1 = poly.locals(0);
+    const glm::vec2 &p1 = poly.local(0);
     for (std::size_t i = 1; i < poly.size() - 1; i++)
     {
-        const glm::vec2 e1 = poly.locals(i) - p1, e2 = poly.locals(i + 1) - p1;
+        const glm::vec2 e1 = poly.local(i) - p1, e2 = poly.local(i + 1) - p1;
         area += std::abs(kit::cross2D(e1, e2));
     }
     return area * 0.5f;
@@ -46,11 +46,11 @@ static float area(const polygon &poly)
 
 static float inertia(const polygon &poly)
 {
-    const glm::vec2 &p1 = poly.locals(0);
+    const glm::vec2 &p1 = poly.local(0);
     float inertia = 0.f;
     for (std::size_t i = 1; i < poly.size() - 1; i++)
     {
-        const glm::vec2 &p2 = poly.locals(i), &p3 = poly.locals(i + 1);
+        const glm::vec2 &p2 = poly.local(i), &p3 = poly.local(i + 1);
         const glm::vec2 e1 = p1 - p2, e2 = p3 - p2;
 
         const float w = glm::length(e1), w1 = std::abs(glm::dot(e1, e2) / w), w2 = std::abs(w - w1);
@@ -128,7 +128,7 @@ bool polygon::is_convex() const
 {
     for (std::size_t i = 0; i < m_local_vertices.size(); i++)
     {
-        const glm::vec2 &prev = m_local_vertices[i], &mid = locals(i + 1), &next = locals(i + 2);
+        const glm::vec2 &prev = m_local_vertices[i], &mid = local(i + 1), &next = local(i + 2);
         if (kit::cross2D(mid - prev, next - mid) < 0.f)
             return false;
     }
@@ -150,7 +150,7 @@ bool polygon::contains_point(const glm::vec2 &p) const
     KIT_ASSERT_WARN(is_convex(), "Checking if a point is contained in a non convex polygon yields undefined behaviour.")
     for (std::size_t i = 0; i < m_global_vertices.size(); i++)
     {
-        const glm::vec2 &v1 = m_global_vertices[i], &v2 = globals(i + 1);
+        const glm::vec2 &v1 = m_global_vertices[i], &v2 = global(i + 1);
         if (line_intersects_edge(v2, v1, p, m_global_centroid) && line_intersects_edge(p, m_global_centroid, v2, v1))
             return false;
     }
@@ -170,7 +170,7 @@ glm::vec2 polygon::closest_direction_from(const glm::vec2 &p) const
     glm::vec2 closest(0.f);
     for (std::size_t i = 0; i < m_global_vertices.size(); i++)
     {
-        const glm::vec2 towards = towards_segment_from(m_global_vertices[i], globals(i + 1), p);
+        const glm::vec2 towards = towards_segment_from(m_global_vertices[i], global(i + 1), p);
         const float dist = glm::length2(towards);
         if (min_dist > dist)
         {
@@ -220,11 +220,11 @@ const std::vector<glm::vec2> &polygon::globals() const
     return m_global_vertices;
 }
 
-const glm::vec2 &polygon::locals(const std::size_t index) const
+const glm::vec2 &polygon::local(const std::size_t index) const
 {
     return m_local_vertices[index % m_local_vertices.size()];
 }
-const glm::vec2 &polygon::globals(const std::size_t index) const
+const glm::vec2 &polygon::global(const std::size_t index) const
 {
     return m_global_vertices[index % m_global_vertices.size()];
 }

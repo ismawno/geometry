@@ -20,8 +20,8 @@ class polygon : public shape2D
 
     glm::vec2 closest_direction_from(const glm::vec2 &p) const override;
 
-    const glm::vec2 &locals(std::size_t index) const;
-    const glm::vec2 &globals(std::size_t index) const;
+    const glm::vec2 &local(std::size_t index) const;
+    const glm::vec2 &global(std::size_t index) const;
 
     const std::vector<glm::vec2> &locals() const;
     const std::vector<glm::vec2> &globals() const;
