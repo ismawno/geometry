@@ -4,8 +4,6 @@
 #include "kit/profile/perf.hpp"
 #include "kit/utility/utils.hpp"
 
-#define EPA_EPSILON 1.e-3f
-
 namespace geo
 {
 static glm::vec2 triple_cross(const glm::vec2 &v1, const glm::vec2 &v2, const glm::vec2 &v3)
@@ -91,7 +89,7 @@ gjk_result gjk(const shape2D &sh1, const shape2D &sh2)
     }
 }
 
-mtv_result epa(const shape2D &sh1, const shape2D &sh2, const std::array<glm::vec2, 3> &simplex)
+mtv_result epa(const shape2D &sh1, const shape2D &sh2, const std::array<glm::vec2, 3> &simplex, const float threshold)
 {
     KIT_PERF_FUNCTION()
 
@@ -131,7 +129,7 @@ mtv_result epa(const shape2D &sh1, const shape2D &sh2, const std::array<glm::vec
         const glm::vec2 support = sh1.support_point(result.mtv) - sh2.support_point(-result.mtv);
         const float sup_dist = glm::dot(result.mtv, support);
         const float diff = std::abs(sup_dist - min_dist);
-        if (diff <= EPA_EPSILON)
+        if (diff <= threshold)
             break;
         hull.insert(hull.begin() + min_index, support);
         min_dist = FLT_MAX;

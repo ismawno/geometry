@@ -20,7 +20,8 @@ struct mtv_result
 };
 
 gjk_result gjk(const shape2D &sh1, const shape2D &sh2);
-mtv_result epa(const shape2D &sh1, const shape2D &sh2, const std::array<glm::vec2, 3> &simplex);
+mtv_result epa(const shape2D &sh1, const shape2D &sh2, const std::array<glm::vec2, 3> &simplex,
+               float threshold = 1.e-3f);
 
 glm::vec2 contact_point(const shape2D &sh1, const shape2D &sh2, const glm::vec2 &mtv);
 bool may_intersect(const shape2D &sh1, const shape2D &sh2);
