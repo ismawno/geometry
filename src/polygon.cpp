@@ -8,12 +8,12 @@
 
 namespace geo
 {
-static glm::vec2 center_of_vertices(const std::vector<glm::vec2> &vertices)
+template <typename It> static glm::vec2 center_of_vertices(It it1, It it2, const std::size_t size)
 {
     glm::vec2 center(0.f);
-    for (const glm::vec2 &v : vertices)
-        center += v;
-    return center / (float)vertices.size();
+    for (auto it = it1; it != it2; ++it)
+        center += *it;
+    return center / (float)size;
 }
 
 static glm::vec2 center_of_mass(const polygon &poly)
@@ -79,15 +79,14 @@ static float inertia(const polygon &poly)
     return std::abs(inertia) / poly.area();
 }
 
-polygon::polygon(const std::vector<glm::vec2> &vertices)
-    : m_local_vertices(vertices.size()), m_global_vertices(vertices)
+polygon::polygon(const std::vector<glm::vec2> &vertices) : m_vertices(vertices), m_size(vertices.size())
 {
     m_transform.position = initialize_properties_and_local_vertices();
     update();
 }
 
 polygon::polygon(const kit::transform2D &transform, const std::vector<glm::vec2> &vertices)
-    : shape2D(transform), m_local_vertices(vertices.size()), m_global_vertices(vertices)
+    : shape2D(transform), m_vertices(vertices), m_size(vertices.size())
 {
     initialize_properties_and_local_vertices();
     update();
@@ -95,13 +94,12 @@ polygon::polygon(const kit::transform2D &transform, const std::vector<glm::vec2>
 
 glm::vec2 polygon::initialize_properties_and_local_vertices()
 {
-    KIT_ASSERT_ERROR(m_local_vertices.size() >= 3, "Cannot make polygon with less than 3 vertices - vertices: {0}",
-                     m_local_vertices.size())
+    KIT_ASSERT_ERROR(m_size >= 3, "Cannot make polygon with less than 3 vertices - vertices: {0}", m_size)
     sort_global_vertices();
     const glm::vec2 current_centroid = ::geo::center_of_mass(*this);
 
-    for (std::size_t i = 0; i < m_global_vertices.size(); i++)
-        m_local_vertices[i] = m_global_vertices[i] - current_centroid;
+    for (std::size_t i = 0; i < m_size; i++)
+        m_vertices[i + m_size] = m_vertices[i] - current_centroid;
 
     m_area = ::geo::area(*this);
     m_inertia = ::geo::inertia(*this);
@@ -111,24 +109,26 @@ glm::vec2 polygon::initialize_properties_and_local_vertices()
 glm::vec2 polygon::support_point(const glm::vec2 &direction) const
 {
     std::size_t support = 0;
-    float max_dot = glm::dot(direction, m_global_vertices[support] - m_global_centroid);
-    for (std::size_t i = 1; i < m_global_vertices.size(); i++)
+    float max_dot = glm::dot(direction, m_vertices[support] - m_global_centroid);
+    for (std::size_t i = 1; i < m_size; i++)
     {
-        const float dot = glm::dot(direction, m_global_vertices[i] - m_global_centroid);
+        const float dot = glm::dot(direction, m_vertices[i] - m_global_centroid);
         if (dot > max_dot)
         {
             max_dot = dot;
             support = i;
         }
     }
-    return m_global_vertices[support];
+    return m_vertices[support];
 }
 
 bool polygon::is_convex() const
 {
-    for (std::size_t i = 0; i < m_local_vertices.size(); i++)
+    for (std::size_t i = 0; i < m_size; i++)
     {
-        const glm::vec2 &prev = m_local_vertices[i], &mid = local(i + 1), &next = local(i + 2);
+        const glm::vec2 &prev = local(i); // TODO: REPLACE WITH EDGE
+        const glm::vec2 &mid = local(i + 1);
+        const glm::vec2 &next = local(i + 2);
         if (kit::cross2D(mid - prev, next - mid) < 0.f)
             return false;
     }
@@ -148,9 +148,10 @@ static bool line_intersects_edge(const glm::vec2 &l1, const glm::vec2 &l2, const
 bool polygon::contains_point(const glm::vec2 &p) const
 {
     KIT_ASSERT_WARN(is_convex(), "Checking if a point is contained in a non convex polygon yields undefined behaviour.")
-    for (std::size_t i = 0; i < m_global_vertices.size(); i++)
+    for (std::size_t i = 0; i < m_size; i++)
     {
-        const glm::vec2 &v1 = m_global_vertices[i], &v2 = global(i + 1);
+        const glm::vec2 &v1 = global(i);
+        const glm::vec2 &v2 = global(i + 1);
         if (line_intersects_edge(v2, v1, p, m_global_centroid) && line_intersects_edge(p, m_global_centroid, v2, v1))
             return false;
     }
@@ -168,9 +169,9 @@ glm::vec2 polygon::closest_direction_from(const glm::vec2 &p) const
 {
     float min_dist = FLT_MAX;
     glm::vec2 closest(0.f);
-    for (std::size_t i = 0; i < m_global_vertices.size(); i++)
+    for (std::size_t i = 0; i < m_size; i++)
     {
-        const glm::vec2 towards = towards_segment_from(m_global_vertices[i], global(i + 1), p);
+        const glm::vec2 towards = towards_segment_from(global(i), global(i + 1), p);
         const float dist = glm::length2(towards);
         if (min_dist > dist)
         {
@@ -183,8 +184,8 @@ glm::vec2 polygon::closest_direction_from(const glm::vec2 &p) const
 
 void polygon::sort_global_vertices()
 {
-    const glm::vec2 center = center_of_vertices(m_global_vertices);
-    const glm::vec2 reference = m_global_vertices[0] - center;
+    const glm::vec2 center = center_of_vertices(m_vertices.begin(), m_vertices.begin() + m_size, m_size);
+    const glm::vec2 reference = m_vertices[0] - center;
 
     const auto cmp = [&center, &reference](const glm::vec2 &v1, const glm::vec2 &v2) {
         const glm::vec2 dir1 = v1 - center, dir2 = v2 - center;
@@ -200,38 +201,38 @@ void polygon::sort_global_vertices()
             return kit::cross2D(dir1, dir2) > 0.f;
         return det1 > 0.f;
     };
-    std::sort(m_global_vertices.begin(), m_global_vertices.end(), cmp);
+    std::sort(m_vertices.begin(), m_vertices.begin() + m_size, cmp);
 }
 
 void polygon::on_shape_transform_update(const glm::mat3 &transform)
 {
     shape2D::on_shape_transform_update(transform);
-    for (std::size_t i = 0; i < m_global_vertices.size(); i++)
-        m_global_vertices[i] = transform * glm::vec3(m_local_vertices[i], 1.f);
+    for (std::size_t i = 0; i < m_size; i++)
+        m_vertices[i] = transform * glm::vec3(m_vertices[i + m_size], 1.f);
     m_aabb.bound(*this);
 }
 
-const std::vector<glm::vec2> &polygon::locals() const
+polygon::vertex_subview polygon::globals() const
 {
-    return m_local_vertices;
+    return vertex_subview{m_vertices.begin(), m_vertices.begin() + m_size};
 }
-const std::vector<glm::vec2> &polygon::globals() const
+polygon::vertex_subview polygon::locals() const
 {
-    return m_global_vertices;
+    return vertex_subview{m_vertices.begin() + m_size, m_vertices.begin() + 2 * m_size};
 }
 
-const glm::vec2 &polygon::local(const std::size_t index) const
-{
-    return m_local_vertices[index % m_local_vertices.size()];
-}
 const glm::vec2 &polygon::global(const std::size_t index) const
 {
-    return m_global_vertices[index % m_global_vertices.size()];
+    return m_vertices[index % m_size];
+}
+const glm::vec2 &polygon::local(const std::size_t index) const
+{
+    return m_vertices[m_size + index % m_size];
 }
 
 std::size_t polygon::size() const
 {
-    return m_local_vertices.size();
+    return m_size;
 }
 
 float polygon::area() const
@@ -272,10 +273,11 @@ std::vector<glm::vec2> polygon::ngon(const float radius, const std::uint32_t sid
 YAML::Node polygon::encode() const
 {
     YAML::Node node = shape2D::encode();
-    node["Vertices"] = m_local_vertices;
-
-    for (YAML::Node n : node["Vertices"])
-        n.SetStyle(YAML::EmitterStyle::Flow);
+    for (std::size_t i = 0; i < m_size; i++)
+    {
+        node["Vertices"].push_back(m_vertices[i]);
+        node["Vertices"][i].SetStyle(YAML::EmitterStyle::Flow);
+    }
     return node;
 }
 bool polygon::decode(const YAML::Node &node)
