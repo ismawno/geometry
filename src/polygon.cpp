@@ -18,11 +18,13 @@ static glm::vec2 center_of_vertices(const std::vector<glm::vec2> &vertices)
 
 static glm::vec2 center_of_mass(const polygon &poly)
 {
-    const glm::vec2 &p1 = poly.globals(0); // No locals yet available
+    const glm::vec2 &p1 = poly.globals(0); // No locals available yet
     glm::vec2 num(0.f), den(0.f);
     for (std::size_t i = 1; i < poly.size() - 1; i++)
     {
-        const glm::vec2 e1 = poly.globals(i) - p1, e2 = poly.globals(i + 1) - p1;
+        const glm::vec2 e1 = poly.globals(i) - p1;
+        const glm::vec2 e2 = poly.globals(i + 1) - p1;
+
         const float crs = std::abs(kit::cross2D(e1, e2));
         num += (e1 + e2) * crs;
         den += crs;
@@ -108,12 +110,18 @@ glm::vec2 polygon::initialize_properties_and_local_vertices()
 
 glm::vec2 polygon::support_point(const glm::vec2 &direction) const
 {
-    const auto cmp = [&direction, this](const glm::vec2 &v1, const glm::vec2 &v2) {
-        return glm::dot(direction, v1 - m_global_centroid) < glm::dot(direction, v2 - m_global_centroid);
-    };
-
-    const auto &support = std::max_element(m_global_vertices.begin(), m_global_vertices.end(), cmp);
-    return *support;
+    std::size_t support = 0;
+    float max_dot = glm::dot(direction, m_global_vertices[support] - m_global_centroid);
+    for (std::size_t i = 1; i < m_global_vertices.size(); i++)
+    {
+        const float dot = glm::dot(direction, m_global_vertices[i] - m_global_centroid);
+        if (dot > max_dot)
+        {
+            max_dot = dot;
+            support = i;
+        }
+    }
+    return m_global_vertices[support];
 }
 
 bool polygon::is_convex() const
