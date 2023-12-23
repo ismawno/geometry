@@ -54,6 +54,10 @@ class polygon : public shape2D
         {
             return m_end;
         }
+        std::vector<glm::vec2> as_vector() const
+        {
+            return std::vector<glm::vec2>(m_begin, m_end);
+        }
 
       private:
         iter_type m_begin;
