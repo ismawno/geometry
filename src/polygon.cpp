@@ -95,11 +95,18 @@ polygon::polygon(const kit::transform2D &transform, const std::vector<glm::vec2>
 glm::vec2 polygon::initialize_properties_and_local_vertices()
 {
     KIT_ASSERT_ERROR(m_size >= 3, "Cannot make polygon with less than 3 vertices - vertices: {0}", m_size)
+    m_vertices.resize(6 * m_size);
+
     sort_global_vertices();
     const glm::vec2 current_centroid = ::geo::center_of_mass(*this);
 
     for (std::size_t i = 0; i < m_size; i++)
         m_vertices[i + m_size] = m_vertices[i] - current_centroid;
+    for (std::size_t i = 0; i < m_size; i++)
+    {
+        m_vertices[i + 3 * m_size] = local(i + 1) - local(i);
+        m_vertices[i + 5 * m_size] = {-m_vertices[i + 3 * m_size].y, m_vertices[i + 3 * m_size].x};
+    }
 
     m_area = ::geo::area(*this);
     m_inertia = ::geo::inertia(*this);
@@ -125,13 +132,9 @@ glm::vec2 polygon::support_point(const glm::vec2 &direction) const
 bool polygon::is_convex() const
 {
     for (std::size_t i = 0; i < m_size; i++)
-    {
-        const glm::vec2 &prev = local(i); // TODO: REPLACE WITH EDGE
-        const glm::vec2 &mid = local(i + 1);
-        const glm::vec2 &next = local(i + 2);
-        if (kit::cross2D(mid - prev, next - mid) < 0.f)
+        if (kit::cross2D(local_edge(i), local_edge(i + 1)) < 0.f)
             return false;
-    }
+
     return true;
 }
 
@@ -209,6 +212,11 @@ void polygon::on_shape_transform_update(const glm::mat3 &transform)
     shape2D::on_shape_transform_update(transform);
     for (std::size_t i = 0; i < m_size; i++)
         m_vertices[i] = transform * glm::vec3(m_vertices[i + m_size], 1.f);
+    for (std::size_t i = 0; i < m_size; i++)
+    {
+        m_vertices[i + 2 * m_size] = global(i + 1) - global(i);
+        m_vertices[i + 4 * m_size] = {-m_vertices[i + 2 * m_size].y, m_vertices[i + 2 * m_size].x};
+    }
     m_aabb.bound(*this);
 }
 
@@ -221,6 +229,24 @@ polygon::vertex_subview polygon::locals() const
     return vertex_subview{m_vertices.begin() + m_size, m_vertices.begin() + 2 * m_size};
 }
 
+polygon::vertex_subview polygon::global_edges() const
+{
+    return vertex_subview{m_vertices.begin() + 2 * m_size, m_vertices.begin() + 3 * m_size};
+}
+polygon::vertex_subview polygon::local_edges() const
+{
+    return vertex_subview{m_vertices.begin() + 3 * m_size, m_vertices.begin() + 4 * m_size};
+}
+
+polygon::vertex_subview polygon::global_edge_normals() const
+{
+    return vertex_subview{m_vertices.begin() + 4 * m_size, m_vertices.begin() + 5 * m_size};
+}
+polygon::vertex_subview polygon::local_edge_normals() const
+{
+    return vertex_subview{m_vertices.begin() + 5 * m_size, m_vertices.begin() + 6 * m_size};
+}
+
 const glm::vec2 &polygon::global(const std::size_t index) const
 {
     return m_vertices[index % m_size];
@@ -228,6 +254,24 @@ const glm::vec2 &polygon::global(const std::size_t index) const
 const glm::vec2 &polygon::local(const std::size_t index) const
 {
     return m_vertices[m_size + index % m_size];
+}
+
+const glm::vec2 &polygon::global_edge(std::size_t index) const
+{
+    return m_vertices[2 * m_size + index % m_size];
+}
+const glm::vec2 &polygon::local_edge(std::size_t index) const
+{
+    return m_vertices[3 * m_size + index % m_size];
+}
+
+const glm::vec2 &polygon::global_edge_normal(std::size_t index) const
+{
+    return m_vertices[4 * m_size + index % m_size];
+}
+const glm::vec2 &polygon::local_edge_normal(std::size_t index) const
+{
+    return m_vertices[5 * m_size + index % m_size];
 }
 
 std::size_t polygon::size() const

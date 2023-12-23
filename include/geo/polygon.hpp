@@ -23,6 +23,12 @@ class polygon : public shape2D
     const glm::vec2 &global(std::size_t index) const;
     const glm::vec2 &local(std::size_t index) const;
 
+    const glm::vec2 &global_edge(std::size_t index) const;
+    const glm::vec2 &local_edge(std::size_t index) const;
+
+    const glm::vec2 &global_edge_normal(std::size_t index) const;
+    const glm::vec2 &local_edge_normal(std::size_t index) const;
+
     std::size_t size() const;
     float area() const override;
     float inertia() const override;
@@ -58,7 +64,13 @@ class polygon : public shape2D
     vertex_subview globals() const;
     vertex_subview locals() const;
 
-    // Try local + global edges and normals and witch to only global edges and normals if performance issues
+    vertex_subview global_edges() const;
+    vertex_subview local_edges() const;
+
+    vertex_subview global_edge_normals() const;
+    vertex_subview local_edge_normals() const;
+
+    // Try local + global edges and normals and switch to only global edges and normals if performance issues
 
 #ifdef KIT_USE_YAML_CPP
     YAML::Node encode() const override;
