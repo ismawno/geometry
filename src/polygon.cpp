@@ -319,9 +319,10 @@ YAML::Node polygon::encode() const
     YAML::Node node = shape2D::encode();
     for (std::size_t i = 0; i < m_size; i++)
     {
-        node["Vertices"].push_back(m_vertices[i]);
+        node["Vertices"].push_back(m_vertices[i + m_size]);
         node["Vertices"][i].SetStyle(YAML::EmitterStyle::Flow);
     }
+    node["Transform"] = m_transform;
     return node;
 }
 bool polygon::decode(const YAML::Node &node)
@@ -335,7 +336,8 @@ bool polygon::decode(const YAML::Node &node)
     for (std::size_t i = 0; i < node_v.size(); i++)
         vertices.push_back(node_v[i].as<glm::vec2>());
 
-    *this = {m_transform, vertices};
+    const kit::transform2D transform = node["Transform"].as<kit::transform2D>();
+    *this = {transform, vertices};
     return true;
 }
 #endif
