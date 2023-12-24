@@ -143,7 +143,7 @@ mtv_result epa(const shape2D &sh1, const shape2D &sh2, const std::array<glm::vec
     return result;
 }
 
-glm::vec2 contact_point(const shape2D &sh1, const shape2D &sh2, const glm::vec2 &mtv)
+glm::vec2 mtv_support_contact_point(const shape2D &sh1, const shape2D &sh2, const glm::vec2 &mtv)
 {
     KIT_PERF_FUNCTION()
     const glm::vec2 sup1 = sh1.support_point(mtv), sup2 = sh2.support_point(-mtv);
@@ -181,7 +181,7 @@ mtv_result mtv(const circle &c1, const circle &c2)
         !std::isnan(result.mtv.x) && !std::isnan(result.mtv.y) && !kit::approaches_zero(glm::length2(result.mtv));
     return result;
 }
-glm::vec2 contact_point(const circle &c1, const circle &c2)
+glm::vec2 radius_distance_contact_point(const circle &c1, const circle &c2)
 {
     const glm::vec2 dir = glm::normalize(c1.centroid() - c2.centroid());
     return c1.centroid() - dir * c1.radius;

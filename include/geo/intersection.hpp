@@ -23,12 +23,12 @@ gjk_result gjk(const shape2D &sh1, const shape2D &sh2);
 mtv_result epa(const shape2D &sh1, const shape2D &sh2, const std::array<glm::vec2, 3> &simplex,
                float threshold = 1.e-3f);
 
-glm::vec2 contact_point(const shape2D &sh1, const shape2D &sh2, const glm::vec2 &mtv);
+glm::vec2 mtv_support_contact_point(const shape2D &sh1, const shape2D &sh2, const glm::vec2 &mtv);
 bool may_intersect(const shape2D &sh1, const shape2D &sh2);
 
 bool intersects(const aabb2D &bb1, const aabb2D &bb2);
 bool intersects(const circle &c1, const circle &c2);
 
 mtv_result mtv(const circle &c1, const circle &c2);
-glm::vec2 contact_point(const circle &c1, const circle &c2);
+glm::vec2 radius_distance_contact_point(const circle &c1, const circle &c2);
 } // namespace geo
