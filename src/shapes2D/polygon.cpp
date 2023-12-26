@@ -85,7 +85,7 @@ polygon::polygon(const std::vector<glm::vec2> &vertices) : m_vertices(vertices),
     update();
 }
 
-polygon::polygon(const kit::transform2D &transform, const std::vector<glm::vec2> &vertices)
+polygon::polygon(const kit::transform2D<float> &transform, const std::vector<glm::vec2> &vertices)
     : shape2D(transform), m_vertices(vertices), m_size(vertices.size())
 {
     initialize_properties_and_local_vertices();
@@ -312,34 +312,5 @@ std::vector<glm::vec2> polygon::ngon(const float radius, const std::uint32_t sid
     }
     return vertices;
 }
-
-#ifdef KIT_USE_YAML_CPP
-YAML::Node polygon::encode() const
-{
-    YAML::Node node = shape2D::encode();
-    for (std::size_t i = 0; i < m_size; i++)
-    {
-        node["Vertices"].push_back(m_vertices[i + m_size]);
-        node["Vertices"][i].SetStyle(YAML::EmitterStyle::Flow);
-    }
-    node["Transform"] = m_transform;
-    return node;
-}
-bool polygon::decode(const YAML::Node &node)
-{
-    if (!shape2D::decode(node) || node.size() != 2)
-        return false;
-    YAML::Node node_v = node["Vertices"];
-
-    std::vector<glm::vec2> vertices;
-    vertices.reserve(node_v.size());
-    for (std::size_t i = 0; i < node_v.size(); i++)
-        vertices.push_back(node_v[i].as<glm::vec2>());
-
-    const kit::transform2D transform = node["Transform"].as<kit::transform2D>();
-    *this = {transform, vertices};
-    return true;
-}
-#endif
 
 } // namespace geo

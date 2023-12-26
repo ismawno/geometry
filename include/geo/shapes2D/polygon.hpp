@@ -11,7 +11,7 @@ class polygon : public shape2D
 {
   public:
     polygon(const std::vector<glm::vec2> &vertices = square(1.f));
-    polygon(const kit::transform2D &transform, const std::vector<glm::vec2> &vertices = square(1.f));
+    polygon(const kit::transform2D<float> &transform, const std::vector<glm::vec2> &vertices = square(1.f));
 
     glm::vec2 support_point(const glm::vec2 &direction) const override;
 

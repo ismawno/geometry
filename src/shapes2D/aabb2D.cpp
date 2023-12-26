@@ -71,24 +71,4 @@ aabb2D operator-(const aabb2D &bb1, const aabb2D &bb2)
     return aabb2D({std::max(bb1.min.x, bb2.min.x), std::max(bb1.min.y, bb2.min.y)},
                   {std::min(bb1.max.x, bb2.max.x), std::min(bb1.max.y, bb2.max.y)});
 }
-
-#ifdef KIT_USE_YAML_CPP
-YAML::Node aabb2D::serializer::encode(const aabb2D &aabb) const
-{
-    YAML::Node node;
-    node["Min"] = aabb.min;
-    node["Max"] = aabb.max;
-    node["Min"].SetStyle(YAML::EmitterStyle::Flow);
-    node["Max"].SetStyle(YAML::EmitterStyle::Flow);
-    return node;
-}
-bool aabb2D::serializer::decode(const YAML::Node &node, aabb2D &aabb) const
-{
-    if (!node.IsMap() || node.size() != 2)
-        return false;
-
-    aabb = {node["Min"].as<glm::vec2>(), node["Max"].as<glm::vec2>()};
-    return true;
-}
-#endif
 } // namespace geo

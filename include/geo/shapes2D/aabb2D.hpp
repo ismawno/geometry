@@ -10,14 +10,6 @@ class polygon;
 class circle;
 struct aabb2D
 {
-#ifdef KIT_USE_YAML_CPP
-    class serializer : public kit::serializer<aabb2D>
-    {
-      public:
-        YAML::Node encode(const aabb2D &aabb) const override;
-        bool decode(const YAML::Node &node, aabb2D &aabb) const override;
-    };
-#endif
     aabb2D(const polygon &poly);
     aabb2D(const circle &c);
 

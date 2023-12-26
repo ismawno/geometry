@@ -8,7 +8,7 @@ class circle : public shape2D
 {
   public:
     circle(float radius = 1.f);
-    circle(const kit::transform2D &transform, float radius = 1.f);
+    circle(const kit::transform2D<float> &transform, float radius = 1.f);
 
     float radius;
 

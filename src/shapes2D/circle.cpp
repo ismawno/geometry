@@ -11,7 +11,7 @@ circle::circle(const float radius) : radius(radius)
 {
     KIT_ASSERT_WARN(radius >= 0.f, "Creating circle with negative radius: {0}", radius);
 }
-circle::circle(const kit::transform2D &transform, const float radius) : shape2D(transform), radius(radius)
+circle::circle(const kit::transform2D<float> &transform, const float radius) : shape2D(transform), radius(radius)
 {
     KIT_ASSERT_WARN(radius >= 0.f, "Creating circle with negative radius: {0}", radius);
 }
@@ -51,21 +51,5 @@ bool circle::is_convex() const
 {
     return true;
 }
-
-#ifdef KIT_USE_YAML_CPP
-YAML::Node circle::encode() const
-{
-    YAML::Node node = shape2D::encode();
-    node["Radius"] = radius;
-    return node;
-}
-bool circle::decode(const YAML::Node &node)
-{
-    if (!shape2D::decode(node) || node.size() != 2)
-        return false;
-    radius = node["Radius"].as<float>();
-    return true;
-}
-#endif
 
 } // namespace geo
