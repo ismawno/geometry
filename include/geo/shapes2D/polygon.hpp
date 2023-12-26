@@ -1,6 +1,6 @@
 #pragma once
 
-#include "geo/shape2D.hpp"
+#include "geo/shapes2D/shape2D.hpp"
 #include <vector>
 #include <array>
 #include <utility>

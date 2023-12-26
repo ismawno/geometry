@@ -1,5 +1,5 @@
-#include "geo/pch.hpp"
-#include "geo/shape2D.hpp"
+#include "geo/internal/pch.hpp"
+#include "geo/shapes2D/shape2D.hpp"
 
 namespace geo
 {

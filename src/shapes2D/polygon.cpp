@@ -1,5 +1,5 @@
-#include "geo/pch.hpp"
-#include "geo/polygon.hpp"
+#include "geo/internal/pch.hpp"
+#include "geo/shapes2D/polygon.hpp"
 #include "kit/utility/utils.hpp"
 
 #ifndef M_PI

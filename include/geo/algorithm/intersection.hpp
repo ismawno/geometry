@@ -1,7 +1,7 @@
 #pragma once
 
-#include "geo/circle.hpp"
-#include "geo/aabb2D.hpp"
+#include "geo/shapes2D/circle.hpp"
+#include "geo/shapes2D/aabb2D.hpp"
 #include <glm/vec2.hpp>
 #include <array>
 #include <utility>

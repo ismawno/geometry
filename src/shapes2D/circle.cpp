@@ -1,5 +1,5 @@
-#include "geo/pch.hpp"
-#include "geo/circle.hpp"
+#include "geo/internal/pch.hpp"
+#include "geo/shapes2D/circle.hpp"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846f

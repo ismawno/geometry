@@ -1,7 +1,7 @@
-#include "geo/pch.hpp"
-#include "geo/aabb2D.hpp"
-#include "geo/polygon.hpp"
-#include "geo/circle.hpp"
+#include "geo/internal/pch.hpp"
+#include "geo/shapes2D/aabb2D.hpp"
+#include "geo/shapes2D/polygon.hpp"
+#include "geo/shapes2D/circle.hpp"
 
 namespace geo
 {

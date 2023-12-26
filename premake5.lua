@@ -13,8 +13,8 @@ filter "system:macosx"
    }
 filter {}
 
-pchheader "geo/pch.hpp"
-pchsource "src/pch.cpp"
+pchheader "geo/internal/pch.hpp"
+pchsource "src/internal/pch.cpp"
 
 staticruntime "off"
 kind "StaticLib"
