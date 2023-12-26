@@ -3,11 +3,12 @@
 
 namespace geo
 {
-shape2D::shape2D(const kit::transform2D &transform) : m_transform(transform), m_global_centroid(transform.position)
+shape2D::shape2D(const kit::transform2D<float> &transform)
+    : m_transform(transform), m_global_centroid(transform.position)
 {
 }
 
-const kit::transform2D &shape2D::transform() const
+const kit::transform2D<float> &shape2D::transform() const
 {
     return m_transform;
 }
@@ -85,22 +86,4 @@ void shape2D::end_update()
     m_pushing_update = false;
     update();
 }
-
-#ifdef KIT_USE_YAML_CPP
-YAML::Node shape2D::encode() const
-{
-    YAML::Node node;
-    node["Transform"] = m_transform;
-    return node;
-}
-bool shape2D::decode(const YAML::Node &node)
-{
-    if (!node.IsMap() || node.size() < 1)
-        return false;
-
-    m_transform = node["Transform"].as<kit::transform2D>();
-    update();
-    return true;
-}
-#endif
 } // namespace geo

@@ -4,12 +4,11 @@
 #include "glm/mat2x2.hpp"
 #include "geo/shapes2D/aabb2D.hpp"
 
-#include "kit/interface/serialization.hpp"
 #include "kit/utility/transform.hpp"
 
 namespace geo
 {
-class shape2D : public kit::serializable
+class shape2D
 {
   public:
     shape2D(const kit::transform2D<float> &transform);
@@ -40,11 +39,6 @@ class shape2D : public kit::serializable
     virtual float area() const = 0;
     virtual float inertia() const = 0;
     virtual bool is_convex() const = 0;
-
-#ifdef KIT_USE_YAML_CPP
-    virtual YAML::Node encode() const override;
-    virtual bool decode(const YAML::Node &node) override;
-#endif
 
   protected:
     kit::transform2D<float> m_transform;

@@ -2,7 +2,6 @@
 
 #include <glm/vec2.hpp>
 #include <vector>
-#include "kit/interface/serialization.hpp"
 
 namespace geo
 {
