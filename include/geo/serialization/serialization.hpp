@@ -1,4 +1,5 @@
 #pragma once
+#ifdef KIT_USE_YAML_CPP
 
 #include "geo/shapes2D/polygon.hpp"
 #include "geo/shapes2D/circle.hpp"
@@ -73,3 +74,4 @@ template <> struct kit::yaml::codec<geo::polygon>
         return true;
     }
 };
+#endif

@@ -75,6 +75,10 @@ class polygon : public shape2D
     vertex_subview local_edge_normals() const;
 
     // Try local + global edges and normals and switch to only global edges and normals if performance issues
+#ifdef KIT_USE_YAML_CPP
+    YAML::Node encode() const override;
+    bool decode(const YAML::Node &node) override;
+#endif
 
   private:
     std::vector<glm::vec2> m_vertices;

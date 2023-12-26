@@ -1,5 +1,6 @@
 #include "geo/internal/pch.hpp"
 #include "geo/shapes2D/polygon.hpp"
+#include "geo/serialization/serialization.hpp"
 #include "kit/utility/utils.hpp"
 
 #ifndef M_PI
@@ -312,5 +313,16 @@ std::vector<glm::vec2> polygon::ngon(const float radius, const std::uint32_t sid
     }
     return vertices;
 }
+
+#ifdef KIT_USE_YAML_CPP
+YAML::Node polygon::encode() const
+{
+    return kit::yaml::codec<polygon>::encode(*this);
+}
+bool polygon::decode(const YAML::Node &node)
+{
+    return kit::yaml::codec<polygon>::decode(node, *this);
+}
+#endif
 
 } // namespace geo

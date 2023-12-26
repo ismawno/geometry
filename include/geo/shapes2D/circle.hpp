@@ -22,6 +22,11 @@ class circle : public shape2D
 
     bool is_convex() const override;
 
+#ifdef KIT_USE_YAML_CPP
+    YAML::Node encode() const override;
+    bool decode(const YAML::Node &node) override;
+#endif
+
   private:
     void on_shape_transform_update(const glm::mat3 &transform) override;
 };

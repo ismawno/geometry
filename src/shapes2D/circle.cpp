@@ -1,5 +1,6 @@
 #include "geo/internal/pch.hpp"
 #include "geo/shapes2D/circle.hpp"
+#include "geo/serialization/serialization.hpp"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846f
@@ -51,5 +52,16 @@ bool circle::is_convex() const
 {
     return true;
 }
+
+#ifdef KIT_USE_YAML_CPP
+YAML::Node circle::encode() const
+{
+    return kit::yaml::codec<circle>::encode(*this);
+}
+bool circle::decode(const YAML::Node &node)
+{
+    return kit::yaml::codec<circle>::decode(node, *this);
+}
+#endif
 
 } // namespace geo

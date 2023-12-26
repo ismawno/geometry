@@ -5,10 +5,11 @@
 #include "geo/shapes2D/aabb2D.hpp"
 
 #include "kit/utility/transform.hpp"
+#include "kit/serialization/yaml/serializer.hpp"
 
 namespace geo
 {
-class shape2D
+class shape2D : public kit::yaml::serializable, public kit::yaml::deserializable
 {
   public:
     shape2D(const kit::transform2D<float> &transform);
