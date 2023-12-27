@@ -4,6 +4,8 @@
 #include "geo/shapes2D/polygon.hpp"
 #include "geo/shapes2D/circle.hpp"
 #include "kit/serialization/yaml/codec.hpp"
+#include "kit/serialization/yaml/glm.hpp"
+#include "kit/serialization/yaml/transform.hpp"
 
 template <> struct kit::yaml::codec<geo::aabb2D>
 {
@@ -38,7 +40,7 @@ template <> struct kit::yaml::codec<geo::circle>
     }
     static bool decode(const YAML::Node &node, geo::circle &circ)
     {
-        if (!node.IsMap() || !node.size() != 2)
+        if (!node.IsMap() || node.size() != 2)
             return false;
         circ = {node["Transform"].as<kit::transform2D<float>>(), node["Radius"].as<float>()};
         return true;
