@@ -106,7 +106,8 @@ glm::vec2 polygon::initialize_properties_and_local_vertices()
     for (std::size_t i = 0; i < m_size; i++)
     {
         m_vertices[i + 3 * m_size] = local(i + 1) - local(i);
-        m_vertices[i + 5 * m_size] = {-m_vertices[i + 3 * m_size].y, m_vertices[i + 3 * m_size].x};
+        m_vertices[i + 5 * m_size] =
+            glm::normalize(glm::vec2(m_vertices[i + 3 * m_size].y, -m_vertices[i + 3 * m_size].x));
     }
 
     m_area = ::geo::area(*this);
@@ -139,24 +140,14 @@ bool polygon::is_convex() const
     return true;
 }
 
-static bool line_intersects_edge(const glm::vec2 &l1, const glm::vec2 &l2, const glm::vec2 &v1, const glm::vec2 &v2)
-{
-    const float a = l2.y - l1.y, b = l1.x - l2.x;
-    const float c = l2.x * l1.y - l1.x * l2.y;
-
-    const float d1 = a * v1.x + b * v1.y + c;
-    const float d2 = a * v2.x + b * v2.y + c;
-    return !((d1 >= 0.f && d2 >= 0.f) || (d1 <= 0.f && d2 <= 0.f));
-}
-
 bool polygon::contains_point(const glm::vec2 &p) const
 {
     KIT_ASSERT_WARN(is_convex(), "Checking if a point is contained in a non convex polygon yields undefined behaviour.")
     for (std::size_t i = 0; i < m_size; i++)
     {
-        const glm::vec2 &v1 = global(i);
-        const glm::vec2 &v2 = global(i + 1);
-        if (line_intersects_edge(v2, v1, p, m_global_centroid) && line_intersects_edge(p, m_global_centroid, v2, v1))
+        const glm::vec2 &normal = global_edge_normal(i);
+        const glm::vec2 side = p - global(i);
+        if (glm::dot(normal, side) > 0.f)
             return false;
     }
     return true;
@@ -216,7 +207,8 @@ void polygon::on_shape_transform_update(const glm::mat3 &transform)
     for (std::size_t i = 0; i < m_size; i++)
     {
         m_vertices[i + 2 * m_size] = global(i + 1) - global(i);
-        m_vertices[i + 4 * m_size] = {-m_vertices[i + 2 * m_size].y, m_vertices[i + 2 * m_size].x};
+        m_vertices[i + 4 * m_size] =
+            glm::normalize(glm::vec2(m_vertices[i + 2 * m_size].y, -m_vertices[i + 2 * m_size].x));
     }
     m_aabb.bound(*this);
 }
