@@ -1,6 +1,7 @@
 #pragma once
 
 #include "geo/shapes2D/circle.hpp"
+#include "geo/shapes2D/polygon.hpp"
 #include "geo/shapes2D/aabb2D.hpp"
 #include <glm/vec2.hpp>
 #include <array>
@@ -31,4 +32,14 @@ bool intersects(const circle &c1, const circle &c2);
 
 mtv_result mtv(const circle &c1, const circle &c2);
 glm::vec2 radius_distance_contact_point(const circle &c1, const circle &c2);
+
+template <std::size_t MaxPoints> struct clip_info
+{
+    std::array<glm::vec2, MaxPoints> contacts;
+    std::uint8_t size = 0;
+};
+
+template <std::size_t MaxPoints>
+clip_info<MaxPoints> clipping_contacts(const polygon &poly1, const polygon &poly2, const glm::vec2 &mtv,
+                                       bool include_intersections = true);
 } // namespace geo
