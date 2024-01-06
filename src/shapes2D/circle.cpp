@@ -11,10 +11,12 @@ namespace geo
 circle::circle(const float radius) : radius(radius)
 {
     KIT_ASSERT_WARN(radius >= 0.f, "Creating circle with negative radius: {0}", radius);
+    update();
 }
 circle::circle(const kit::transform2D<float> &transform, const float radius) : shape2D(transform), radius(radius)
 {
     KIT_ASSERT_WARN(radius >= 0.f, "Creating circle with negative radius: {0}", radius);
+    update();
 }
 
 glm::vec2 circle::support_point(const glm::vec2 &direction) const
