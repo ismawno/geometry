@@ -1,6 +1,6 @@
 project "geometry"
 language "C++"
-cppdialect "C++17"
+cppdialect "c++20"
 
 filter "system:macosx"
    buildoptions {
