@@ -38,16 +38,16 @@ float circle::inertia() const
     return 0.5f * radius * radius;
 }
 
+void circle::bound()
+{
+    m_aabb.min = m_global_centroid - glm::vec2(radius);
+    m_aabb.max = m_global_centroid + glm::vec2(radius);
+}
+
 glm::vec2 circle::closest_direction_from(const glm::vec2 &p) const
 {
     const glm::vec2 dir = m_transform.position - p;
     return dir - glm::normalize(dir) * radius;
-}
-
-void circle::on_shape_transform_update(const glm::mat3 &transform)
-{
-    shape2D::on_shape_transform_update(transform);
-    m_aabb.bound(*this);
 }
 
 bool circle::is_convex() const

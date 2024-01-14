@@ -5,18 +5,10 @@
 
 namespace geo
 {
-class polygon;
-class circle;
 struct aabb2D
 {
-    aabb2D(const polygon &poly);
-    aabb2D(const circle &c);
-
     aabb2D(const glm::vec2 &point = glm::vec2(0.f));
     aabb2D(const glm::vec2 &min, const glm::vec2 &max);
-
-    void bound(const polygon &poly);
-    void bound(const circle &c);
 
     glm::vec2 dimension() const;
 

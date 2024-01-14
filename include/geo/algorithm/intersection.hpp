@@ -39,7 +39,65 @@ template <std::size_t MaxPoints> struct clip_info
     std::uint8_t size = 0;
 };
 
-template <std::size_t MaxPoints>
-clip_info<MaxPoints> clipping_contacts(const polygon &poly1, const polygon &poly2, const glm::vec2 &mtv,
-                                       bool include_intersections = true);
+template <std::size_t MaxPoints, std::size_t Capacity>
+clip_info<MaxPoints> clipping_contacts(const polygon<Capacity> &poly1, const polygon<Capacity> &poly2,
+                                       const glm::vec2 &mtv, bool include_intersections = true)
+{
+    float max_dot = glm::dot(mtv, poly1.global_edge_normal(0));
+    std::size_t normal_index = 0;
+
+    const polygon<Capacity> *ref_poly = &poly1;
+    const polygon<Capacity> *inc_poly = &poly2;
+
+    for (std::size_t i = 1; i < poly1.size(); i++)
+    {
+        const float dot = glm::dot(mtv, poly1.global_edge_normal(i));
+        if (dot > max_dot)
+        {
+            max_dot = dot;
+            normal_index = i;
+        }
+    }
+    for (std::size_t i = 0; i < poly2.size(); i++)
+    {
+        const float dot = glm::dot(-mtv, poly2.global_edge_normal(i));
+        if (dot > max_dot)
+        {
+            max_dot = dot;
+            normal_index = i;
+            ref_poly = &poly2;
+            inc_poly = &poly1;
+        }
+    }
+    const glm::vec2 &normal = ref_poly->global_edge_normal(normal_index);
+    const glm::vec2 &start = ref_poly->global(normal_index);
+
+    clip_info<MaxPoints> result;
+    float current_dot = glm::dot(inc_poly->global(0) - start, normal);
+    for (std::size_t i = 0; i < inc_poly->size(); i++)
+    {
+        const float next_dot = glm::dot(inc_poly->global(i + 1) - start, normal);
+        if (current_dot <= 0.f)
+        {
+            result.contacts[result.size++] = inc_poly->global(i);
+            if (result.size == MaxPoints)
+                break;
+        }
+        if (include_intersections && current_dot * next_dot < 0.f)
+        {
+            const float current_abs = abs(current_dot);
+            const float next_abs = abs(next_dot);
+            result.contacts[result.size++] = inc_poly->global(i) + (inc_poly->global(i + 1) - inc_poly->global(i)) *
+                                                                       current_abs / (current_abs + next_abs);
+            if (result.size == MaxPoints)
+                break;
+        }
+
+        current_dot = next_dot;
+    }
+    if (ref_poly != &poly1)
+        for (std::size_t i = 0; i < result.size; i++)
+            result.contacts[i] += mtv;
+    return result;
+}
 } // namespace geo

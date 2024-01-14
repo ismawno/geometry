@@ -27,6 +27,7 @@ void shape2D::update()
 {
     const glm::mat3 transform = m_transform.center_scale_rotate_translate3();
     on_shape_transform_update(transform);
+    bound();
 }
 
 void shape2D::on_shape_transform_update(const glm::mat3 &transform)

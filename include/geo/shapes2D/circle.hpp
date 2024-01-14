@@ -4,7 +4,7 @@
 
 namespace geo
 {
-class circle : public shape2D
+class circle final : public shape2D
 {
   public:
     circle(float radius = 1.f);
@@ -17,6 +17,7 @@ class circle : public shape2D
 
     float area() const override;
     float inertia() const override;
+    void bound() override;
 
     glm::vec2 closest_direction_from(const glm::vec2 &p) const override;
 
@@ -26,8 +27,5 @@ class circle : public shape2D
     YAML::Node encode() const override;
     bool decode(const YAML::Node &node) override;
 #endif
-
-  private:
-    void on_shape_transform_update(const glm::mat3 &transform) override;
 };
 } // namespace geo

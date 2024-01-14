@@ -1,11 +1,15 @@
 #pragma once
 #ifdef KIT_USE_YAML_CPP
 
-#include "geo/shapes2D/polygon.hpp"
 #include "geo/shapes2D/circle.hpp"
 #include "kit/serialization/yaml/codec.hpp"
 #include "kit/serialization/yaml/glm.hpp"
 #include "kit/serialization/yaml/transform.hpp"
+
+namespace geo
+{
+template <std::size_t Capacity> class polygon;
+}
 
 template <> struct kit::yaml::codec<geo::aabb2D>
 {
@@ -47,9 +51,9 @@ template <> struct kit::yaml::codec<geo::circle>
     }
 };
 
-template <> struct kit::yaml::codec<geo::polygon>
+template <std::size_t Capacity> struct kit::yaml::codec<geo::polygon<Capacity>>
 {
-    static YAML::Node encode(const geo::polygon &poly)
+    static YAML::Node encode(const geo::polygon<Capacity> &poly)
     {
         YAML::Node node;
         node["Transform"] = poly.transform();
@@ -60,7 +64,7 @@ template <> struct kit::yaml::codec<geo::polygon>
         }
         return node;
     }
-    static bool decode(const YAML::Node &node, geo::polygon &poly)
+    static bool decode(const YAML::Node &node, geo::polygon<Capacity> &poly)
     {
         if (!node.IsMap() || node.size() != 2)
             return false;

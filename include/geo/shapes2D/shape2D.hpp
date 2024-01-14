@@ -24,6 +24,8 @@ class shape2D : public kit::yaml::serializable, public kit::yaml::deserializable
     void end_update();
 
     const aabb2D &bounding_box() const;
+    virtual void bound() = 0;
+
     virtual glm::vec2 closest_direction_from(const glm::vec2 &p) const = 0;
 
     const kit::transform2D<float> &transform() const;
