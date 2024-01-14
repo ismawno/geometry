@@ -54,7 +54,7 @@ class polygon : public shape2D
         {
             return m_end;
         }
-        std::vector<glm::vec2> as_vector() const
+        std::vector<glm::vec2> as_vector() const // Delete this
         {
             return std::vector<glm::vec2>(m_begin, m_end);
         }

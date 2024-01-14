@@ -1,7 +1,7 @@
 #pragma once
 
-#include "glm/vec2.hpp"
-#include "glm/mat2x2.hpp"
+#include <glm/vec2.hpp>
+#include <glm/mat2x2.hpp>
 #include "geo/shapes2D/aabb2D.hpp"
 
 #include "kit/utility/transform.hpp"
