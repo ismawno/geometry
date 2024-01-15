@@ -70,7 +70,7 @@ template <std::size_t Capacity = SIZE_MAX> class polygon final : public shape2D
         glm::vec2 closest(0.f);
         for (std::size_t i = 0; i < m_globals.size(); i++)
         {
-            const glm::vec2 towards = towards_segment_from(m_globals[i], (*this)[i + 1], p);
+            const glm::vec2 towards = towards_segment_from(m_globals[i], global(i + 1), p);
             const float dist = glm::length2(towards);
             if (min_dist > dist)
             {
@@ -127,7 +127,7 @@ template <std::size_t Capacity = SIZE_MAX> class polygon final : public shape2D
         return vertices;
     }
 
-    const glm::vec2 &operator[](const std::size_t index) const
+    const glm::vec2 &global(const std::size_t index) const
     {
         return m_globals[index % m_globals.size()];
     }
@@ -149,24 +149,19 @@ template <std::size_t Capacity = SIZE_MAX> class polygon final : public shape2D
     {
         return m_globals.size();
     }
-    float area() const
+    float area() const override
     {
         return m_area;
     }
-    float inertia() const
+    float inertia() const override
     {
         return m_inertia;
     }
 
-    auto begin() const
+    const vertices2D<Capacity> &globals() const
     {
-        return m_globals.begin();
+        return m_globals;
     }
-    auto end() const
-    {
-        return m_globals.end();
-    }
-
     const vertices2D<Capacity> &locals() const
     {
         return m_locals;
@@ -183,11 +178,11 @@ template <std::size_t Capacity = SIZE_MAX> class polygon final : public shape2D
 
     // Try local + global edges and normals and switch to only global edges and normals if performance issues
 #ifdef KIT_USE_YAML_CPP
-    YAML::Node encode() const
+    YAML::Node encode() const override
     {
         return kit::yaml::codec<polygon>::encode(*this);
     }
-    bool decode(const YAML::Node &node)
+    bool decode(const YAML::Node &node) override
     {
         return kit::yaml::codec<polygon>::decode(node, *this);
     }
@@ -209,7 +204,7 @@ template <std::size_t Capacity = SIZE_MAX> class polygon final : public shape2D
             m_globals[i] = transform * glm::vec3(m_locals[i], 1.f);
         for (std::size_t i = 0; i < m_globals.size(); i++)
         {
-            m_edges[i] = (*this)[i + 1] - m_globals[i];
+            m_edges[i] = global(i + 1) - m_globals[i];
             m_normals[i] = glm::normalize(glm::vec2(m_edges[i].y, -m_edges[i].x));
         }
     }
@@ -253,7 +248,7 @@ template <std::size_t Capacity = SIZE_MAX> class polygon final : public shape2D
         return current_centroid;
     }
 
-    template <typename It> static glm::vec2 center_of_vertices(const vertices2D<Capacity> &vertices)
+    static glm::vec2 center_of_vertices(const vertices2D<Capacity> &vertices)
     {
         glm::vec2 center(0.f);
         for (const glm::vec2 &v : vertices)
@@ -263,12 +258,12 @@ template <std::size_t Capacity = SIZE_MAX> class polygon final : public shape2D
 
     static glm::vec2 compute_center_of_mass(const polygon &poly)
     {
-        const glm::vec2 &p1 = poly[0]; // No locals available yet
+        const glm::vec2 &p1 = poly.global(0); // No locals available yet
         glm::vec2 num(0.f), den(0.f);
         for (std::size_t i = 1; i < poly.size() - 1; i++)
         {
-            const glm::vec2 e1 = poly[i] - p1;
-            const glm::vec2 e2 = poly[i + 1] - p1;
+            const glm::vec2 e1 = poly.global(i) - p1;
+            const glm::vec2 e2 = poly.global(i + 1) - p1;
 
             const float crs = std::abs(kit::cross2D(e1, e2));
             num += (e1 + e2) * crs;

@@ -43,7 +43,7 @@ template <std::size_t MaxPoints, std::size_t Capacity>
 clip_info<MaxPoints> clipping_contacts(const polygon<Capacity> &poly1, const polygon<Capacity> &poly2,
                                        const glm::vec2 &mtv, bool include_intersections = true)
 {
-    float max_dot = glm::dot(mtv, poly1.global_edge_normal(0));
+    float max_dot = glm::dot(mtv, poly1.normal(0));
     std::size_t normal_index = 0;
 
     const polygon<Capacity> *ref_poly = &poly1;
@@ -51,7 +51,7 @@ clip_info<MaxPoints> clipping_contacts(const polygon<Capacity> &poly1, const pol
 
     for (std::size_t i = 1; i < poly1.size(); i++)
     {
-        const float dot = glm::dot(mtv, poly1.global_edge_normal(i));
+        const float dot = glm::dot(mtv, poly1.normal(i));
         if (dot > max_dot)
         {
             max_dot = dot;
@@ -60,7 +60,7 @@ clip_info<MaxPoints> clipping_contacts(const polygon<Capacity> &poly1, const pol
     }
     for (std::size_t i = 0; i < poly2.size(); i++)
     {
-        const float dot = glm::dot(-mtv, poly2.global_edge_normal(i));
+        const float dot = glm::dot(-mtv, poly2.normal(i));
         if (dot > max_dot)
         {
             max_dot = dot;
@@ -69,7 +69,7 @@ clip_info<MaxPoints> clipping_contacts(const polygon<Capacity> &poly1, const pol
             inc_poly = &poly1;
         }
     }
-    const glm::vec2 &normal = ref_poly->global_edge_normal(normal_index);
+    const glm::vec2 &normal = ref_poly->normal(normal_index);
     const glm::vec2 &start = ref_poly->global(normal_index);
 
     clip_info<MaxPoints> result;

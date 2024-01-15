@@ -2,6 +2,7 @@
 #ifdef KIT_USE_YAML_CPP
 
 #include "geo/shapes2D/circle.hpp"
+#include "geo/shapes2D/vertices2D.hpp"
 #include "kit/serialization/yaml/codec.hpp"
 #include "kit/serialization/yaml/glm.hpp"
 #include "kit/serialization/yaml/transform.hpp"
@@ -70,10 +71,9 @@ template <std::size_t Capacity> struct kit::yaml::codec<geo::polygon<Capacity>>
             return false;
         YAML::Node node_v = node["Vertices"];
 
-        std::vector<glm::vec2> vertices;
-        vertices.reserve(node_v.size());
+        geo::vertices2D<Capacity> vertices{node_v.size()};
         for (std::size_t i = 0; i < node_v.size(); i++)
-            vertices.push_back(node_v[i].as<glm::vec2>());
+            vertices[i] = node_v[i].as<glm::vec2>();
 
         const kit::transform2D<float> transform = node["Transform"].as<kit::transform2D<float>>();
         poly = {transform, vertices};

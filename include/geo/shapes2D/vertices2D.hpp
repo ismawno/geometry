@@ -7,7 +7,7 @@
 
 namespace geo
 {
-template <std::size_t Capacity>
+template <std::size_t Capacity = SIZE_MAX>
     requires(Capacity >= 3)
 class vertices2D
 {
@@ -32,6 +32,9 @@ class vertices2D
         }
         KIT_ASSERT_ERROR(m_size >= 3, "Polygon must have at least 3 vertices")
     }
+    vertices2D(std::initializer_list<glm::vec2> vertices) : vertices2D(vertices.begin(), vertices.end())
+    {
+    }
 
     template <std::size_t OtherCapacity> vertices2D(const vertices2D<OtherCapacity> &other) : m_size(other.size())
     {
@@ -47,6 +50,12 @@ class vertices2D
         for (std::size_t i = 0; i < m_size; ++i)
             m_vertices[i] = other[i];
         return *this;
+    }
+
+    void push_back(const glm::vec2 &vertex)
+    {
+        KIT_ASSERT_ERROR(m_size < Capacity, "Vertex capacity exceeded: {0}", Capacity)
+        m_vertices[m_size++] = vertex;
     }
 
     const glm::vec2 &operator[](const std::size_t index) const
@@ -98,9 +107,7 @@ concept V2Vector = std::is_same_v<Container, std::vector<glm::vec2>>;
 template <> class vertices2D<SIZE_MAX>
 {
   public:
-    vertices2D(const std::size_t size = 0) : m_vertices(size)
-    {
-    }
+    vertices2D(const std::size_t size = 0);
 
     template <V2Vector Container> vertices2D(Container &&vertices) : m_vertices(std::forward<Container>(vertices))
     {
@@ -110,10 +117,10 @@ template <> class vertices2D<SIZE_MAX>
     vertices2D(const std::array<glm::vec2, Capacity> &other) : m_vertices(other.begin(), other.end())
     {
     }
-
     template <kit::Iterator<glm::vec2> It> vertices2D(It begin, It end) : m_vertices(begin, end)
     {
     }
+    vertices2D(std::initializer_list<glm::vec2> vertices);
 
     template <std::size_t OtherCapacity> vertices2D(const vertices2D<OtherCapacity> &other)
     {
@@ -129,6 +136,8 @@ template <> class vertices2D<SIZE_MAX>
             m_vertices[i] = other[i];
         return *this;
     }
+
+    void push_back(const glm::vec2 &vertex);
 
     const glm::vec2 &operator[](const std::size_t index) const;
     glm::vec2 &operator[](const std::size_t index);
