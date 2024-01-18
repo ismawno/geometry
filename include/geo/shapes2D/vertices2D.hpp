@@ -1,12 +1,96 @@
 #pragma once
 
-#include "kit/debug/log.hpp"
-#include "kit/utility/type_constraints.hpp"
+#include "kit/container/dynarray.hpp"
 #include <glm/vec2.hpp>
-#include <array>
 
 namespace geo
 {
+template <std::size_t N>
+    requires(N >= 3)
+class vertex_container2D
+{
+  public:
+    template <class... Args> vertex_container2D(Args &&...args) : m_vertices(std::forward<Args>(args)...)
+    {
+    }
+
+    const glm::vec2 &operator[](const std::size_t index) const
+    {
+        return m_vertices[index];
+    }
+
+    auto begin() const
+    {
+        return m_vertices.begin();
+    }
+    auto end() const
+    {
+        return m_vertices.end();
+    }
+
+  private:
+    glm::vec2 &operator[](const std::size_t index)
+    {
+        return m_vertices[index];
+    }
+
+    auto begin()
+    {
+        return m_vertices.begin();
+    }
+    auto end()
+    {
+        return m_vertices.end();
+    }
+
+    kit::dynarray<glm::vec2, N> m_vertices;
+};
+
+template <> class vertex_container2D<SIZE_MAX>
+{
+  public:
+    vertex_container2D(std::vector<glm::vec2> *vertices, const std::size_t start, const std::size_t size)
+        : m_vertices(vertices), m_start(start), m_size(size)
+    {
+    }
+
+    const glm::vec2 &operator[](const std::size_t index) const
+    {
+        KIT_ASSERT_ERROR(index < m_size, "Index exceeds container size: {0}", index)
+        return m_vertices->at(m_start + index);
+    }
+
+    auto begin() const
+    {
+        return m_vertices->begin() + m_start;
+    }
+    auto end() const
+    {
+        return m_vertices->begin() + m_start + m_size;
+    }
+
+  private:
+    glm::vec2 &operator[](const std::size_t index)
+    {
+        KIT_ASSERT_ERROR(index < m_size, "Index exceeds container size: {0}", index)
+        return m_vertices->at(m_start + index);
+    }
+
+    auto begin()
+    {
+        return m_vertices->begin() + m_start;
+    }
+    auto end()
+    {
+        return m_vertices->begin() + m_start + m_size;
+    }
+
+    std::vector<glm::vec2> *m_vertices;
+    std::size_t m_start, m_size;
+
+    friend class polygon;
+};
+
 template <std::size_t Capacity = SIZE_MAX>
     requires(Capacity >= 3)
 class vertices2D
