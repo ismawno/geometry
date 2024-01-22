@@ -6,14 +6,15 @@
 
 namespace geo
 {
+template <std::size_t N> class polygon;
 template <std::size_t N>
     requires(N >= 3)
-class vertex_container2D
+class vertices2D
 {
   public:
     template <class... VectorArgs>
-        requires kit::NoCopyCtorOverride<vertex_container2D, VectorArgs...>
-    vertex_container2D(VectorArgs &&...args) : m_vertices(std::forward<VectorArgs>(args)...)
+        requires kit::NoCopyCtorOverride<vertices2D, VectorArgs...>
+    vertices2D(VectorArgs &&...args) : m_vertices(std::forward<VectorArgs>(args)...)
     {
     }
 
@@ -36,6 +37,11 @@ class vertex_container2D
         return m_vertices.size();
     }
 
+    operator const kit::dynarray<glm::vec2, N> &() const
+    {
+        return m_vertices;
+    }
+
   private:
     glm::vec2 &operator[](const std::size_t index)
     {
@@ -54,29 +60,5 @@ class vertex_container2D
     kit::dynarray<glm::vec2, N> m_vertices;
 
     friend class polygon<N>;
-};
-
-template <std::size_t Capacity>
-    requires(Capacity >= 3)
-class vertices2D
-{
-  public:
-    template <class... VectorArgs>
-        requires kit::NoCopyCtorOverride<vertices2D, VectorArgs...>
-    vertices2D(VectorArgs &&...args)
-        : globals(std::forward<VectorArgs>(args)...), locals(globals.size()), edges(globals.size()),
-          normals(globals.size())
-    {
-    }
-
-    std::size_t size() const
-    {
-        return globals.size();
-    }
-
-    vertex_container2D<Capacity> globals;
-    vertex_container2D<Capacity> locals;
-    vertex_container2D<Capacity> edges;
-    vertex_container2D<Capacity> normals;
 };
 } // namespace geo

@@ -13,26 +13,26 @@ namespace geo
 template <std::size_t Capacity> class polygon final : public shape2D
 {
   public:
-    template <kit::Iterator<glm::vec2> It> polygon(It it1, It it2) : m_vertices(it1, it2)
+    template <kit::Iterator<glm::vec2> It> polygon(It it1, It it2) : globals(it1, it2)
     {
         m_transform.position = initialize_properties_and_local_vertices();
         update();
     }
-    template <std::size_t Size>
+    template <std::size_t Size = 4>
         requires(Size >= 3 && Size <= Capacity)
-    polygon(const kit::dynarray<glm::vec2, Size> &vertices = square(1.f)) : m_vertices(vertices)
+    polygon(const kit::dynarray<glm::vec2, Size> &vertices = square(1.f)) : globals(vertices)
     {
         m_transform.position = initialize_properties_and_local_vertices();
         update();
     }
-    polygon(std::initializer_list<glm::vec2> vertices) : m_vertices(vertices)
+    polygon(std::initializer_list<glm::vec2> vertices) : globals(vertices)
     {
         m_transform.position = initialize_properties_and_local_vertices();
         update();
     }
 
     template <kit::Iterator<glm::vec2> It>
-    polygon(const kit::transform2D<float> &transform, It it1, It it2) : shape2D(transform), m_vertices(it1, it2)
+    polygon(const kit::transform2D<float> &transform, It it1, It it2) : shape2D(transform), globals(it1, it2)
     {
         initialize_properties_and_local_vertices();
         update();
@@ -41,37 +41,42 @@ template <std::size_t Capacity> class polygon final : public shape2D
     template <std::size_t Size>
         requires(Size >= 3 && Size <= Capacity)
     polygon(const kit::transform2D<float> &transform, const kit::dynarray<glm::vec2, Size> &vertices = square(1.f))
-        : shape2D(transform), m_vertices(vertices)
+        : shape2D(transform), globals(vertices)
     {
         initialize_properties_and_local_vertices();
         update();
     }
-    polygon(const kit::transform2D<float> &transform, std::initializer_list<glm::vec2> vertices) : m_vertices(vertices)
+    polygon(const kit::transform2D<float> &transform, std::initializer_list<glm::vec2> vertices) : globals(vertices)
     {
         initialize_properties_and_local_vertices();
         update();
     }
 
+    vertices2D<Capacity> globals;
+    vertices2D<Capacity> locals;
+    vertices2D<Capacity> edges;
+    vertices2D<Capacity> normals;
+
     glm::vec2 support_point(const glm::vec2 &direction) const override
     {
         std::size_t support = 0;
-        float max_dot = glm::dot(direction, m_vertices.globals[support] - m_global_centroid);
-        for (std::size_t i = 1; i < m_vertices.size(); i++)
+        float max_dot = glm::dot(direction, globals[support] - m_global_centroid);
+        for (std::size_t i = 1; i < globals.size(); i++)
         {
-            const float dot = glm::dot(direction, m_vertices.globals[i] - m_global_centroid);
+            const float dot = glm::dot(direction, globals[i] - m_global_centroid);
             if (dot > max_dot)
             {
                 max_dot = dot;
                 support = i;
             }
         }
-        return m_vertices.globals[support];
+        return globals[support];
     }
 
     bool is_convex() const override
     {
-        for (std::size_t i = 0; i < m_vertices.size(); i++)
-            if (kit::cross2D(m_vertices.edges[i], m_vertices.edges[i + 1]) < 0.f)
+        for (std::size_t i = 0; i < globals.size(); i++)
+            if (kit::cross2D(edges[i], edges[i + 1]) < 0.f)
                 return false;
 
         return true;
@@ -80,10 +85,10 @@ template <std::size_t Capacity> class polygon final : public shape2D
     {
         KIT_ASSERT_WARN(is_convex(),
                         "Checking if a point is contained in a non convex polygon yields undefined behaviour.")
-        for (std::size_t i = 0; i < m_vertices.size(); i++)
+        for (std::size_t i = 0; i < globals.size(); i++)
         {
-            const glm::vec2 &normal = m_vertices.normals[i];
-            const glm::vec2 side = p - m_vertices.globals[i];
+            const glm::vec2 &normal = normals[i];
+            const glm::vec2 side = p - globals[i];
             if (glm::dot(normal, side) > 0.f)
                 return false;
         }
@@ -94,9 +99,9 @@ template <std::size_t Capacity> class polygon final : public shape2D
     {
         float min_dist = FLT_MAX;
         glm::vec2 closest(0.f);
-        for (std::size_t i = 0; i < m_vertices.size(); i++)
+        for (std::size_t i = 0; i < globals.size(); i++)
         {
-            const glm::vec2 towards = towards_segment_from(m_vertices.globals[i], m_vertices.globals[i + 1], p);
+            const glm::vec2 towards = towards_segment_from(globals[i], globals[i + 1], p);
             const float dist = glm::length2(towards);
             if (min_dist > dist)
             {
@@ -111,9 +116,9 @@ template <std::size_t Capacity> class polygon final : public shape2D
     {
         m_aabb.min = glm::vec2(FLT_MAX);
         m_aabb.max = -glm::vec2(FLT_MAX);
-        for (std::size_t i = 0; i < m_vertices.size(); i++)
+        for (std::size_t i = 0; i < globals.size(); i++)
         {
-            const glm::vec2 &v = m_vertices.globals[i];
+            const glm::vec2 &v = globals[i];
             if (m_aabb.min.x > v.x)
                 m_aabb.min.x = v.x;
             if (m_aabb.min.y > v.y)
@@ -164,9 +169,9 @@ template <std::size_t Capacity> class polygon final : public shape2D
         return m_inertia;
     }
 
-    const vertices2D<Capacity> &vertices() const
+    std::size_t size() const
     {
-        return m_vertices;
+        return globals.size();
     }
 
 #ifdef KIT_USE_YAML_CPP
@@ -181,27 +186,25 @@ template <std::size_t Capacity> class polygon final : public shape2D
 #endif
 
   private:
-    vertices2D<Capacity> m_vertices;
     float m_area = 0.f;
     float m_inertia = 0.f;
 
     void on_shape_transform_update(const glm::mat3 &transform) override
     {
         shape2D::on_shape_transform_update(transform);
-        for (std::size_t i = 0; i < m_vertices.size(); i++)
-            m_vertices.globals[i] = transform * glm::vec3(m_vertices.locals[i], 1.f);
-        for (std::size_t i = 0; i < m_vertices.size(); i++)
+        for (std::size_t i = 0; i < globals.size(); i++)
+            globals[i] = transform * glm::vec3(locals[i], 1.f);
+        for (std::size_t i = 0; i < globals.size(); i++)
         {
-            m_vertices.edges[i] = m_vertices.globals[i + 1] - m_vertices.globals[i];
-            m_vertices.normals[i] = glm::normalize(glm::vec2(m_vertices.edges[i].y, -m_vertices.edges[i].x));
+            edges[i] = globals[i + 1] - globals[i];
+            normals[i] = glm::normalize(glm::vec2(edges[i].y, -edges[i].x));
         }
     }
 
     void sort_global_vertices()
     {
-        const glm::vec2 center =
-            center_of_vertices(m_vertices.globals.begin(), m_vertices.globals.end(), m_vertices.size());
-        const glm::vec2 reference = m_vertices.globals[0] - center;
+        const glm::vec2 center = center_of_vertices(globals);
+        const glm::vec2 reference = globals[0] - center;
 
         const auto cmp = [&center, &reference](const glm::vec2 &v1, const glm::vec2 &v2) {
             const glm::vec2 dir1 = v1 - center, dir2 = v2 - center;
@@ -217,7 +220,7 @@ template <std::size_t Capacity> class polygon final : public shape2D
                 return kit::cross2D(dir1, dir2) > 0.f;
             return det1 > 0.f;
         };
-        std::sort(m_vertices.globals.begin(), m_vertices.globals.end(), cmp);
+        std::sort(globals.begin(), globals.end(), cmp);
     }
 
     glm::vec2 initialize_properties_and_local_vertices()
@@ -225,30 +228,30 @@ template <std::size_t Capacity> class polygon final : public shape2D
         sort_global_vertices();
         const glm::vec2 current_centroid = compute_center_of_mass(*this);
 
-        for (std::size_t i = 0; i < m_vertices.size(); i++)
-            m_vertices.locals[i] = m_vertices.globals[i] - current_centroid;
+        for (std::size_t i = 0; i < globals.size(); i++)
+            locals[i] = globals[i] - current_centroid;
 
         m_area = compute_area(*this);
         m_inertia = compute_inertia(*this);
         return current_centroid;
     }
 
-    template <kit::Iterator<glm::vec2> It> static glm::vec2 center_of_vertices(It it1, It it2, const std::size_t size)
+    static glm::vec2 center_of_vertices(const vertices2D<Capacity> &vertices)
     {
         glm::vec2 center(0.f);
-        for (It it = it1; it != it2; it++)
-            center += *it;
-        return center / (float)size;
+        for (const glm::vec2 &v : vertices)
+            center += v;
+        return center / (float)vertices.size();
     }
 
     static glm::vec2 compute_center_of_mass(const polygon &poly)
     {
-        const glm::vec2 &p1 = poly.m_vertices.globals[0]; // No locals available yet
+        const glm::vec2 &p1 = poly.globals[0]; // No locals available yet
         glm::vec2 num(0.f), den(0.f);
-        for (std::size_t i = 1; i < poly.size() - 1; i++)
+        for (std::size_t i = 1; i < poly.globals.size() - 1; i++)
         {
-            const glm::vec2 e1 = poly.m_vertices.globals[i] - p1;
-            const glm::vec2 e2 = poly.m_vertices.globals[i + 1] - p1;
+            const glm::vec2 e1 = poly.globals[i] - p1;
+            const glm::vec2 e2 = poly.globals[i + 1] - p1;
 
             const float crs = std::abs(kit::cross2D(e1, e2));
             num += (e1 + e2) * crs;
@@ -260,12 +263,12 @@ template <std::size_t Capacity> class polygon final : public shape2D
     static float compute_area(const polygon &poly)
     {
         float area = 0.f;
-        const glm::vec2 &p1 = poly.m_vertices.locals[0];
+        const glm::vec2 &p1 = poly.locals[0];
 
-        for (std::size_t i = 1; i < poly.size() - 1; i++)
+        for (std::size_t i = 1; i < poly.globals.size() - 1; i++)
         {
-            const glm::vec2 e1 = poly.m_vertices.locals[i] - p1;
-            const glm::vec2 e2 = poly.m_vertices.locals[i + 1] - p1;
+            const glm::vec2 e1 = poly.locals[i] - p1;
+            const glm::vec2 e2 = poly.locals[i + 1] - p1;
             area += std::abs(kit::cross2D(e1, e2));
         }
         return area * 0.5f;
@@ -273,13 +276,13 @@ template <std::size_t Capacity> class polygon final : public shape2D
 
     static float compute_inertia(const polygon &poly)
     {
-        const glm::vec2 &p1 = poly.m_vertices.locals[0];
+        const glm::vec2 &p1 = poly.locals[0];
         float inertia = 0.f;
 
-        for (std::size_t i = 1; i < poly.size() - 1; i++)
+        for (std::size_t i = 1; i < poly.globals.size() - 1; i++)
         {
-            const glm::vec2 &p2 = poly.m_vertices.locals[i];
-            const glm::vec2 &p3 = poly.m_vertices.locals[i + 1];
+            const glm::vec2 &p2 = poly.locals[i];
+            const glm::vec2 &p3 = poly.locals[i + 1];
             const glm::vec2 e1 = p1 - p2;
             const glm::vec2 e2 = p3 - p2;
 
