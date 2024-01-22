@@ -10,7 +10,7 @@
 
 namespace geo
 {
-template <std::size_t Capacity = SIZE_MAX> class polygon final : public shape2D
+template <std::size_t Capacity> class polygon final : public shape2D
 {
   public:
     template <kit::Iterator<glm::vec2> It> polygon(It it1, It it2) : m_vertices(it1, it2)
@@ -19,24 +19,12 @@ template <std::size_t Capacity = SIZE_MAX> class polygon final : public shape2D
         update();
     }
     template <std::size_t Size>
-    polygon(const std::array<glm::vec2, Size> &vertices) : polygon(vertices.begin(), vertices.end())
+    polygon(const kit::dynarray<glm::vec2, Size> &vertices = square(1.f)) : m_vertices(vertices)
     {
-    }
-    template <std::size_t Size>
-    polygon(const kit::dynarray<glm::vec2, Size> &vertices = square(1.f)) : polygon(vertices.begin(), vertices.end())
-    {
+        m_transform.position = initialize_properties_and_local_vertices();
+        update();
     }
     polygon(std::initializer_list<glm::vec2> vertices) : m_vertices(vertices)
-    {
-        m_transform.position = initialize_properties_and_local_vertices();
-        update();
-    }
-    polygon(const std::vector<glm::vec2> &vertices) : m_vertices(vertices)
-    {
-        m_transform.position = initialize_properties_and_local_vertices();
-        update();
-    }
-    polygon(std::vector<glm::vec2> &&vertices) : m_vertices(std::move(vertices))
     {
         m_transform.position = initialize_properties_and_local_vertices();
         update();
@@ -48,28 +36,15 @@ template <std::size_t Capacity = SIZE_MAX> class polygon final : public shape2D
         initialize_properties_and_local_vertices();
         update();
     }
-    template <std::size_t Size>
-    polygon(const kit::transform2D<float> &transform, const std::array<glm::vec2, Size> &vertices)
-        : polygon(transform, vertices.begin(), vertices.end())
-    {
-    }
+
     template <std::size_t Size>
     polygon(const kit::transform2D<float> &transform, const kit::dynarray<glm::vec2, Size> &vertices = square(1.f))
-        : polygon(transform, vertices.begin(), vertices.end())
+        : shape2D(transform), m_vertices(vertices)
     {
+        initialize_properties_and_local_vertices();
+        update();
     }
     polygon(const kit::transform2D<float> &transform, std::initializer_list<glm::vec2> vertices) : m_vertices(vertices)
-    {
-        initialize_properties_and_local_vertices();
-        update();
-    }
-    polygon(const kit::transform2D<float> &transform, const std::vector<glm::vec2> &vertices) : m_vertices(vertices)
-    {
-        initialize_properties_and_local_vertices();
-        update();
-    }
-    polygon(const kit::transform2D<float> &transform, std::vector<glm::vec2> &&vertices)
-        : m_vertices(std::move(vertices))
     {
         initialize_properties_and_local_vertices();
         update();
@@ -166,32 +141,16 @@ template <std::size_t Capacity = SIZE_MAX> class polygon final : public shape2D
     static kit::dynarray<glm::vec2, MaxEdges> ngon(const float radius, const std::uint32_t edges)
     {
         KIT_ASSERT_ERROR(edges >= 3, "Cannot make polygon with less than 3 edges - edges: {0}", edges)
-
-        if constexpr (MaxEdges == SIZE_MAX)
+        KIT_ASSERT_ERROR(edges <= MaxEdges, "Cannot make polygon with more than {0} edges - edges: {1}", MaxEdges,
+                         edges)
+        kit::dynarray<glm::vec2, MaxEdges> vertices{edges};
+        const float dangle = 2.f * (float)M_PI / edges;
+        for (std::size_t i = 0; i < edges; i++)
         {
-            std::vector<glm::vec2> vertices;
-            vertices.reserve(edges);
-            const float dangle = 2.f * (float)M_PI / edges;
-            for (std::size_t i = 0; i < edges; i++)
-            {
-                const float rotation = i * dangle;
-                vertices.emplace_back(radius * sinf(rotation), radius * cosf(rotation));
-            }
-            return vertices;
+            const float rotation = i * dangle;
+            vertices[i] = {radius * sinf(rotation), radius * cosf(rotation)};
         }
-        else
-        {
-            KIT_ASSERT_ERROR(edges <= MaxEdges, "Cannot make polygon with more than {0} edges - edges: {1}", MaxEdges,
-                             edges)
-            kit::dynarray<glm::vec2, MaxEdges> vertices{edges};
-            const float dangle = 2.f * (float)M_PI / edges;
-            for (std::size_t i = 0; i < edges; i++)
-            {
-                const float rotation = i * dangle;
-                vertices[i] = {radius * sinf(rotation), radius * cosf(rotation)};
-            }
-            return vertices;
-        }
+        return vertices;
     }
 
     float area() const override
