@@ -19,6 +19,7 @@ template <std::size_t Capacity> class polygon final : public shape2D
         update();
     }
     template <std::size_t Size>
+        requires(Size >= 3 && Size <= Capacity)
     polygon(const kit::dynarray<glm::vec2, Size> &vertices = square(1.f)) : m_vertices(vertices)
     {
         m_transform.position = initialize_properties_and_local_vertices();
@@ -38,6 +39,7 @@ template <std::size_t Capacity> class polygon final : public shape2D
     }
 
     template <std::size_t Size>
+        requires(Size >= 3 && Size <= Capacity)
     polygon(const kit::transform2D<float> &transform, const kit::dynarray<glm::vec2, Size> &vertices = square(1.f))
         : shape2D(transform), m_vertices(vertices)
     {
