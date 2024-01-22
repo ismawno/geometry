@@ -13,26 +13,30 @@ namespace geo
 template <std::size_t Capacity> class polygon final : public shape2D
 {
   public:
-    template <kit::Iterator<glm::vec2> It> polygon(It it1, It it2) : globals(it1, it2)
+    template <kit::Iterator<glm::vec2> It>
+    polygon(It it1, It it2) : globals(it1, it2), locals(globals.size()), edges(globals.size()), normals(globals.size())
     {
         m_transform.position = initialize_properties_and_local_vertices();
         update();
     }
     template <std::size_t Size = 4>
         requires(Size >= 3 && Size <= Capacity)
-    polygon(const kit::dynarray<glm::vec2, Size> &vertices = square(1.f)) : globals(vertices)
+    polygon(const kit::dynarray<glm::vec2, Size> &vertices = square(1.f))
+        : globals(vertices), locals(globals.size()), edges(globals.size()), normals(globals.size())
     {
         m_transform.position = initialize_properties_and_local_vertices();
         update();
     }
-    polygon(std::initializer_list<glm::vec2> vertices) : globals(vertices)
+    polygon(std::initializer_list<glm::vec2> vertices)
+        : globals(vertices), locals(globals.size()), edges(globals.size()), normals(globals.size())
     {
         m_transform.position = initialize_properties_and_local_vertices();
         update();
     }
 
     template <kit::Iterator<glm::vec2> It>
-    polygon(const kit::transform2D<float> &transform, It it1, It it2) : shape2D(transform), globals(it1, it2)
+    polygon(const kit::transform2D<float> &transform, It it1, It it2)
+        : shape2D(transform), globals(it1, it2), locals(globals.size()), edges(globals.size()), normals(globals.size())
     {
         initialize_properties_and_local_vertices();
         update();
@@ -41,12 +45,13 @@ template <std::size_t Capacity> class polygon final : public shape2D
     template <std::size_t Size>
         requires(Size >= 3 && Size <= Capacity)
     polygon(const kit::transform2D<float> &transform, const kit::dynarray<glm::vec2, Size> &vertices = square(1.f))
-        : shape2D(transform), globals(vertices)
+        : shape2D(transform), globals(vertices), locals(globals.size()), edges(globals.size()), normals(globals.size())
     {
         initialize_properties_and_local_vertices();
         update();
     }
-    polygon(const kit::transform2D<float> &transform, std::initializer_list<glm::vec2> vertices) : globals(vertices)
+    polygon(const kit::transform2D<float> &transform, std::initializer_list<glm::vec2> vertices)
+        : shape2D(transform), globals(vertices), locals(globals.size()), edges(globals.size()), normals(globals.size())
     {
         initialize_properties_and_local_vertices();
         update();
