@@ -1,22 +1,27 @@
 #pragma once
 
 #include "kit/container/dynarray.hpp"
+#include "kit/utility/type_constraints.hpp"
 #include <glm/vec2.hpp>
 
 namespace geo
 {
+template <std::size_t N> class polygon;
+
 template <std::size_t N>
     requires(N >= 3)
 class vertex_container2D
 {
   public:
-    template <class... Args> vertex_container2D(Args &&...args) : m_vertices(std::forward<Args>(args)...)
+    template <class... VectorArgs>
+        requires kit::NoCopyCtorOverride<vertex_container2D, VectorArgs...>
+    vertex_container2D(VectorArgs &&...args) : m_vertices(std::forward<VectorArgs>(args)...)
     {
     }
 
     const glm::vec2 &operator[](const std::size_t index) const
     {
-        return m_vertices[index];
+        return m_vertices[index % m_vertices.size()];
     }
 
     auto begin() const
@@ -28,10 +33,15 @@ class vertex_container2D
         return m_vertices.end();
     }
 
+    std::size_t size() const
+    {
+        return m_vertices.size();
+    }
+
   private:
     glm::vec2 &operator[](const std::size_t index)
     {
-        return m_vertices[index];
+        return m_vertices[index % m_vertices.size()];
     }
 
     auto begin()
@@ -44,20 +54,21 @@ class vertex_container2D
     }
 
     kit::dynarray<glm::vec2, N> m_vertices;
+
+    friend class polygon<N>;
 };
 
 template <> class vertex_container2D<SIZE_MAX>
 {
   public:
-    vertex_container2D(std::vector<glm::vec2> *vertices, const std::size_t start, const std::size_t size)
-        : m_vertices(vertices), m_start(start), m_size(size)
+    vertex_container2D(std::vector<glm::vec2> *vertices, const std::size_t start)
+        : m_vertices(vertices), m_start(start), m_size(vertices->size())
     {
     }
 
     const glm::vec2 &operator[](const std::size_t index) const
     {
-        KIT_ASSERT_ERROR(index < m_size, "Index exceeds container size: {0}", index)
-        return m_vertices->at(m_start + index);
+        return m_vertices->at(m_start + index % m_size);
     }
 
     auto begin() const
@@ -69,11 +80,15 @@ template <> class vertex_container2D<SIZE_MAX>
         return m_vertices->begin() + m_start + m_size;
     }
 
+    std::size_t size() const
+    {
+        return m_size;
+    }
+
   private:
     glm::vec2 &operator[](const std::size_t index)
     {
-        KIT_ASSERT_ERROR(index < m_size, "Index exceeds container size: {0}", index)
-        return m_vertices->at(m_start + index);
+        return m_vertices->at(m_start + index % m_size);
     }
 
     auto begin()
@@ -88,7 +103,7 @@ template <> class vertex_container2D<SIZE_MAX>
     std::vector<glm::vec2> *m_vertices;
     std::size_t m_start, m_size;
 
-    friend class polygon;
+    friend class polygon<SIZE_MAX>;
 };
 
 template <std::size_t Capacity = SIZE_MAX>
@@ -96,158 +111,73 @@ template <std::size_t Capacity = SIZE_MAX>
 class vertices2D
 {
   public:
-    vertices2D(const std::size_t size = 0) : m_size(size)
+    template <class... VectorArgs>
+        requires kit::NoCopyCtorOverride<vertices2D, VectorArgs...>
+    vertices2D(VectorArgs &&...args)
+        : globals(std::forward<VectorArgs>(args)...), locals(globals.size()), edges(globals.size()),
+          normals(globals.size())
     {
     }
 
-    template <std::size_t OtherCapacity>
-        requires(OtherCapacity <= Capacity && OtherCapacity >= 3)
-    vertices2D(const std::array<glm::vec2, OtherCapacity> &vertices) : m_size(OtherCapacity)
-    {
-        for (std::size_t i = 0; i < OtherCapacity; ++i)
-            m_vertices[i] = vertices[i];
-    }
-    template <kit::Iterator<glm::vec2> It> vertices2D(It begin, It end) : m_size(0)
-    {
-        for (auto it = begin; it != end; ++it)
-        {
-            KIT_ASSERT_ERROR(m_size < Capacity, "Vertex capacity exceeded: {0}", Capacity)
-            m_vertices[m_size++] = *it;
-        }
-        KIT_ASSERT_ERROR(m_size >= 3, "Polygon must have at least 3 vertices")
-    }
-    vertices2D(std::initializer_list<glm::vec2> vertices) : vertices2D(vertices.begin(), vertices.end())
-    {
-    }
-
-    template <std::size_t OtherCapacity> vertices2D(const vertices2D<OtherCapacity> &other) : m_size(other.size())
-    {
-        KIT_ASSERT_ERROR(other.size() <= Capacity, "Vertex capacity exceeded: {0}", Capacity)
-        for (std::size_t i = 0; i < m_size; ++i)
-            m_vertices[i] = other[i];
-    }
-
-    template <std::size_t OtherCapacity> vertices2D &operator=(const vertices2D<OtherCapacity> &other)
-    {
-        KIT_ASSERT_ERROR(other.size() <= Capacity, "Vertex capacity exceeded: {0}", Capacity)
-        m_size = other.size();
-        for (std::size_t i = 0; i < m_size; ++i)
-            m_vertices[i] = other[i];
-        return *this;
-    }
-
-    void push_back(const glm::vec2 &vertex)
-    {
-        KIT_ASSERT_ERROR(m_size < Capacity, "Vertex capacity exceeded: {0}", Capacity)
-        m_vertices[m_size++] = vertex;
-    }
-
-    const glm::vec2 &operator[](const std::size_t index) const
-    {
-        KIT_ASSERT_ERROR(index < m_vertices.size(), "Index exceeds container size: {0}", index)
-        return m_vertices[index];
-    }
-    glm::vec2 &operator[](const std::size_t index)
-    {
-        KIT_ASSERT_ERROR(index < m_vertices.size(), "Index exceeds container size: {0}", index)
-        return m_vertices[index];
-    }
-
-    auto begin() const
-    {
-        return m_vertices.begin();
-    }
-    auto end() const
-    {
-        return m_vertices.begin() + m_size;
-    }
-
-    auto begin()
-    {
-        return m_vertices.begin();
-    }
-    auto end()
-    {
-        return m_vertices.begin() + m_size;
-    }
-
-    void resize(std::size_t size)
-    {
-        m_size = size;
-    }
     std::size_t size() const
     {
-        return m_size;
+        return globals.size();
     }
 
-  private:
-    std::array<glm::vec2, Capacity> m_vertices;
-    std::size_t m_size;
+    vertex_container2D<Capacity> globals;
+    vertex_container2D<Capacity> locals;
+    vertex_container2D<Capacity> edges;
+    vertex_container2D<Capacity> normals;
 };
-
-template <typename Container>
-concept V2Vector = std::is_same_v<Container, std::vector<glm::vec2>>;
 
 template <> class vertices2D<SIZE_MAX>
 {
   public:
-    vertices2D(const std::size_t size = 0);
-
-    template <V2Vector Container> vertices2D(Container &&vertices) : m_vertices(std::forward<Container>(vertices))
+    template <class... VectorArgs>
+        requires kit::NoCopyCtorOverride<vertices2D, VectorArgs...>
+    vertices2D(VectorArgs &&...args)
+        : m_vertices(std::forward<VectorArgs>(args)...), globals(&m_vertices, 0),
+          locals(&m_vertices, m_vertices.size()), edges(&m_vertices, 2 * m_vertices.size()),
+          normals(&m_vertices, 3 * m_vertices.size())
     {
+        m_vertices.resize(4 * m_vertices.size());
+    }
+    vertices2D(const vertices2D &other)
+        : m_vertices(other.m_vertices), globals(&m_vertices, 0), locals(&m_vertices, m_vertices.size()),
+          edges(&m_vertices, 2 * m_vertices.size()), normals(&m_vertices, 3 * m_vertices.size())
+    {
+        m_vertices.resize(4 * m_vertices.size());
+    }
+    vertices2D(vertices2D &&other)
+        : m_vertices(std::move(other.m_vertices)), globals(&m_vertices, 0), locals(&m_vertices, m_vertices.size()),
+          edges(&m_vertices, 2 * m_vertices.size()), normals(&m_vertices, 3 * m_vertices.size())
+    {
+        m_vertices.resize(4 * m_vertices.size());
     }
 
-    template <std::size_t Capacity>
-    vertices2D(const std::array<glm::vec2, Capacity> &other) : m_vertices(other.begin(), other.end())
+    vertices2D &operator=(const vertices2D &other)
     {
+        m_vertices = other.m_vertices;
+        return *this;
     }
-    template <kit::Iterator<glm::vec2> It> vertices2D(It begin, It end) : m_vertices(begin, end)
+    vertices2D &operator=(vertices2D &&other)
     {
-    }
-    vertices2D(std::initializer_list<glm::vec2> vertices);
-
-    template <std::size_t OtherCapacity> vertices2D(const vertices2D<OtherCapacity> &other)
-    {
-        m_vertices.resize(other.size());
-        for (std::size_t i = 0; i < m_vertices.size(); ++i)
-            m_vertices[i] = other[i];
-    }
-
-    template <std::size_t OtherCapacity> vertices2D &operator=(const vertices2D<OtherCapacity> &other)
-    {
-        m_vertices.resize(other.size());
-        for (std::size_t i = 0; i < m_vertices.size(); ++i)
-            m_vertices[i] = other[i];
+        m_vertices = std::move(other.m_vertices);
         return *this;
     }
 
-    void push_back(const glm::vec2 &vertex);
-
-    const glm::vec2 &operator[](const std::size_t index) const;
-    glm::vec2 &operator[](const std::size_t index);
-
-    auto begin() const
+    std::size_t size() const
     {
-        return m_vertices.begin();
+        return globals.size();
     }
-    auto end() const
-    {
-        return m_vertices.end();
-    }
-
-    auto begin()
-    {
-        return m_vertices.begin();
-    }
-    auto end()
-    {
-        return m_vertices.end();
-    }
-
-    void resize(std::size_t size);
-    std::size_t size() const;
 
   private:
     std::vector<glm::vec2> m_vertices;
+
+  public:
+    vertex_container2D<SIZE_MAX> globals;
+    vertex_container2D<SIZE_MAX> locals;
+    vertex_container2D<SIZE_MAX> edges;
+    vertex_container2D<SIZE_MAX> normals;
 };
 } // namespace geo
