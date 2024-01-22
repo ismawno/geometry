@@ -43,7 +43,7 @@ template <std::size_t MaxPoints, std::size_t Capacity>
 clip_info<MaxPoints> clipping_contacts(const polygon<Capacity> &poly1, const polygon<Capacity> &poly2,
                                        const glm::vec2 &mtv, bool include_intersections = true)
 {
-    float max_dot = glm::dot(mtv, poly1.normal(0));
+    float max_dot = glm::dot(mtv, poly1.normals[0]);
     std::size_t normal_index = 0;
 
     const polygon<Capacity> *ref_poly = &poly1;
@@ -51,7 +51,7 @@ clip_info<MaxPoints> clipping_contacts(const polygon<Capacity> &poly1, const pol
 
     for (std::size_t i = 1; i < poly1.size(); i++)
     {
-        const float dot = glm::dot(mtv, poly1.normal(i));
+        const float dot = glm::dot(mtv, poly1.normals[i]);
         if (dot > max_dot)
         {
             max_dot = dot;
@@ -60,7 +60,7 @@ clip_info<MaxPoints> clipping_contacts(const polygon<Capacity> &poly1, const pol
     }
     for (std::size_t i = 0; i < poly2.size(); i++)
     {
-        const float dot = glm::dot(-mtv, poly2.normal(i));
+        const float dot = glm::dot(-mtv, poly2.normals[i]);
         if (dot > max_dot)
         {
             max_dot = dot;
@@ -69,17 +69,17 @@ clip_info<MaxPoints> clipping_contacts(const polygon<Capacity> &poly1, const pol
             inc_poly = &poly1;
         }
     }
-    const glm::vec2 &normal = ref_poly->normal(normal_index);
-    const glm::vec2 &start = ref_poly->global(normal_index);
+    const glm::vec2 &normal = ref_poly->normals[normal_index];
+    const glm::vec2 &start = ref_poly->globals[normal_index];
 
     clip_info<MaxPoints> result;
-    float current_dot = glm::dot(inc_poly->global(0) - start, normal);
+    float current_dot = glm::dot(inc_poly->globals[0] - start, normal);
     for (std::size_t i = 0; i < inc_poly->size(); i++)
     {
-        const float next_dot = glm::dot(inc_poly->global(i + 1) - start, normal);
+        const float next_dot = glm::dot(inc_poly->globals[i + 1] - start, normal);
         if (current_dot <= 0.f)
         {
-            result.contacts[result.size++] = inc_poly->global(i);
+            result.contacts[result.size++] = inc_poly->globals[i];
             if (result.size == MaxPoints)
                 break;
         }
@@ -87,8 +87,8 @@ clip_info<MaxPoints> clipping_contacts(const polygon<Capacity> &poly1, const pol
         {
             const float current_abs = abs(current_dot);
             const float next_abs = abs(next_dot);
-            result.contacts[result.size++] = inc_poly->global(i) + (inc_poly->global(i + 1) - inc_poly->global(i)) *
-                                                                       current_abs / (current_abs + next_abs);
+            result.contacts[result.size++] = inc_poly->globals[i] + (inc_poly->globals[i + 1] - inc_poly->globals[i]) *
+                                                                        current_abs / (current_abs + next_abs);
             if (result.size == MaxPoints)
                 break;
         }

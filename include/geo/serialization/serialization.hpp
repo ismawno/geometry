@@ -58,11 +58,10 @@ template <std::size_t Capacity> struct kit::yaml::codec<geo::polygon<Capacity>>
     {
         YAML::Node node;
         node["Transform"] = poly.transform();
-        const geo::vertices2D<Capacity> &vertices = poly.vertices();
 
-        for (std::size_t i = 0; i < vertices.size(); i++)
+        for (std::size_t i = 0; i < poly.size(); i++)
         {
-            node["Vertices"].push_back(vertices.locals[i]);
+            node["Vertices"].push_back(poly.locals[i]);
             node["Vertices"][i].SetStyle(YAML::EmitterStyle::Flow);
         }
         return node;
