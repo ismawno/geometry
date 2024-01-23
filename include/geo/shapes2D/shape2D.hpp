@@ -43,12 +43,13 @@ class shape2D : public kit::yaml::serializable, public kit::yaml::deserializable
     virtual float inertia() const = 0;
     virtual bool is_convex() const = 0;
 
+    void update();
+
   protected:
     kit::transform2D<float> m_transform;
     glm::vec2 m_global_centroid;
     aabb2D m_aabb;
 
-    void update();
     virtual void on_shape_transform_update(const glm::mat3 &transform);
 
   private:
