@@ -43,6 +43,13 @@ class vertices2D
     }
 
   private:
+    kit::dynarray<glm::vec2, N> m_vertices;
+
+    vertices2D(const vertices2D &) = default;
+    vertices2D &operator=(const vertices2D &) = default;
+    vertices2D(vertices2D &&) = default;
+    vertices2D &operator=(vertices2D &&) = default;
+
     glm::vec2 &operator[](const std::size_t index)
     {
         return m_vertices[index % m_vertices.size()];
@@ -56,8 +63,6 @@ class vertices2D
     {
         return m_vertices.end();
     }
-
-    kit::dynarray<glm::vec2, N> m_vertices;
 
     friend class polygon<N>;
 };
