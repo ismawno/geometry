@@ -169,7 +169,7 @@ bool intersects(const aabb2D &bb1, const aabb2D &bb2)
 
 bool intersects(const circle &c1, const circle &c2)
 {
-    const float R = c1.radius + c2.radius;
+    const float R = c1.radius() + c2.radius();
     return glm::distance2(c1.centroid(), c2.centroid()) < R * R;
 }
 mtv_result mtv(const circle &c1, const circle &c2)
@@ -177,7 +177,7 @@ mtv_result mtv(const circle &c1, const circle &c2)
     mtv_result result;
 
     const glm::vec2 dir = c1.centroid() - c2.centroid();
-    result.mtv = dir - (c1.radius + c2.radius) * glm::normalize(dir);
+    result.mtv = dir - (c1.radius() + c2.radius()) * glm::normalize(dir);
     result.valid =
         !std::isnan(result.mtv.x) && !std::isnan(result.mtv.y) && !kit::approaches_zero(glm::length2(result.mtv));
     return result;
@@ -185,6 +185,6 @@ mtv_result mtv(const circle &c1, const circle &c2)
 glm::vec2 radius_distance_contact_point(const circle &c1, const circle &c2)
 {
     const glm::vec2 dir = glm::normalize(c1.centroid() - c2.centroid());
-    return c1.centroid() - dir * c1.radius;
+    return c1.centroid() - dir * c1.radius();
 }
 } // namespace geo

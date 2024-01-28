@@ -17,6 +17,19 @@ const glm::vec2 &shape2D::centroid() const
     return m_centroid;
 }
 
+float shape2D::area() const
+{
+    return m_area;
+}
+float shape2D::inertia() const
+{
+    return m_inertia;
+}
+bool shape2D::convex() const
+{
+    return m_convex;
+}
+
 void shape2D::centroid(const glm::vec2 &centroid)
 {
     translate(centroid - m_centroid);

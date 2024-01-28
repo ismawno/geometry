@@ -39,9 +39,9 @@ class shape2D : public kit::yaml::serializable, public kit::yaml::deserializable
     void rotation(float angle);
     void origin(const glm::vec2 &origin);
 
-    virtual float area() const = 0;
-    virtual float inertia() const = 0;
-    virtual bool is_convex() const = 0;
+    float area() const;
+    float inertia() const;
+    bool convex() const;
 
     void update();
 
@@ -49,6 +49,10 @@ class shape2D : public kit::yaml::serializable, public kit::yaml::deserializable
     kit::transform2D<float> m_transform;
     glm::vec2 m_centroid;
     aabb2D m_aabb;
+
+    float m_area = 0.f;
+    float m_inertia = 0.f;
+    bool m_convex = true;
 
     virtual void on_shape_transform_update(const glm::mat3 &transform);
 

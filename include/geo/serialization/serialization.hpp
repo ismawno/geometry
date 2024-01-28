@@ -39,7 +39,7 @@ template <> struct kit::yaml::codec<geo::circle>
     {
         YAML::Node node;
         node["Transform"] = circ.transform();
-        node["Radius"] = circ.radius;
+        node["Radius"] = circ.radius();
 
         return node;
     }

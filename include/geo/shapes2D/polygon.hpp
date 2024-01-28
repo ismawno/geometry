@@ -78,17 +78,9 @@ template <std::size_t Capacity> class polygon final : public shape2D
         return globals[support];
     }
 
-    bool is_convex() const override
-    {
-        for (std::size_t i = 0; i < globals.size(); i++)
-            if (kit::cross2D(edges[i], edges[i + 1]) < 0.f)
-                return false;
-
-        return true;
-    }
     bool contains_point(const glm::vec2 &p) const override
     {
-        KIT_ASSERT_WARN(is_convex(),
+        KIT_ASSERT_WARN(m_convex,
                         "Checking if a point is contained in a non convex polygon yields undefined behaviour.")
         for (std::size_t i = 0; i < globals.size(); i++)
         {
@@ -165,15 +157,6 @@ template <std::size_t Capacity> class polygon final : public shape2D
         return vertices;
     }
 
-    float area() const override
-    {
-        return m_area;
-    }
-    float inertia() const override
-    {
-        return m_inertia;
-    }
-
     std::size_t size() const
     {
         return globals.size();
@@ -191,9 +174,6 @@ template <std::size_t Capacity> class polygon final : public shape2D
 #endif
 
   private:
-    float m_area = 0.f;
-    float m_inertia = 0.f;
-
     void on_shape_transform_update(const glm::mat3 &transform) override
     {
         shape2D::on_shape_transform_update(transform);
@@ -208,7 +188,7 @@ template <std::size_t Capacity> class polygon final : public shape2D
 
     void sort_global_vertices()
     {
-        const glm::vec2 center = center_of_vertices(globals);
+        const glm::vec2 center = center_of_global_vertices();
         const glm::vec2 reference = globals[0] - center;
 
         const auto cmp = [&center, &reference](const glm::vec2 &v1, const glm::vec2 &v2) {
@@ -231,32 +211,33 @@ template <std::size_t Capacity> class polygon final : public shape2D
     glm::vec2 initialize_properties_and_local_vertices()
     {
         sort_global_vertices();
-        const glm::vec2 current_centroid = compute_center_of_mass(*this);
+        const glm::vec2 current_centroid = compute_center_of_mass();
 
         for (std::size_t i = 0; i < globals.size(); i++)
             locals[i] = globals[i] - current_centroid;
 
-        m_area = compute_area(*this);
-        m_inertia = compute_inertia(*this);
+        m_area = compute_area();
+        m_inertia = compute_inertia();
+        m_convex = compute_convexity();
         return current_centroid;
     }
 
-    static glm::vec2 center_of_vertices(const vertices2D<Capacity> &vertices)
+    glm::vec2 center_of_global_vertices()
     {
         glm::vec2 center(0.f);
-        for (const glm::vec2 &v : vertices)
+        for (const glm::vec2 &v : globals)
             center += v;
-        return center / (float)vertices.size();
+        return center / (float)globals.size();
     }
 
-    static glm::vec2 compute_center_of_mass(const polygon &poly)
+    glm::vec2 compute_center_of_mass()
     {
-        const glm::vec2 &p1 = poly.globals[0]; // No locals available yet
+        const glm::vec2 &p1 = globals[0]; // No locals available yet
         glm::vec2 num(0.f), den(0.f);
-        for (std::size_t i = 1; i < poly.globals.size() - 1; i++)
+        for (std::size_t i = 1; i < globals.size() - 1; i++)
         {
-            const glm::vec2 e1 = poly.globals[i] - p1;
-            const glm::vec2 e2 = poly.globals[i + 1] - p1;
+            const glm::vec2 e1 = globals[i] - p1;
+            const glm::vec2 e2 = globals[i + 1] - p1;
 
             const float crs = std::abs(kit::cross2D(e1, e2));
             num += (e1 + e2) * crs;
@@ -265,29 +246,29 @@ template <std::size_t Capacity> class polygon final : public shape2D
         return p1 + num / (3.f * den);
     }
 
-    static float compute_area(const polygon &poly)
+    float compute_area()
     {
         float area = 0.f;
-        const glm::vec2 &p1 = poly.locals[0];
+        const glm::vec2 &p1 = locals[0];
 
-        for (std::size_t i = 1; i < poly.globals.size() - 1; i++)
+        for (std::size_t i = 1; i < globals.size() - 1; i++)
         {
-            const glm::vec2 e1 = poly.locals[i] - p1;
-            const glm::vec2 e2 = poly.locals[i + 1] - p1;
+            const glm::vec2 e1 = locals[i] - p1;
+            const glm::vec2 e2 = locals[i + 1] - p1;
             area += std::abs(kit::cross2D(e1, e2));
         }
         return area * 0.5f;
     }
 
-    static float compute_inertia(const polygon &poly)
+    float compute_inertia()
     {
-        const glm::vec2 &p1 = poly.locals[0];
+        const glm::vec2 &p1 = locals[0];
         float inertia = 0.f;
 
-        for (std::size_t i = 1; i < poly.globals.size() - 1; i++)
+        for (std::size_t i = 1; i < globals.size() - 1; i++)
         {
-            const glm::vec2 &p2 = poly.locals[i];
-            const glm::vec2 &p3 = poly.locals[i + 1];
+            const glm::vec2 &p2 = locals[i];
+            const glm::vec2 &p3 = locals[i + 1];
             const glm::vec2 e1 = p1 - p2;
             const glm::vec2 e2 = p3 - p2;
 
@@ -314,7 +295,16 @@ template <std::size_t Capacity> class polygon final : public shape2D
             else
                 inertia -= icm2;
         }
-        return std::abs(inertia) / poly.area();
+        return std::abs(inertia) / m_area;
+    }
+
+    bool compute_convexity() const
+    {
+        for (std::size_t i = 0; i < globals.size(); i++)
+            if (kit::cross2D(edges[i], edges[i + 1]) < 0.f)
+                return false;
+
+        return true;
     }
 
     static glm::vec2 towards_segment_from(const glm::vec2 &p1, const glm::vec2 &p2, const glm::vec2 &p)
