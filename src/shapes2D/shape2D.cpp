@@ -37,6 +37,8 @@ void shape2D::centroid(const glm::vec2 &centroid)
 
 void shape2D::update()
 {
+    if (m_pushing_update)
+        return;
     const glm::mat3 transform = m_transform.center_scale_rotate_translate3();
     on_shape_transform_update(transform);
     bound();
@@ -50,35 +52,30 @@ void shape2D::on_shape_transform_update(const glm::mat3 &transform)
 void shape2D::translate(const glm::vec2 &dpos)
 {
     m_transform.position += dpos;
-    if (!m_pushing_update)
-        update();
+    update();
 }
 void shape2D::rotate(const float drotation)
 {
     m_transform.rotation += drotation;
-    if (!m_pushing_update)
-        update();
+    update();
 }
 
 void shape2D::position(const glm::vec2 &position)
 {
     m_transform.position = position;
-    if (!m_pushing_update)
-        update();
+    update();
 }
 
 void shape2D::rotation(const float rotation)
 {
     m_transform.rotation = rotation;
-    if (!m_pushing_update)
-        update();
+    update();
 }
 
 void shape2D::origin(const glm::vec2 &origin)
 {
     m_transform.origin = origin;
-    if (!m_pushing_update)
-        update();
+    update();
 }
 
 bool shape2D::contains_origin() const
@@ -90,8 +87,14 @@ const aabb2D &shape2D::bounding_box() const
     return m_aabb;
 }
 
+bool shape2D::updating() const
+{
+    return m_pushing_update;
+}
+
 void shape2D::begin_update()
 {
+    KIT_ASSERT_ERROR(!m_pushing_update, "Cannot begin update while already updating");
     m_pushing_update = true;
 }
 void shape2D::end_update()

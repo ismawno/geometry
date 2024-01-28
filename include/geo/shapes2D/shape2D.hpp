@@ -43,6 +43,7 @@ class shape2D : public kit::yaml::serializable, public kit::yaml::deserializable
     float inertia() const;
     bool convex() const;
 
+    bool updating() const;
     void update();
 
   protected:
