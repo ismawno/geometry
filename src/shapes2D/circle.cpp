@@ -40,8 +40,8 @@ float circle::inertia() const
 
 void circle::bound()
 {
-    m_aabb.min = m_global_centroid - glm::vec2(radius);
-    m_aabb.max = m_global_centroid + glm::vec2(radius);
+    m_aabb.min = m_centroid - glm::vec2(radius);
+    m_aabb.max = m_centroid + glm::vec2(radius);
 }
 
 glm::vec2 circle::closest_direction_from(const glm::vec2 &p) const

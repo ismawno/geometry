@@ -47,7 +47,7 @@ class shape2D : public kit::yaml::serializable, public kit::yaml::deserializable
 
   protected:
     kit::transform2D<float> m_transform;
-    glm::vec2 m_global_centroid;
+    glm::vec2 m_centroid;
     aabb2D m_aabb;
 
     virtual void on_shape_transform_update(const glm::mat3 &transform);

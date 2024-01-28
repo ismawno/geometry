@@ -3,8 +3,7 @@
 
 namespace geo
 {
-shape2D::shape2D(const kit::transform2D<float> &transform)
-    : m_transform(transform), m_global_centroid(transform.position)
+shape2D::shape2D(const kit::transform2D<float> &transform) : m_transform(transform), m_centroid(transform.position)
 {
 }
 
@@ -15,12 +14,12 @@ const kit::transform2D<float> &shape2D::transform() const
 
 const glm::vec2 &shape2D::centroid() const
 {
-    return m_global_centroid;
+    return m_centroid;
 }
 
 void shape2D::centroid(const glm::vec2 &centroid)
 {
-    translate(centroid - m_global_centroid);
+    translate(centroid - m_centroid);
 }
 
 void shape2D::update()
@@ -32,7 +31,7 @@ void shape2D::update()
 
 void shape2D::on_shape_transform_update(const glm::mat3 &transform)
 {
-    m_global_centroid = transform[2];
+    m_centroid = transform[2];
 }
 
 void shape2D::translate(const glm::vec2 &dpos)

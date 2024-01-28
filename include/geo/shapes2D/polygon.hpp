@@ -65,10 +65,10 @@ template <std::size_t Capacity> class polygon final : public shape2D
     glm::vec2 support_point(const glm::vec2 &direction) const override
     {
         std::size_t support = 0;
-        float max_dot = glm::dot(direction, globals[support] - m_global_centroid);
+        float max_dot = glm::dot(direction, globals[support] - m_centroid);
         for (std::size_t i = 1; i < globals.size(); i++)
         {
-            const float dot = glm::dot(direction, globals[i] - m_global_centroid);
+            const float dot = glm::dot(direction, globals[i] - m_centroid);
             if (dot > max_dot)
             {
                 max_dot = dot;
