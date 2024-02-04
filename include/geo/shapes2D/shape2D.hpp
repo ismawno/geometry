@@ -23,6 +23,9 @@ class shape2D : public kit::yaml::serializable, public kit::yaml::deserializable
     void begin_update();
     void end_update();
 
+    const kit::transform2D<float> *parent() const;
+    void parent(const kit::transform2D<float> *parent);
+
     const aabb2D &bounding_box() const;
     virtual void bound() = 0;
 

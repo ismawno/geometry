@@ -35,6 +35,18 @@ void shape2D::centroid(const glm::vec2 &centroid)
     translate(centroid - m_centroid);
 }
 
+const kit::transform2D<float> *shape2D::parent() const
+{
+    return m_transform.parent;
+}
+void shape2D::parent(const kit::transform2D<float> *parent)
+{
+    if (m_transform.parent == parent)
+        return;
+    m_transform.parent = parent;
+    update();
+}
+
 void shape2D::update()
 {
     if (m_pushing_update)
