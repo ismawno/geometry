@@ -28,6 +28,7 @@ glm::vec2 mtv_support_contact_point(const shape2D &sh1, const shape2D &sh2, cons
 bool may_intersect(const shape2D &sh1, const shape2D &sh2);
 
 bool intersects(const aabb2D &bb1, const aabb2D &bb2);
+bool intersects(const aabb2D &bb, const glm::vec2 &point);
 bool intersects(const circle &c1, const circle &c2);
 
 mtv_result mtv(const circle &c1, const circle &c2);

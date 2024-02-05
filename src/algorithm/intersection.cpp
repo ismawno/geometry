@@ -166,6 +166,10 @@ bool intersects(const aabb2D &bb1, const aabb2D &bb2)
         return false;
     return true;
 }
+bool intersects(const aabb2D &bb, const glm::vec2 &point)
+{
+    return point.x >= bb.min.x && point.x <= bb.max.x && point.y >= bb.min.y && point.y <= bb.max.y;
+}
 
 bool intersects(const circle &c1, const circle &c2)
 {
