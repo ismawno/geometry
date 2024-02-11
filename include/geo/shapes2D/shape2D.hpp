@@ -32,6 +32,7 @@ class shape2D : public kit::yaml::serializable, public kit::yaml::deserializable
     virtual glm::vec2 closest_direction_from(const glm::vec2 &p) const = 0;
 
     const kit::transform2D<float> &ltransform() const;
+    void ltransform(const kit::transform2D<float> &ltransform);
 
     const glm::vec2 &lcentroid() const;
     const glm::vec2 &gcentroid() const;

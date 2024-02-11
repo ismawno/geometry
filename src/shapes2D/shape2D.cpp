@@ -11,6 +11,11 @@ const kit::transform2D<float> &shape2D::ltransform() const
 {
     return m_ltransform;
 }
+void shape2D::ltransform(const kit::transform2D<float> &ltransform)
+{
+    m_ltransform = ltransform;
+    update();
+}
 
 const glm::vec2 &shape2D::lcentroid() const
 {

@@ -31,7 +31,6 @@ template <std::size_t Capacity> class polygon final : public shape2D
         : vertices{.locals{it1, it2}, .globals{it1, it2}, .edges{it1, it2}, .normals{it1, it2}, .model{it1, it2}}
     {
         m_ltransform.position = initialize_properties_and_vertices();
-        update();
     }
 
     template <std::size_t Size = 4>
@@ -44,7 +43,6 @@ template <std::size_t Capacity> class polygon final : public shape2D
                    .model{verts.size()}}
     {
         m_ltransform.position = initialize_properties_and_vertices();
-        update();
     }
     polygon(std::initializer_list<glm::vec2> verts)
         : vertices{.locals{verts},
@@ -54,7 +52,6 @@ template <std::size_t Capacity> class polygon final : public shape2D
                    .model{verts.size()}}
     {
         m_ltransform.position = initialize_properties_and_vertices();
-        update();
     }
 
     template <kit::Iterator<glm::vec2> It>
@@ -63,7 +60,6 @@ template <std::size_t Capacity> class polygon final : public shape2D
           vertices{.locals{it1, it2}, .globals{it1, it2}, .edges{it1, it2}, .normals{it1, it2}, .model{it1, it2}}
     {
         initialize_properties_and_vertices();
-        update();
     }
 
     template <std::size_t Size>
@@ -76,7 +72,6 @@ template <std::size_t Capacity> class polygon final : public shape2D
                                         .model{verts.size()}}
     {
         initialize_properties_and_vertices();
-        update();
     }
     polygon(const kit::transform2D<float> &ltransform, std::initializer_list<glm::vec2> verts)
         : shape2D(ltransform), vertices{.locals{verts},
@@ -86,7 +81,6 @@ template <std::size_t Capacity> class polygon final : public shape2D
                                         .model{verts.size()}}
     {
         initialize_properties_and_vertices();
-        update();
     }
 
     vertex_container vertices;
@@ -246,6 +240,7 @@ template <std::size_t Capacity> class polygon final : public shape2D
 
         for (std::size_t i = 0; i < vertices.size(); i++)
             vertices.model[i] = vertices.locals[i] - current_lcentroid;
+        update();
 
         m_area = compute_area();
         m_inertia = compute_inertia();
