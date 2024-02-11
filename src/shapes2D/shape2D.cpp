@@ -102,7 +102,8 @@ void shape2D::ltranslate(const glm::vec2 &dpos)
 void shape2D::gtranslate(const glm::vec2 &dpos)
 {
     if (m_ltransform.parent)
-        m_ltransform.position += m_ltransform.parent->inverse_center_scale_rotate_translate3() * glm::vec3(dpos, 0.f);
+        m_ltransform.position +=
+            glm::vec2(m_ltransform.parent->inverse_center_scale_rotate_translate3() * glm::vec3(dpos, 0.f));
     else
         ltranslate(dpos);
     update();
