@@ -37,6 +37,7 @@ class shape2D : public kit::yaml::serializable, public kit::yaml::deserializable
     const glm::vec2 &gcentroid() const;
 
     const glm::vec2 &lposition() const;
+    const glm::vec2 &lscale() const;
     float lrotation() const;
     const glm::vec2 &origin() const;
 
@@ -45,6 +46,7 @@ class shape2D : public kit::yaml::serializable, public kit::yaml::deserializable
 
     void lcentroid(const glm::vec2 &lcentroid);
     void lposition(const glm::vec2 &lposition);
+    void lscale(const glm::vec2 &lscale);
     void lrotation(float langle);
     void origin(const glm::vec2 &origin);
 

@@ -25,6 +25,10 @@ const glm::vec2 &shape2D::lposition() const
 {
     return m_ltransform.position;
 }
+const glm::vec2 &shape2D::lscale() const
+{
+    return m_ltransform.scale;
+}
 float shape2D::lrotation() const
 {
     return m_ltransform.rotation;
@@ -100,6 +104,11 @@ void shape2D::lrotate(const float drotation)
 void shape2D::lposition(const glm::vec2 &lposition)
 {
     m_ltransform.position = lposition;
+    update();
+}
+void shape2D::lscale(const glm::vec2 &lscale)
+{
+    m_ltransform.scale = lscale;
     update();
 }
 
