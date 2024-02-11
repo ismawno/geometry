@@ -28,11 +28,7 @@ template <std::size_t Capacity> class polygon final : public shape2D
 
     template <kit::Iterator<glm::vec2> It>
     polygon(It it1, It it2)
-        : vertices{.locals{it1, it2},
-                   .globals{vertices.size()},
-                   .edges{vertices.size()},
-                   .normals{vertices.size()},
-                   .model{vertices.size()}}
+        : vertices{.locals{it1, it2}, .globals{it1, it2}, .edges{it1, it2}, .normals{it1, it2}, .model{it1, it2}}
     {
         m_ltransform.position = initialize_properties_and_vertices();
         update();
@@ -42,20 +38,20 @@ template <std::size_t Capacity> class polygon final : public shape2D
         requires(Size >= 3 && Size <= Capacity)
     polygon(const kit::dynarray<glm::vec2, Size> &verts = square(1.f))
         : vertices{.locals{verts},
-                   .globals{vertices.size()},
-                   .edges{vertices.size()},
-                   .normals{vertices.size()},
-                   .model{vertices.size()}}
+                   .globals{verts.size()},
+                   .edges{verts.size()},
+                   .normals{verts.size()},
+                   .model{verts.size()}}
     {
         m_ltransform.position = initialize_properties_and_vertices();
         update();
     }
     polygon(std::initializer_list<glm::vec2> verts)
         : vertices{.locals{verts},
-                   .globals{vertices.size()},
-                   .edges{vertices.size()},
-                   .normals{vertices.size()},
-                   .model{vertices.size()}}
+                   .globals{verts.size()},
+                   .edges{verts.size()},
+                   .normals{verts.size()},
+                   .model{verts.size()}}
     {
         m_ltransform.position = initialize_properties_and_vertices();
         update();
@@ -63,11 +59,8 @@ template <std::size_t Capacity> class polygon final : public shape2D
 
     template <kit::Iterator<glm::vec2> It>
     polygon(const kit::transform2D<float> &ltransform, It it1, It it2)
-        : shape2D(ltransform), vertices{.locals{it1, it2},
-                                        .globals{vertices.size()},
-                                        .edges{vertices.size()},
-                                        .normals{vertices.size()},
-                                        .model{vertices.size()}}
+        : shape2D(ltransform),
+          vertices{.locals{it1, it2}, .globals{it1, it2}, .edges{it1, it2}, .normals{it1, it2}, .model{it1, it2}}
     {
         initialize_properties_and_vertices();
         update();
@@ -77,20 +70,20 @@ template <std::size_t Capacity> class polygon final : public shape2D
         requires(Size >= 3 && Size <= Capacity)
     polygon(const kit::transform2D<float> &ltransform, const kit::dynarray<glm::vec2, Size> &verts = square(1.f))
         : shape2D(ltransform), vertices{.locals{verts},
-                                        .globals{vertices.size()},
-                                        .edges{vertices.size()},
-                                        .normals{vertices.size()},
-                                        .model{vertices.size()}}
+                                        .globals{verts.size()},
+                                        .edges{verts.size()},
+                                        .normals{verts.size()},
+                                        .model{verts.size()}}
     {
         initialize_properties_and_vertices();
         update();
     }
     polygon(const kit::transform2D<float> &ltransform, std::initializer_list<glm::vec2> verts)
         : shape2D(ltransform), vertices{.locals{verts},
-                                        .globals{vertices.size()},
-                                        .edges{vertices.size()},
-                                        .normals{vertices.size()},
-                                        .model{vertices.size()}}
+                                        .globals{verts.size()},
+                                        .edges{verts.size()},
+                                        .normals{verts.size()},
+                                        .model{verts.size()}}
     {
         initialize_properties_and_vertices();
         update();
