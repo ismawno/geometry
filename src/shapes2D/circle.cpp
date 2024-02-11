@@ -15,7 +15,7 @@ circle::circle(const float radius) : m_radius(radius)
     update_area_and_inertia();
     update();
 }
-circle::circle(const kit::transform2D<float> &transform, const float radius) : shape2D(transform), m_radius(radius)
+circle::circle(const kit::transform2D<float> &ltransform, const float radius) : shape2D(ltransform), m_radius(radius)
 {
     KIT_ASSERT_WARN(radius >= 0.f, "Creating circle with negative radius: {0}", radius);
     m_convex = true;
@@ -36,12 +36,12 @@ void circle::radius(const float radius)
 
 glm::vec2 circle::support_point(const glm::vec2 &direction) const
 {
-    return m_transform.position + glm::normalize(direction) * m_radius;
+    return m_gcentroid + glm::normalize(direction) * m_radius;
 }
 
 bool circle::contains_point(const glm::vec2 &p) const
 {
-    return glm::length2(p - m_transform.position) < m_radius * m_radius;
+    return glm::length2(p - m_gcentroid) < m_radius * m_radius;
 }
 
 void circle::update_area_and_inertia()
@@ -54,13 +54,13 @@ void circle::update_area_and_inertia()
 void circle::bound()
 {
     const glm::vec2 r = glm::vec2(m_radius);
-    m_aabb.min = m_centroid - r;
-    m_aabb.max = m_centroid + r;
+    m_aabb.min = m_gcentroid - r;
+    m_aabb.max = m_gcentroid + r;
 }
 
 glm::vec2 circle::closest_direction_from(const glm::vec2 &p) const
 {
-    const glm::vec2 dir = m_transform.position - p;
+    const glm::vec2 dir = m_gcentroid - p;
     return dir - glm::normalize(dir) * m_radius;
 }
 

@@ -3,18 +3,35 @@
 
 namespace geo
 {
-shape2D::shape2D(const kit::transform2D<float> &transform) : m_transform(transform), m_centroid(transform.position)
+shape2D::shape2D(const kit::transform2D<float> &ltransform) : m_ltransform(ltransform)
 {
 }
 
-const kit::transform2D<float> &shape2D::transform() const
+const kit::transform2D<float> &shape2D::ltransform() const
 {
-    return m_transform;
+    return m_ltransform;
 }
 
-const glm::vec2 &shape2D::centroid() const
+const glm::vec2 &shape2D::lcentroid() const
 {
-    return m_centroid;
+    return m_lcentroid;
+}
+const glm::vec2 &shape2D::gcentroid() const
+{
+    return m_gcentroid;
+}
+
+const glm::vec2 &shape2D::lposition() const
+{
+    return m_ltransform.position;
+}
+float shape2D::lrotation() const
+{
+    return m_ltransform.rotation;
+}
+const glm::vec2 &shape2D::origin() const
+{
+    return m_ltransform.origin;
 }
 
 float shape2D::area() const
@@ -30,20 +47,20 @@ bool shape2D::convex() const
     return m_convex;
 }
 
-void shape2D::centroid(const glm::vec2 &centroid)
+void shape2D::lcentroid(const glm::vec2 &lcentroid)
 {
-    translate(centroid - m_centroid);
+    ltranslate(lcentroid - m_lcentroid);
 }
 
 const kit::transform2D<float> *shape2D::parent() const
 {
-    return m_transform.parent;
+    return m_ltransform.parent;
 }
 void shape2D::parent(const kit::transform2D<float> *parent)
 {
-    if (m_transform.parent == parent)
+    if (m_ltransform.parent == parent)
         return;
-    m_transform.parent = parent;
+    m_ltransform.parent = parent;
     update();
 }
 
@@ -51,42 +68,50 @@ void shape2D::update()
 {
     if (m_pushing_update)
         return;
-    const glm::mat3 transform = m_transform.center_scale_rotate_translate3();
-    on_shape_transform_update(transform);
+    const glm::mat3 ltransform = m_ltransform.center_scale_rotate_translate3(true);
+    if (m_ltransform.parent)
+    {
+        const glm::mat3 gtransform = m_ltransform.parent->center_scale_rotate_translate3() * ltransform;
+        on_shape_transform_update(ltransform, gtransform);
+    }
+    else
+        on_shape_transform_update(ltransform, ltransform);
+
     bound();
 }
 
-void shape2D::on_shape_transform_update(const glm::mat3 &transform)
+void shape2D::on_shape_transform_update(const glm::mat3 &ltransform, const glm::mat3 &gtransform)
 {
-    m_centroid = transform[2];
+    m_lcentroid = ltransform[2];
+    m_gcentroid = gtransform[2];
 }
 
-void shape2D::translate(const glm::vec2 &dpos)
+void shape2D::ltranslate(const glm::vec2 &dpos)
 {
-    m_transform.position += dpos;
+    m_ltransform.position += dpos;
     update();
 }
-void shape2D::rotate(const float drotation)
+void shape2D::lrotate(const float drotation)
 {
-    m_transform.rotation += drotation;
-    update();
-}
-
-void shape2D::position(const glm::vec2 &position)
-{
-    m_transform.position = position;
+    m_ltransform.rotation += drotation;
     update();
 }
 
-void shape2D::rotation(const float rotation)
+void shape2D::lposition(const glm::vec2 &lposition)
 {
-    m_transform.rotation = rotation;
+    m_ltransform.position = lposition;
+    update();
+}
+
+void shape2D::lrotation(const float lrotation)
+{
+    m_ltransform.rotation = lrotation;
     update();
 }
 
 void shape2D::origin(const glm::vec2 &origin)
 {
-    m_transform.origin = origin;
+    m_ltransform.origin = origin;
     update();
 }
 

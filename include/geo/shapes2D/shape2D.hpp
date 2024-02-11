@@ -12,7 +12,7 @@ namespace geo
 class shape2D : public kit::yaml::serializable, public kit::yaml::deserializable
 {
   public:
-    shape2D(const kit::transform2D<float> &transform);
+    shape2D(const kit::transform2D<float> &ltransform);
     shape2D() = default;
     virtual ~shape2D() = default;
 
@@ -31,15 +31,21 @@ class shape2D : public kit::yaml::serializable, public kit::yaml::deserializable
 
     virtual glm::vec2 closest_direction_from(const glm::vec2 &p) const = 0;
 
-    const kit::transform2D<float> &transform() const;
-    const glm::vec2 &centroid() const;
-    void centroid(const glm::vec2 &centroid);
+    const kit::transform2D<float> &ltransform() const;
 
-    void translate(const glm::vec2 &dpos);
-    void rotate(float drotation);
+    const glm::vec2 &lcentroid() const;
+    const glm::vec2 &gcentroid() const;
 
-    void position(const glm::vec2 &pos);
-    void rotation(float angle);
+    const glm::vec2 &lposition() const;
+    float lrotation() const;
+    const glm::vec2 &origin() const;
+
+    void ltranslate(const glm::vec2 &dpos);
+    void lrotate(float drotation);
+
+    void lcentroid(const glm::vec2 &lcentroid);
+    void lposition(const glm::vec2 &lposition);
+    void lrotation(float langle);
     void origin(const glm::vec2 &origin);
 
     float area() const;
@@ -50,15 +56,16 @@ class shape2D : public kit::yaml::serializable, public kit::yaml::deserializable
     void update();
 
   protected:
-    kit::transform2D<float> m_transform;
-    glm::vec2 m_centroid;
+    kit::transform2D<float> m_ltransform;
+    glm::vec2 m_lcentroid;
+    glm::vec2 m_gcentroid;
     aabb2D m_aabb;
 
     float m_area = 0.f;
     float m_inertia = 0.f;
     bool m_convex = true;
 
-    virtual void on_shape_transform_update(const glm::mat3 &transform);
+    virtual void on_shape_transform_update(const glm::mat3 &ltransform, const glm::mat3 &gtransform);
 
   private:
     bool m_pushing_update = false;
