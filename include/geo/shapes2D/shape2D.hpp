@@ -42,9 +42,12 @@ class shape2D : public kit::yaml::serializable, public kit::yaml::deserializable
     const glm::vec2 &origin() const;
 
     void ltranslate(const glm::vec2 &dpos);
+    void gtranslate(const glm::vec2 &dpos);
     void lrotate(float drotation);
 
     void lcentroid(const glm::vec2 &lcentroid);
+    void gcentroid(const glm::vec2 &gcentroid);
+
     void lposition(const glm::vec2 &lposition);
     void lscale(const glm::vec2 &lscale);
     void lrotation(float langle);

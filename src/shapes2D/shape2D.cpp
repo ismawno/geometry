@@ -55,6 +55,10 @@ void shape2D::lcentroid(const glm::vec2 &lcentroid)
 {
     ltranslate(lcentroid - m_lcentroid);
 }
+void shape2D::gcentroid(const glm::vec2 &gcentroid)
+{
+    gtranslate(gcentroid - m_gcentroid);
+}
 
 const kit::transform2D<float> *shape2D::parent() const
 {
@@ -93,6 +97,14 @@ void shape2D::on_shape_transform_update(const glm::mat3 &ltransform, const glm::
 void shape2D::ltranslate(const glm::vec2 &dpos)
 {
     m_ltransform.position += dpos;
+    update();
+}
+void shape2D::gtranslate(const glm::vec2 &dpos)
+{
+    if (m_ltransform.parent)
+        m_ltransform.position += m_ltransform.parent->inverse_center_scale_rotate_translate3() * glm::vec3(dpos, 0.f);
+    else
+        ltranslate(dpos);
     update();
 }
 void shape2D::lrotate(const float drotation)
