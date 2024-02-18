@@ -196,18 +196,18 @@ template <std::size_t Capacity> class polygon final : public shape2D
     {
         shape2D::on_shape_transform_update(ltransform, gtransform);
         for (std::size_t i = 0; i < vertices.size(); i++)
-            vertices.locals[i] = ltransform * glm::vec3(vertices.model[i], 1.f);
+            vertices.locals(i) = ltransform * glm::vec3(vertices.model[i], 1.f);
         if (m_ltransform.parent)
             for (std::size_t i = 0; i < vertices.size(); i++)
-                vertices.globals[i] = gtransform * glm::vec3(vertices.model[i], 1.f);
+                vertices.globals(i) = gtransform * glm::vec3(vertices.model[i], 1.f);
         else
             for (std::size_t i = 0; i < vertices.size(); i++)
-                vertices.globals[i] = vertices.locals[i];
+                vertices.globals(i) = vertices.locals[i];
 
         for (std::size_t i = 0; i < vertices.size(); i++)
         {
-            vertices.edges[i] = vertices.globals[i + 1] - vertices.globals[i];
-            vertices.normals[i] = glm::normalize(glm::vec2(vertices.edges[i].y, -vertices.edges[i].x));
+            vertices.edges(i) = vertices.globals[i + 1] - vertices.globals[i];
+            vertices.normals(i) = glm::normalize(glm::vec2(vertices.edges[i].y, -vertices.edges[i].x));
         }
     }
 
@@ -230,7 +230,7 @@ template <std::size_t Capacity> class polygon final : public shape2D
                 return kit::cross2D(dir1, dir2) > 0.f;
             return det1 > 0.f;
         };
-        std::sort(vertices.locals.begin(), vertices.locals.end(), cmp);
+        std::sort(vertices.locals.mbegin(), vertices.locals.mend(), cmp);
     }
 
     glm::vec2 initialize_properties_and_vertices()
@@ -239,7 +239,7 @@ template <std::size_t Capacity> class polygon final : public shape2D
         const glm::vec2 current_lcentroid = compute_center_of_mass();
 
         for (std::size_t i = 0; i < vertices.size(); i++)
-            vertices.model[i] = vertices.locals[i] - current_lcentroid;
+            vertices.model(i) = vertices.locals[i] - current_lcentroid;
         update();
 
         m_area = compute_area();
@@ -288,30 +288,40 @@ template <std::size_t Capacity> class polygon final : public shape2D
 
     float compute_inertia()
     {
-        const glm::vec2 &p1 = vertices.locals[0];
+        const glm::vec2 &p1 = vertices.model[0];
         float inertia = 0.f;
 
         for (std::size_t i = 1; i < vertices.size() - 1; i++)
         {
-            const glm::vec2 &p2 = vertices.locals[i];
-            const glm::vec2 &p3 = vertices.locals[i + 1];
+            const glm::vec2 &p2 = vertices.model[i];
+            const glm::vec2 &p3 = vertices.model[i + 1];
             const glm::vec2 e1 = p1 - p2;
             const glm::vec2 e2 = p3 - p2;
 
-            const float w = glm::length(e1), w1 = std::abs(glm::dot(e1, e2) / w), w2 = std::abs(w - w1);
+            const float w = glm::length(e1);
+
+            const float w1 = std::abs(glm::dot(e1, e2) / w);
+            const float w2 = std::abs(w - w1);
 
             const float h = std::abs(kit::cross2D(e2, e1)) / w;
             const glm::vec2 p4 = p2 + e1 * w1 / w;
 
-            const float i1 = w1 * h * (w1 * w1 / 3.f + h * h) / 4.f, i2 = w2 * h * (w2 * w2 / 3.f + h * h) / 4.f;
-            const float m1 = 0.5f * w1 * h, m2 = 0.5f * w2 * h;
+            const float i1 = w1 * h * (w1 * w1 / 3.f + h * h) / 4.f;
+            const float i2 = w2 * h * (w2 * w2 / 3.f + h * h) / 4.f;
 
-            const glm::vec2 cm1 = (p2 + p3 + p4) / 3.f, cm2 = (p1 + p3 + p4) / 3.f;
+            const float m1 = 0.5f * w1 * h;
+            const float m2 = 0.5f * w2 * h;
 
-            const float icm1 = i1 + m1 * (glm::length2(cm1) - glm::distance2(cm1, p3)),
-                        icm2 = i2 + m2 * (glm::length2(cm2) - glm::distance2(cm2, p3));
+            const glm::vec2 cm1 = (p2 + p3 + p4) / 3.f;
+            const glm::vec2 cm2 = (p1 + p3 + p4) / 3.f;
 
-            const glm::vec2 p13 = p1 - p3, p43 = p4 - p3, p23 = -e2;
+            const float icm1 = i1 + m1 * (glm::length2(cm1) - glm::distance2(cm1, p3));
+            const float icm2 = i2 + m2 * (glm::length2(cm2) - glm::distance2(cm2, p3));
+
+            const glm::vec2 p13 = p1 - p3;
+            const glm::vec2 p43 = p4 - p3;
+            const glm::vec2 p23 = -e2;
+
             if (kit::cross2D(p13, p43) < 0.f)
                 inertia += icm1;
             else

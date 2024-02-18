@@ -50,16 +50,16 @@ class vertices2D
     vertices2D(vertices2D &&) = default;
     vertices2D &operator=(vertices2D &&) = default;
 
-    glm::vec2 &operator[](const std::size_t index)
+    glm::vec2 &operator()(const std::size_t index)
     {
         return m_vertices[index % m_vertices.size()];
     }
 
-    auto begin()
+    auto mbegin()
     {
         return m_vertices.begin();
     }
-    auto end()
+    auto mend()
     {
         return m_vertices.end();
     }
