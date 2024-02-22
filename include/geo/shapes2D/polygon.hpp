@@ -26,7 +26,7 @@ template <std::size_t Capacity> class polygon final : public shape2D
         }
     };
 
-    template <kit::Iterator<glm::vec2> It>
+    template <std::input_iterator It>
     polygon(It it1, It it2)
         : vertices{.locals{it1, it2}, .globals{it1, it2}, .edges{it1, it2}, .normals{it1, it2}, .model{it1, it2}}
     {
@@ -57,7 +57,7 @@ template <std::size_t Capacity> class polygon final : public shape2D
         update();
     }
 
-    template <kit::Iterator<glm::vec2> It>
+    template <std::input_iterator It>
     polygon(const kit::transform2D<float> &ltransform, It it1, It it2)
         : shape2D(ltransform),
           vertices{.locals{it1, it2}, .globals{it1, it2}, .edges{it1, it2}, .normals{it1, it2}, .model{it1, it2}}
