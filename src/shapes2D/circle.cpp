@@ -2,10 +2,6 @@
 #include "geo/shapes2D/circle.hpp"
 #include "geo/serialization/serialization.hpp"
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846f
-#endif
-
 namespace geo
 {
 circle::circle(const float radius) : m_radius(radius)
@@ -47,7 +43,7 @@ bool circle::contains_point(const glm::vec2 &p) const
 void circle::update_area_and_inertia()
 {
     const float r2 = m_radius * m_radius;
-    m_area = (float)M_PI * r2;
+    m_area = glm::pi<float>() * r2;
     m_inertia = 0.5f * r2;
 }
 

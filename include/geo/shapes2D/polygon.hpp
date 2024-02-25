@@ -8,10 +8,6 @@
 #include <array>
 #include <utility>
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846f
-#endif
-
 namespace geo
 {
 template <std::size_t Capacity> class polygon final : public shape2D
@@ -181,7 +177,7 @@ template <std::size_t Capacity> class polygon final : public shape2D
         KIT_ASSERT_ERROR(edges <= MaxEdges, "Cannot make polygon with more than {0} edges - edges: {1}", MaxEdges,
                          edges)
         kit::dynarray<glm::vec2, MaxEdges> vertices{edges};
-        const float dangle = 2.f * (float)M_PI / edges;
+        const float dangle = 2.f * glm::pi<float>() / edges;
         for (std::size_t i = 0; i < edges; i++)
         {
             const float rotation = i * dangle;
