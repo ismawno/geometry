@@ -8,8 +8,8 @@ aabb2D::aabb2D(const glm::vec2 &point) : aabb2D(point, point)
 }
 aabb2D::aabb2D(const glm::vec2 &min, const glm::vec2 &max) : min(min), max(max)
 {
-    KIT_ASSERT_WARN(min.x <= max.x && min.y <= max.y,
-                    "Vector min: {0}, {1} is greater than vector max {0}, {1} in aabb", min.x, min.y, max.x, max.y);
+    KIT_ASSERT_ERROR(min.x <= max.x && min.y <= max.y,
+                     "Vector min: {0}, {1} is greater than vector max {0}, {1} in aabb", min.x, min.y, max.x, max.y);
 }
 
 glm::vec2 aabb2D::dimension() const
